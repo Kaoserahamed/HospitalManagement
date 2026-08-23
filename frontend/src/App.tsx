@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import DepartmentManagement from './pages/DepartmentManagement'
 import DoctorDashboard from './pages/DoctorDashboard'
 import ReceptionistDashboard from './pages/ReceptionistDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -40,6 +41,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/departments"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <DepartmentManagement />
               </ProtectedRoute>
             }
           />

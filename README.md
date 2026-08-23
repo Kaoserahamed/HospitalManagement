@@ -7,6 +7,10 @@ User Management:
 1. Admin can create role(doctor, receptionist) based users. 
 2. Role based login (Admin, doctor, receptionist). 
 
+Department and Doctors
+1. Admin creates departments and assign doctors to departments
+
+
 ## Project Structure
 
 ```
