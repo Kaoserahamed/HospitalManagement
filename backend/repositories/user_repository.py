@@ -14,6 +14,10 @@ class UserRepository:
         result = await self.session.execute(select(User).where(User.id == user_id))
         return result.scalars().first()
 
+    async def get_all(self) -> list[User]:
+        result = await self.session.execute(select(User))
+        return list(result.scalars().all())
+
     async def create(self, user: User) -> User:
         self.session.add(user)
         await self.session.commit()

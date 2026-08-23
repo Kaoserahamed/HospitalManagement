@@ -1,10 +1,11 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
 
 from models.user import UserRole
 
 
 class UserCreate(BaseModel):
-    email: str
+    """Schema for admin-created users (doctors, receptionists, admins)"""
+    email: EmailStr
     password: str
     role: UserRole
     first_name: str

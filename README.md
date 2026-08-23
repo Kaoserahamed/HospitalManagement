@@ -2,6 +2,11 @@
 
 A comprehensive Hospital Management System built with FastAPI and MySQL.
 
+
+User Management:
+1. Admin can create role(doctor, receptionist) based users. 
+2. Role based login (Admin, doctor, receptionist). 
+
 ## Project Structure
 
 ```
@@ -62,3 +67,6 @@ Once running, visit:
 - `doctor` - Medical practitioners
 - `patient` - Hospital patients
 - `receptionist` - Front desk staff
+
+
+
