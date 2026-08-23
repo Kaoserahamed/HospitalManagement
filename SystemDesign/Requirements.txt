@@ -1,0 +1,129 @@
+# Hospital Management System — Core Requirements
+
+## Functional Requirements
+
+### 1. Authentication & Role Management
+
+* Secure login/logout.
+* Role-based access for **Admin, Doctor, Receptionist, and Patient**.
+* User profile management.
+* Authorization for protected resources.
+
+### 2. Patient Management
+
+* Register and update patient information.
+* Generate unique patient ID.
+* View patient profile and medical history.
+* Search patients by ID, name, or phone number.
+
+### 3. Doctor & Department Management
+
+* Manage doctors and their specializations.
+* Manage hospital departments.
+* Assign doctors to departments.
+* Manage doctor availability and schedules.
+
+### 4. Appointment Management
+
+* Patients/receptionists can book appointments.
+* View available doctors and time slots.
+* Reschedule or cancel appointments.
+* Track appointment status.
+* Prevent double booking.
+
+### 5. Medical Consultation
+
+* Doctors can view patient history.
+* Record symptoms, diagnosis, and clinical notes.
+* Create prescriptions.
+* Add follow-up instructions.
+* Maintain consultation history.
+
+### 6. Prescription Management
+
+* Create and manage prescriptions.
+* Add medicines, dosage, frequency, and duration.
+* Patients can view/download prescriptions.
+* Maintain prescription history.
+
+### 7. Billing & Payment
+
+* Generate invoices for consultations and services.
+* Record payments.
+* Track paid/unpaid invoices.
+* Generate payment receipts.
+
+### 8. Dashboard & Reports
+
+* Admin dashboard with:
+
+  * Total patients
+  * Appointments
+  * Doctors
+  * Revenue
+* Doctor dashboard with appointments and patients.
+* Basic reports with date-based filtering.
+
+### 9. Notifications
+
+* Appointment confirmation.
+* Appointment reminders.
+* Appointment cancellation notifications.
+
+### 10. Audit Logging
+
+* Record important user activities.
+* Track who created or modified important records.
+* Store activity timestamps.
+
+---
+
+# Non-Functional Requirements
+
+### Security
+
+* Passwords must be securely hashed.
+* Implement role-based authorization.
+* Protect APIs and sensitive patient information.
+* Use HTTPS in production.
+
+### Performance
+
+* API response time should remain low under normal workload.
+* Use proper database indexing and optimized queries.
+* Support multiple concurrent users.
+
+### Reliability
+
+* Maintain database consistency using transactions and constraints.
+* Implement automated database backups.
+* Prevent accidental data loss.
+
+### Scalability
+
+* Use a modular backend architecture.
+* Design the database to support increasing patients, doctors, and appointments.
+* Keep file storage separate from transactional data where appropriate.
+
+### Maintainability
+
+* Follow clean architecture and coding standards.
+* Use RESTful APIs.
+* Maintain database migrations.
+* Write unit/integration tests for critical modules.
+* Maintain API documentation.
+
+### Usability
+
+* Provide a simple and responsive interface.
+* Provide clear validation and error messages.
+* Make common operations easy for hospital staff.
+
+### Deployment
+
+* Separate development and production environments.
+* Use CI/CD for deployment.
+* Store secrets using environment variables/secret management.
+* Support deployment on cloud infrastructure such as Azure.
+
+---
