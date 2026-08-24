@@ -1,34 +1,18 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 
 
 class DepartmentCreate(BaseModel):
-    """Schema for creating a new department"""
+    """Schema for creating a department"""
     name: str
     description: str | None = None
 
-    @field_validator("name")
-    @classmethod
-    def validate_name(cls, value: str) -> str:
-        value = value.strip()
-        if not value:
-            raise ValueError("Department name cannot be empty")
-        return value
-
 
 class DepartmentUpdate(BaseModel):
-    """Schema for updating an existing department"""
+    """Schema for updating a department"""
     name: str | None = None
     description: str | None = None
     is_active: bool | None = None
-
-    @field_validator("name")
-    @classmethod
-    def validate_name(cls, value: str | None) -> str | None:
-        if value is not None:
-            value = value.strip()
-            if not value:
-                raise ValueError("Department name cannot be empty")
-        return value
 
 
 class DepartmentResponse(BaseModel):
@@ -39,10 +23,12 @@ class DepartmentResponse(BaseModel):
     name: str
     description: str | None
     is_active: bool
+    created_at: datetime
+    updated_at: datetime
 
 
 class DoctorAssignmentRequest(BaseModel):
-    """Schema for assigning a doctor to a department"""
+    """Schema for assigning doctor to department"""
     user_id: str
     department_id: str
     specialization: str | None = None
@@ -56,6 +42,8 @@ class DoctorProfileResponse(BaseModel):
     user_id: str
     department_id: str | None
     specialization: str | None
+    created_at: datetime
+    updated_at: datetime
 
 
 class DoctorWithDepartment(BaseModel):

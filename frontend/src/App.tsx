@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'
+import PatientRegistration from './pages/PatientRegistration'
 import Dashboard from './pages/Dashboard'
 import DepartmentManagement from './pages/DepartmentManagement'
 import DoctorDashboard from './pages/DoctorDashboard'
 import ReceptionistDashboard from './pages/ReceptionistDashboard'
+import PatientDashboard from './pages/PatientDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 
 const RootRedirect = () => {
@@ -25,6 +27,8 @@ const RootRedirect = () => {
     return <Navigate to="/doctor-dashboard" replace />
   } else if (user.role === 'receptionist') {
     return <Navigate to="/receptionist-dashboard" replace />
+  } else if (user.role === 'patient') {
+    return <Navigate to="/patient-dashboard" replace />
   }
 
   return <Navigate to="/login" replace />
@@ -36,6 +40,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<PatientRegistration />} />
           <Route
             path="/dashboard"
             element={
@@ -65,6 +70,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['receptionist']}>
                 <ReceptionistDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/patient-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['patient']}>
+                <PatientDashboard />
               </ProtectedRoute>
             }
           />

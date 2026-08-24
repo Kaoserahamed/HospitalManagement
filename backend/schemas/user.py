@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
-
 from models.user import UserRole
 
 
@@ -35,6 +34,19 @@ class UserResponse(BaseModel):
     last_name: str
     phone: str | None = None
     is_active: bool
+
+
+class UserUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    phone: str | None = None
+    password: str | None = None
+    is_active: bool | None = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
 
 
 class TokenResponse(BaseModel):

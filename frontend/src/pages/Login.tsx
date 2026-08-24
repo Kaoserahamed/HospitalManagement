@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Lock, Mail } from 'lucide-react'
 import './Login.css'
@@ -20,6 +20,8 @@ const Login = () => {
       navigate('/doctor-dashboard', { replace: true })
     } else if (user.role === 'receptionist') {
       navigate('/receptionist-dashboard', { replace: true })
+    } else if (user.role === 'patient') {
+      navigate('/patient-dashboard', { replace: true })
     }
     return null
   }
@@ -38,7 +40,7 @@ const Login = () => {
         navigate('/doctor-dashboard')
       } else if (userData.role === 'receptionist') {
         navigate('/receptionist-dashboard')
-      } else {
+      } else if (userData.role === 'patient') {
         navigate('/patient-dashboard')
       }
     } catch (err: any) {
@@ -94,6 +96,22 @@ const Login = () => {
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
+
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>
+              Don't have an account?{' '}
+              <Link
+                to="/register"
+                style={{
+                  color: '#667eea',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                }}
+              >
+                Register as Patient
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

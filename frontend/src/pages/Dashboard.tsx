@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Plus, Users, Building2 } from 'lucide-react'
+import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react'
 import CreateUserModal from '../components/CreateUserModal'
+import ScheduleManagement from './ScheduleManagement'
 import { User } from '../types'
 import { authAPI } from '../api/auth'
 import './Dashboard.css'
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [showModal, setShowModal] = useState(false)
+  const [showScheduleManagement, setShowScheduleManagement] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -137,6 +139,14 @@ const Dashboard = () => {
               <Building2 size={20} />
               Departments
             </button>
+            <button
+              onClick={() => setShowScheduleManagement(true)}
+              className="sidebar-button"
+              style={{ backgroundColor: '#8b5cf6' }}
+            >
+              <Calendar size={20} />
+              Schedules
+            </button>
           </nav>
         </aside>
 
@@ -258,6 +268,12 @@ const Dashboard = () => {
           onClose={() => setShowModal(false)}
           onUserCreated={handleUserCreated}
         />
+      )}
+
+      {showScheduleManagement && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'white', zIndex: 1000, overflowY: 'auto' }}>
+          <ScheduleManagement doctors={doctors} onClose={() => setShowScheduleManagement(false)} />
+        </div>
       )}
     </div>
   )

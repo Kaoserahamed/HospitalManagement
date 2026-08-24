@@ -23,3 +23,8 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
         return user
+
+    async def update(self, user: User) -> User:
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
