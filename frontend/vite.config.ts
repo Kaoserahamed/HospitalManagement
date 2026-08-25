@@ -5,11 +5,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    proxy: {
-      '/auth': {
-        target: 'http://localhost:8000',
-        changeOrigin: true
-      }
-    }
+    proxy: ['/auth', '/departments', '/appointments', '/schedules', '/patients', '/prescriptions'].reduce(
+      (proxies, path) => ({
+        ...proxies,
+        [path]: {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      }),
+      {},
+    ),
   }
 })

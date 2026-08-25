@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from models.user import User
+from models.user import User, UserRole
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
@@ -15,7 +15,9 @@ class UserRepository:
         return result.scalars().first()
 
     async def get_all(self) -> list[User]:
-        result = await self.session.execute(select(User))
+        result = await self.session.execute(
+            select(User).where(User.role != UserRole.PATIENT)
+        )
         return list(result.scalars().all())
 
     async def create(self, user: User) -> User:

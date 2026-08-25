@@ -63,14 +63,13 @@ async def get_my_schedule(
     return await controller.get_doctor_schedules(current_user.id)
 
 
-# Public endpoints (for appointment booking)
+# Public endpoints (for appointment booking) - no authentication required
 @router.get("/doctor/{doctor_id}", response_model=list[DoctorScheduleResponse])
 async def get_doctor_schedule(
     doctor_id: str,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.PATIENT)),
     controller: DoctorScheduleController = Depends(get_doctor_schedule_controller),
 ):
-    """Get doctor's schedule"""
+    """Get doctor's schedule (public access for appointment booking)"""
     return await controller.get_doctor_schedules(doctor_id)
 
 
@@ -78,8 +77,7 @@ async def get_doctor_schedule(
 async def get_available_slots(
     doctor_id: str = Query(..., description="Doctor ID"),
     date: date = Query(..., description="Target date (YYYY-MM-DD)"),
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.PATIENT)),
     controller: DoctorScheduleController = Depends(get_doctor_schedule_controller),
 ):
-    """Get available appointment slots for a doctor on a specific date"""
+    """Get available appointment slots for a doctor on a specific date (public access)"""
     return await controller.get_available_slots(doctor_id, date)

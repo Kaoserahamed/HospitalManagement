@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { LogOut, Plus, Calendar, X } from 'lucide-react'
+import { LogOut, Plus, Calendar } from 'lucide-react'
 import { appointmentAPI, AppointmentWithDetails } from '../api/appointment'
-import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
 import BookAppointmentModal from '../components/BookAppointmentModal'
 import './Dashboard.css'
 

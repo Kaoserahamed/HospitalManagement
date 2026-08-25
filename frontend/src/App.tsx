@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import PatientRegistration from './pages/PatientRegistration'
 import Dashboard from './pages/Dashboard'
 import DepartmentManagement from './pages/DepartmentManagement'
+import SchedulesPage from './pages/SchedulesPage'
 import DoctorDashboard from './pages/DoctorDashboard'
 import ReceptionistDashboard from './pages/ReceptionistDashboard'
 import PatientDashboard from './pages/PatientDashboard'
@@ -54,6 +55,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <DepartmentManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/schedules"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <SchedulesPage />
               </ProtectedRoute>
             }
           />

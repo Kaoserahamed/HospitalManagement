@@ -1,49 +1,106 @@
-# Database Schema
+# Hospital Management System - Database Schema
 
-## Quick Setup
+## Overview
+This directory contains the complete database schema for the Hospital Management System.
 
-Use the complete schema file for a fresh installation:
+## Files
+- **complete_schema.sql** - Complete database schema with all tables and seed admin user
 
+## Database Setup
+
+### Fresh Installation
 ```bash
-mysql -u root -p < database/complete_schema.sql
+mysql -u root -p < complete_schema.sql
 ```
 
-This creates all tables and seeds the admin user.
+This will:
+1. Create the `hospital_db` database
+2. Create all required tables
+3. Seed the default admin user
 
-## Database Structure
+### Default Credentials
+- **Email:** admin@hospital.com
+- **Password:** Admin@123
 
-### Staff Management (users table)
-- **users** - Staff only (admin, doctor, receptionist)
-  - Authentication via email/password
-  - Roles: admin, doctor, receptionist
+## Database Tables
 
-### Patient Management (patients table)
-- **patients** - Separate from staff
-  - Authentication via NID + Phone (no email/password)
-  - Medical information included
+### 1. users (Staff Only)
+Staff authentication table for admin, doctor, and receptionist roles.
+- Authentication: Email + Password
+- Fields: id, email, password_hash, role, first_name, last_name, phone, is_active, created_at, updated_at
 
-### Clinical Management
-- **departments** - Hospital departments
-- **doctor_profiles** - Links doctors to departments
-- **doctor_schedules** - Doctor working hours and time slots
-- **appointments** - Links patients to doctors
+### 2. patients (Separate from Staff)
+Patient records completely independent from staff users.
+- Authentication: NID + Phone (no email/password)
+- Fields: id, nid, phone, first_name, last_name, date_of_birth, gender, blood_group, address, emergency contacts, medical_history, allergies, is_active, created_at, updated_at
+
+### 3. departments
+Hospital departments.
+- Fields: id, name, description, is_active, created_at, updated_at
+
+### 4. doctor_profiles
+Links doctors (users) to departments with specialization.
+- Fields: id, user_id (FK→users), department_id (FK→departments), specialization, created_at, updated_at
+
+### 5. doctor_schedules
+Doctor working schedules with time slots.
+- Fields: id, doctor_id (FK→users), day_of_week, start_time, end_time, slot_duration, is_active, created_at, updated_at
+
+### 6. appointments
+Patient appointments with doctors.
+- Fields: id, patient_id (FK→patients), doctor_id (FK→users), department_id (FK→departments), appointment_date, appointment_time, status, reason, notes, created_at, updated_at
+- Status: scheduled, confirmed, completed, cancelled, no_show
+
+### 7. prescriptions
+Prescriptions issued by doctors to patients.
+- Fields: id, appointment_id (FK→appointments), patient_id (FK→patients), doctor_id (FK→users), diagnosis, medications (JSON), instructions, follow_up_date, created_at, updated_at
+
+## Authentication Architecture
+
+### Staff Authentication (Email + Password)
+- Used by: Admin, Doctor, Receptionist
+- JWT Token: Contains `sub` (user_id), `role`, `type: "staff"`
+- Login Endpoint: POST /auth/login
+
+### Patient Authentication (NID + Phone)
+- Used by: Patients
+- JWT Token: Contains `sub` (patient_id), `type: "patient"`
+- Login Endpoint: POST /auth/patients/login
+- Registration: Public endpoint at POST /auth/patients/register
 
 ## Key Design Decisions
 
-1. **Separated Patients from Staff** - Patients have their own table with NID/phone auth
-2. **Doctor Schedules** - Enables appointment availability checking
-3. **Soft Deletes** - Uses `is_active` flags instead of hard deletes
-4. **UUIDs** - All primary keys use UUID for better distribution
+1. **Separate Patient Table**: Patients are NOT in the users table. They have their own authentication system using NID + phone.
 
-## Default Credentials
+2. **Staff Only in Users Table**: The users table contains ONLY staff (admin, doctor, receptionist) with email/password authentication.
 
-- **Admin**: admin@hospital.com / Admin@123
+3. **No Patient Role in Users**: The UserRole enum does NOT include 'patient' - it only has admin, doctor, receptionist.
 
-## Migrations
+4. **Dual Authentication System**: 
+   - Staff use `get_current_user()` dependency
+   - Patients use `get_current_patient()` dependency
 
-Individual migrations are in `/database/migrations/` folder:
-- `002_departments_and_doctors.sql`
-- `003_appointments.sql`
-- `006_separate_patients_simple.sql`
+5. **Public Endpoints**: Department and schedule information is publicly accessible for appointment booking.
 
-Run migrations only if you need incremental updates on an existing database.
+## Indexes
+
+All foreign keys are indexed. Additional indexes on:
+- users: email, role, is_active
+- patients: nid, phone, is_active, date_of_birth
+- departments: name, is_active
+- doctor_schedules: doctor_id, day_of_week, is_active, unique(doctor_id, day_of_week, start_time, end_time)
+- appointments: patient_id, doctor_id, department_id, appointment_date, status, doctor+date, patient+date
+- prescriptions: appointment_id, patient_id, doctor_id, created_at
+
+## Foreign Key Constraints
+
+- CASCADE: When parent is deleted, child is deleted
+  - users → doctor_profiles (doctor deleted → profile deleted)
+  - departments → departments (department deleted → assignment removed)
+  - patients → appointments (patient deleted → appointments deleted)
+  - appointments → prescriptions (appointment deleted → prescriptions deleted)
+
+- RESTRICT: Cannot delete parent if child exists
+  - users/doctors → appointments (cannot delete doctor with appointments)
+  - departments → appointments (cannot delete department with appointments)
+  - users/doctors → prescriptions (cannot delete doctor with prescriptions)

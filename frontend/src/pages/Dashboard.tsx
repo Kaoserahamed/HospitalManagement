@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react'
 import CreateUserModal from '../components/CreateUserModal'
-import ScheduleManagement from './ScheduleManagement'
+import DataTable from '../components/DataTable'
 import { User } from '../types'
 import { authAPI } from '../api/auth'
 import './Dashboard.css'
@@ -13,7 +13,6 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [showModal, setShowModal] = useState(false)
-  const [showScheduleManagement, setShowScheduleManagement] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -42,6 +41,58 @@ const Dashboard = () => {
 
   const doctors = users.filter(u => u.role === 'doctor')
   const receptionists = users.filter(u => u.role === 'receptionist')
+
+  // Define columns for doctors table
+  const doctorsColumns = [
+    {
+      key: 'name',
+      header: 'Name',
+      render: (_: any, row: User) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+    },
+    {
+      key: 'email',
+      header: 'Email'
+    },
+    {
+      key: 'phone',
+      header: 'Phone'
+    },
+    {
+      key: 'is_active',
+      header: 'Status',
+      render: (value: boolean) => (
+        <span className={value ? 'status-active' : 'status-inactive'}>
+          {value ? 'Active' : 'Inactive'}
+        </span>
+      )
+    }
+  ]
+
+  // Define columns for receptionists table
+  const receptionistsColumns = [
+    {
+      key: 'name',
+      header: 'Name',
+      render: (_: any, row: User) => <strong>{row.first_name} {row.last_name}</strong>
+    },
+    {
+      key: 'email',
+      header: 'Email'
+    },
+    {
+      key: 'phone',
+      header: 'Phone'
+    },
+    {
+      key: 'is_active',
+      header: 'Status',
+      render: (value: boolean) => (
+        <span className={value ? 'status-active' : 'status-inactive'}>
+          {value ? 'Active' : 'Inactive'}
+        </span>
+      )
+    }
+  ]
 
   if (loading) {
     return (
@@ -140,9 +191,32 @@ const Dashboard = () => {
               Departments
             </button>
             <button
-              onClick={() => setShowScheduleManagement(true)}
-              className="sidebar-button"
-              style={{ backgroundColor: '#8b5cf6' }}
+              onClick={() => navigate('/schedules')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.75rem 1rem',
+                backgroundColor: currentPath === '/schedules' ? '#f0f0f0' : 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.95rem',
+                fontWeight: currentPath === '/schedules' ? '600' : '400',
+                color: '#333',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (currentPath !== '/schedules') {
+                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentPath !== '/schedules') {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }
+              }}
             >
               <Calendar size={20} />
               Schedules
@@ -175,41 +249,12 @@ const Dashboard = () => {
                 Doctors ({doctors.length})
               </h3>
             </div>
-            <div className="users-grid">
-              {doctors.length === 0 ? (
-                <div className="empty-state">
-                  <p>No doctors added yet</p>
-                  <p className="empty-subtitle">Click "Create User" to add doctors</p>
-                </div>
-              ) : (
-                doctors.map((u) => (
-                  <div key={u.id} className="user-card">
-                    <div className="user-card-header">
-                      <h3>
-                        Dr. {u.first_name} {u.last_name}
-                      </h3>
-                      <span className={`role-badge role-${u.role}`}>{u.role}</span>
-                    </div>
-                    <div className="user-card-body">
-                      <p>
-                        <strong>Email:</strong> {u.email}
-                      </p>
-                      {u.phone && (
-                        <p>
-                          <strong>Phone:</strong> {u.phone}
-                        </p>
-                      )}
-                      <p>
-                        <strong>Status:</strong>{' '}
-                        <span className={u.is_active ? 'status-active' : 'status-inactive'}>
-                          {u.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <DataTable
+              data={doctors}
+              columns={doctorsColumns}
+              emptyMessage="No doctors added yet"
+              emptySubtitle='Click "Create User" to add doctors'
+            />
           </div>
 
           {/* Receptionists Section */}
@@ -224,41 +269,12 @@ const Dashboard = () => {
                 Receptionists ({receptionists.length})
               </h3>
             </div>
-            <div className="users-grid">
-              {receptionists.length === 0 ? (
-                <div className="empty-state">
-                  <p>No receptionists added yet</p>
-                  <p className="empty-subtitle">Click "Create User" to add receptionists</p>
-                </div>
-              ) : (
-                receptionists.map((u) => (
-                  <div key={u.id} className="user-card">
-                    <div className="user-card-header">
-                      <h3>
-                        {u.first_name} {u.last_name}
-                      </h3>
-                      <span className={`role-badge role-${u.role}`}>{u.role}</span>
-                    </div>
-                    <div className="user-card-body">
-                      <p>
-                        <strong>Email:</strong> {u.email}
-                      </p>
-                      {u.phone && (
-                        <p>
-                          <strong>Phone:</strong> {u.phone}
-                        </p>
-                      )}
-                      <p>
-                        <strong>Status:</strong>{' '}
-                        <span className={u.is_active ? 'status-active' : 'status-inactive'}>
-                          {u.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <DataTable
+              data={receptionists}
+              columns={receptionistsColumns}
+              emptyMessage="No receptionists added yet"
+              emptySubtitle='Click "Create User" to add receptionists'
+            />
           </div>
         </main>
       </div>
@@ -268,12 +284,6 @@ const Dashboard = () => {
           onClose={() => setShowModal(false)}
           onUserCreated={handleUserCreated}
         />
-      )}
-
-      {showScheduleManagement && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'white', zIndex: 1000, overflowY: 'auto' }}>
-          <ScheduleManagement doctors={doctors} onClose={() => setShowScheduleManagement(false)} />
-        </div>
       )}
     </div>
   )

@@ -168,7 +168,7 @@ class AppointmentService:
 
         return await self.appointment_repo.update(appointment)
 
-    async def cancel_appointment(self, appointment_id: str, user_id: str, user_role: UserRole) -> Appointment:
+    async def cancel_appointment(self, appointment_id: str, user_id: str, user_role: UserRole | None) -> Appointment:
         """Cancel an appointment"""
         appointment = await self.appointment_repo.get_by_id(appointment_id)
         if not appointment:

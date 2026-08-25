@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, status, Query
 from controllers.appointment_controller import AppointmentController
 from dependencies.appointment import get_appointment_controller
-from dependencies.auth import get_current_user, require_roles
+from dependencies.auth import get_current_patient, get_current_user, require_roles
 from schemas.schemas import (
     AppointmentCreate, AppointmentUpdate, AppointmentStatusUpdate,
     AppointmentResponse, AppointmentWithDetails
 )
 from models.user import User, UserRole
+from models.patient import Patient
 from models.appointment import AppointmentStatus
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
@@ -16,30 +17,30 @@ router = APIRouter(prefix="/appointments", tags=["Appointments"])
 @router.post("", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED)
 async def create_appointment(
     data: AppointmentCreate,
-    current_user: User = Depends(require_roles(UserRole.PATIENT)),
+    current_patient: Patient = Depends(get_current_patient),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
     """Patient: Book a new appointment"""
-    return await controller.create_appointment(current_user.id, data)
+    return await controller.create_appointment(current_patient.id, data)
 
 
 @router.get("/my-appointments", response_model=list[AppointmentWithDetails])
 async def get_my_appointments(
-    current_user: User = Depends(require_roles(UserRole.PATIENT)),
+    current_patient: Patient = Depends(get_current_patient),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
     """Patient: Get my appointments"""
-    return await controller.get_patient_appointments(current_user.id)
+    return await controller.get_patient_appointments(current_patient.id)
 
 
 @router.delete("/{appointment_id}/cancel", response_model=AppointmentResponse)
 async def cancel_my_appointment(
     appointment_id: str,
-    current_user: User = Depends(require_roles(UserRole.PATIENT)),
+    current_patient: Patient = Depends(get_current_patient),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
     """Patient: Cancel my appointment"""
-    return await controller.cancel_appointment(appointment_id, current_user.id, current_user.role)
+    return await controller.cancel_appointment(appointment_id, current_patient.id, "patient")
 
 
 # Doctor endpoints
@@ -67,7 +68,7 @@ async def update_appointment_status(
 @router.post("/create", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED)
 async def create_appointment_for_patient(
     data: AppointmentCreate,
-    patient_id: str = Query(..., description="Patient user ID"),
+    patient_id: str = Query(..., description="Patient ID"),
     current_user: User = Depends(require_roles(UserRole.RECEPTIONIST, UserRole.ADMIN)),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):

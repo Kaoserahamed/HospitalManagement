@@ -1,6 +1,6 @@
 """
-Initialize database tables for departments and doctor profiles
-This will create the tables if they don't exist
+Initialize database tables for the Hospital Management System
+This will create all tables if they don't exist
 """
 import asyncio
 from core.database import engine, Base
@@ -9,6 +9,10 @@ from core.database import engine, Base
 from models.user import User
 from models.department import Department
 from models.doctor import DoctorProfile
+from models.patient import Patient
+from models.appointment import Appointment
+from models.doctor_schedule import DoctorSchedule
+from models.prescription import Prescription
 
 
 async def init_tables():
@@ -24,6 +28,10 @@ async def init_tables():
     print("  - users")
     print("  - departments")
     print("  - doctor_profiles")
+    print("  - patients")
+    print("  - appointments")
+    print("  - doctor_schedules")
+    print("  - prescriptions")
 
 
 if __name__ == "__main__":

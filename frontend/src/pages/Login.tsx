@@ -6,10 +6,13 @@ import './Login.css'
 
 const Login = () => {
   const [email, setEmail] = useState('')
+  const [nid, setNid] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [isPatientLogin, setIsPatientLogin] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login, user } = useAuth()
+  const { login, loginPatient, user } = useAuth()
   const navigate = useNavigate()
 
   // Redirect if already logged in
@@ -32,7 +35,9 @@ const Login = () => {
     setLoading(true)
 
     try {
-      const userData = await login({ email, password })
+      const userData = isPatientLogin
+        ? await loginPatient({ nid, phone })
+        : await login({ email, password })
       // Redirect based on role
       if (userData.role === 'admin') {
         navigate('/dashboard')
@@ -62,14 +67,14 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="email">
               <Mail size={18} />
-              Email
+              {isPatientLogin ? 'National ID (NID)' : 'Email'}
             </label>
             <input
               id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your.email@hospital.com"
+              type={isPatientLogin ? 'text' : 'email'}
+              value={isPatientLogin ? nid : email}
+              onChange={(e) => isPatientLogin ? setNid(e.target.value) : setEmail(e.target.value)}
+              placeholder={isPatientLogin ? 'Enter your National ID' : 'your.email@hospital.com'}
               required
               disabled={loading}
             />
@@ -78,14 +83,14 @@ const Login = () => {
           <div className="form-group">
             <label htmlFor="password">
               <Lock size={18} />
-              Password
+              {isPatientLogin ? 'Phone Number' : 'Password'}
             </label>
             <input
               id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              type={isPatientLogin ? 'tel' : 'password'}
+              value={isPatientLogin ? phone : password}
+              onChange={(e) => isPatientLogin ? setPhone(e.target.value) : setPassword(e.target.value)}
+              placeholder={isPatientLogin ? 'Enter your phone number' : 'Enter your password'}
               required
               disabled={loading}
             />
@@ -94,7 +99,16 @@ const Login = () => {
           {error && <div className="error-message">{error}</div>}
 
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Logging in...' : isPatientLogin ? 'Patient Login' : 'Login'}
+          </button>
+
+          <button
+            type="button"
+            className="login-button"
+            onClick={() => setIsPatientLogin(!isPatientLogin)}
+            disabled={loading}
+          >
+            {isPatientLogin ? 'Staff Login' : 'Patient Login'}
           </button>
 
           <div style={{ textAlign: 'center', marginTop: '1rem' }}>

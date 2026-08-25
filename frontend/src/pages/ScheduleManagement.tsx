@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { scheduleAPI, DoctorSchedule, DoctorScheduleCreate, DayOfWeek } from '../api/schedule'
-import { authAPI } from '../api/auth'
 import { User } from '../types'
 import '../components/CreateUserModal.css'
 
@@ -60,84 +59,104 @@ const ScheduleManagement = ({ doctors, onClose }: ScheduleManagementProps) => {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h2>Doctor Schedules</h2>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button onClick={() => setShowCreateModal(true)} className="create-button">
-            <Plus size={20} />
-            Add Schedule
-          </button>
-          <button onClick={onClose} className="cancel-button">
-            Close
-          </button>
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+      zIndex: 50,
+      display: 'flex'
+    }}>
+      {/* Sidebar spacer - maintains layout */}
+      <div style={{ width: '250px' }}></div>
+      
+      {/* Panel */}
+      <div style={{ 
+        backgroundColor: 'white',
+        width: '100%',
+        maxWidth: '900px',
+        overflow: 'auto',
+        padding: '2rem',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h2>Doctor Schedules</h2>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button onClick={() => setShowCreateModal(true)} className="create-button">
+              <Plus size={20} />
+              Add Schedule
+            </button>
+            <button onClick={onClose} className="cancel-button">
+              <X size={20} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {loading ? (
-        <div>Loading schedules...</div>
-      ) : schedules.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-          <p>No schedules created yet</p>
-          <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            Click "Add Schedule" to create a doctor schedule
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gap: '1rem' }}>
-          {schedules.map((schedule) => (
-            <div
-              key={schedule.id}
-              style={{
-                border: '2px solid #e0e0e0',
-                borderRadius: '8px',
-                padding: '1.5rem',
-                backgroundColor: schedule.is_active ? 'white' : '#f9f9f9',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <h3 style={{ marginBottom: '0.5rem' }}>{getDoctorName(schedule.doctor_id)}</h3>
-                  <p style={{ color: '#666', textTransform: 'capitalize' }}>
-                    <strong>Day:</strong> {schedule.day_of_week}
-                  </p>
-                  <p style={{ color: '#666' }}>
-                    <strong>Time:</strong> {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}
-                  </p>
-                  <p style={{ color: '#666' }}>
-                    <strong>Slot Duration:</strong> {schedule.slot_duration} minutes
-                  </p>
-                  <p style={{ color: '#666' }}>
-                    <strong>Status:</strong>{' '}
-                    <span style={{ color: schedule.is_active ? '#10b981' : '#ef4444' }}>
-                      {schedule.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </p>
+        {loading ? (
+          <div>Loading schedules...</div>
+        ) : schedules.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            <p>No schedules created yet</p>
+            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              Click "Add Schedule" to create a doctor schedule
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            {schedules.map((schedule) => (
+              <div
+                key={schedule.id}
+                style={{
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  backgroundColor: schedule.is_active ? 'white' : '#f9f9f9',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                  <div>
+                    <h3 style={{ marginBottom: '0.5rem' }}>{getDoctorName(schedule.doctor_id)}</h3>
+                    <p style={{ color: '#666', textTransform: 'capitalize' }}>
+                      <strong>Day:</strong> {schedule.day_of_week}
+                    </p>
+                    <p style={{ color: '#666' }}>
+                      <strong>Time:</strong> {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}
+                    </p>
+                    <p style={{ color: '#666' }}>
+                      <strong>Slot Duration:</strong> {schedule.slot_duration} minutes
+                    </p>
+                    <p style={{ color: '#666' }}>
+                      <strong>Status:</strong>{' '}
+                      <span style={{ color: schedule.is_active ? '#10b981' : '#ef4444' }}>
+                        {schedule.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteSchedule(schedule.id)}
+                    style={{
+                      padding: '0.5rem 1rem',
+                      backgroundColor: '#fee',
+                      color: '#c33',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Delete
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleDeleteSchedule(schedule.id)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#fee',
-                    color: '#c33',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Delete
-                </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {showCreateModal && (
-        <CreateScheduleModal doctors={doctors} onClose={() => setShowCreateModal(false)} onCreate={handleCreateSchedule} />
-      )}
+        {showCreateModal && (
+          <CreateScheduleModal doctors={doctors} onClose={() => setShowCreateModal(false)} onCreate={handleCreateSchedule} />
+        )}
+      </div>
     </div>
   )
 }

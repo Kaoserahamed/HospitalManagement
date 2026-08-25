@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { LogOut, Calendar } from 'lucide-react'
+import { LogOut, Calendar, FilePlus, History } from 'lucide-react'
 import { departmentAPI, Department } from '../api/department'
 import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment'
+import PrescriptionModal from '../components/PrescriptionModal'
+import PatientHistoryModal from '../components/PatientHistoryModal'
 import './Dashboard.css'
 
 const DoctorDashboard = () => {
@@ -10,6 +12,11 @@ const DoctorDashboard = () => {
   const [department, setDepartment] = useState<Department | null>(null)
   const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([])
   const [loading, setLoading] = useState(true)
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentWithDetails | null>(
+    null
+  )
 
   useEffect(() => {
     loadData()
@@ -37,6 +44,16 @@ const DoctorDashboard = () => {
     } catch (error: any) {
       alert(error.response?.data?.detail || 'Failed to update appointment status')
     }
+  }
+
+  const handlePrescribe = (apt: AppointmentWithDetails) => {
+    setSelectedAppointment(apt)
+    setShowPrescriptionModal(true)
+  }
+
+  const handleViewHistory = (apt: AppointmentWithDetails) => {
+    setSelectedAppointment(apt)
+    setShowHistoryModal(true)
   }
 
   const getStatusColor = (status: string) => {
@@ -173,6 +190,46 @@ const DoctorDashboard = () => {
                         flexWrap: 'wrap',
                       }}
                     >
+                      <button
+                        onClick={() => handleViewHistory(apt)}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <History size={16} />
+                        History
+                      </button>
+                      {(apt.status === 'confirmed' || apt.status === 'completed') && (
+                        <button
+                          onClick={() => handlePrescribe(apt)}
+                          style={{
+                            padding: '0.5rem 1rem',
+                            backgroundColor: '#dbeafe',
+                            color: '#1e40af',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                          }}
+                        >
+                          <FilePlus size={16} />
+                          Prescribe
+                        </button>
+                      )}
                       {apt.status === 'scheduled' && (
                         <button
                           onClick={() => handleUpdateStatus(apt.id, 'confirmed')}
@@ -232,6 +289,30 @@ const DoctorDashboard = () => {
           </div>
         )}
       </main>
+
+      {showPrescriptionModal && selectedAppointment && (
+        <PrescriptionModal
+          appointmentId={selectedAppointment.id}
+          patientId={selectedAppointment.patient_id}
+          patientName={selectedAppointment.patient_name}
+          onClose={() => {
+            setShowPrescriptionModal(false)
+            setSelectedAppointment(null)
+          }}
+          onSuccess={loadData}
+        />
+      )}
+
+      {showHistoryModal && selectedAppointment && (
+        <PatientHistoryModal
+          patientId={selectedAppointment.patient_id}
+          patientName={selectedAppointment.patient_name}
+          onClose={() => {
+            setShowHistoryModal(false)
+            setSelectedAppointment(null)
+          }}
+        />
+      )}
     </div>
   )
 }

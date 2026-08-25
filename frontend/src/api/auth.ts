@@ -16,6 +16,11 @@ export interface PatientRegisterData {
   allergies?: string
 }
 
+export interface PatientLoginData {
+  nid: string
+  phone: string
+}
+
 export const authAPI = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', credentials)
@@ -38,7 +43,17 @@ export const authAPI = {
   },
 
   registerPatient: async (data: PatientRegisterData): Promise<User> => {
-    const response = await api.post<User>('/auth/register', data)
+    const response = await api.post<User>('/auth/patients/register', data)
     return response.data
+  },
+
+  patientLogin: async (data: PatientLoginData): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/auth/patients/login', data)
+    return response.data
+  },
+
+  getCurrentPatient: async (): Promise<User> => {
+    const response = await api.get('/auth/patients/me')
+    return { ...response.data, role: 'patient', email: '' }
   },
 }

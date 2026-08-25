@@ -128,6 +128,29 @@ CREATE TABLE IF NOT EXISTS appointments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
+-- PRESCRIPTIONS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS prescriptions (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    appointment_id CHAR(36) NOT NULL,
+    patient_id CHAR(36) NOT NULL,
+    doctor_id CHAR(36) NOT NULL,
+    diagnosis TEXT NOT NULL,
+    medications TEXT NOT NULL COMMENT 'JSON array of medications with dosage',
+    instructions TEXT,
+    follow_up_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+    FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE RESTRICT,
+    INDEX idx_appointment_id (appointment_id),
+    INDEX idx_patient_id (patient_id),
+    INDEX idx_doctor_id (doctor_id),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
 -- SEED ADMIN USER (Password: Admin@123)
 -- =====================================================
 INSERT INTO users (id, email, password_hash, role, first_name, last_name, is_active)

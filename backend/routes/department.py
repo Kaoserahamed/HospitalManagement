@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from controllers.department_controller import DepartmentController
 from dependencies.department import get_department_controller
-from dependencies.auth import get_current_user, require_roles
+from dependencies.auth import require_roles
 from schemas.department import (
     DepartmentCreate,
     DepartmentUpdate,
@@ -18,10 +18,9 @@ router = APIRouter(prefix="/departments", tags=["Departments"])
 # Doctor-related endpoints (must come before /{department_id})
 @router.get("/doctors/all", response_model=list[DoctorWithDepartment])
 async def get_all_doctors_with_departments(
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST)),
     controller: DepartmentController = Depends(get_department_controller),
 ):
-    """Get all doctors with their departments (admin, receptionist)"""
+    """Get all doctors with their departments (public access for appointment booking)"""
     return await controller.get_all_doctors_with_departments()
 
 
@@ -76,22 +75,20 @@ async def remove_doctor_assignment(
     return await controller.remove_doctor_assignment(user_id)
 
 
-# Accessible by admin, doctor, receptionist
+# Public endpoints (for appointment booking)
 @router.get("", response_model=list[DepartmentResponse])
 async def get_all_departments(
     active_only: bool = False,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)),
     controller: DepartmentController = Depends(get_department_controller),
 ):
-    """Get all departments (admin, doctor, receptionist)"""
+    """Get all departments (public access for appointment booking)"""
     return await controller.get_all_departments(active_only=active_only)
 
 
 @router.get("/{department_id}", response_model=DepartmentResponse)
 async def get_department(
     department_id: str,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)),
     controller: DepartmentController = Depends(get_department_controller),
 ):
-    """Get a specific department (admin, doctor, receptionist)"""
+    """Get a specific department (public access)"""
     return await controller.get_department(department_id)

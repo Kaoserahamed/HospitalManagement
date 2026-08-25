@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Plus, Edit2, Users as UsersIcon, Building2 } from 'lucide-react'
+import { LogOut, Plus, Users as UsersIcon, Building2, Calendar } from 'lucide-react'
 import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
 import CreateDepartmentModal from '../components/CreateDepartmentModal'
 import AssignDoctorModal from '../components/AssignDoctorModal'
+import DataTable from '../components/DataTable'
 import '../pages/Dashboard.css'
 import './DepartmentManagement.css'
 
@@ -63,6 +64,41 @@ const DepartmentManagement = () => {
   const getDoctorCount = (deptId: string) => {
     return doctors.filter(d => d.department_id === deptId).length
   }
+
+  // Define columns for doctors table
+  const doctorsColumns = [
+    {
+      key: 'name',
+      header: 'Name',
+      render: (_: any, row: DoctorWithDepartment) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+    },
+    {
+      key: 'email',
+      header: 'Email'
+    },
+    {
+      key: 'phone',
+      header: 'Phone'
+    },
+    {
+      key: 'department_name',
+      header: 'Department',
+      render: (value: string | null) => value || <span style={{ color: '#999' }}>Not assigned</span>
+    },
+    {
+      key: 'specialization',
+      header: 'Specialization'
+    },
+    {
+      key: 'is_active',
+      header: 'Status',
+      render: (value: boolean) => (
+        <span className={value ? 'status-active' : 'status-inactive'}>
+          {value ? 'Active' : 'Inactive'}
+        </span>
+      )
+    }
+  ]
 
   if (loading) {
     return (
@@ -160,6 +196,37 @@ const DepartmentManagement = () => {
               <Building2 size={20} />
               Departments
             </button>
+            <button
+              onClick={() => navigate('/schedules')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.75rem 1rem',
+                backgroundColor: currentPath === '/schedules' ? '#f0f0f0' : 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.95rem',
+                fontWeight: currentPath === '/schedules' ? '600' : '400',
+                color: '#333',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (currentPath !== '/schedules') {
+                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentPath !== '/schedules') {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }
+              }}
+            >
+              <Calendar size={20} />
+              Schedules
+            </button>
           </nav>
         </aside>
 
@@ -222,35 +289,11 @@ const DepartmentManagement = () => {
             <h3 style={{ fontSize: '1.25rem', color: '#333', marginBottom: '1.5rem' }}>
               Doctor Assignments ({doctors.length})
             </h3>
-            <div className="users-grid">
-              {doctors.length === 0 ? (
-                <div className="empty-state">
-                  <p>No doctors available</p>
-                </div>
-              ) : (
-                doctors.map((doc) => (
-                  <div key={doc.id} className="user-card">
-                    <div className="user-card-header">
-                      <h3>Dr. {doc.first_name} {doc.last_name}</h3>
-                      <span className={doc.is_active ? 'status-active' : 'status-inactive'}>
-                        {doc.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="user-card-body">
-                      <p><strong>Email:</strong> {doc.email}</p>
-                      {doc.phone && <p><strong>Phone:</strong> {doc.phone}</p>}
-                      <p>
-                        <strong>Department:</strong>{' '}
-                        {doc.department_name || <span style={{ color: '#999' }}>Not assigned</span>}
-                      </p>
-                      {doc.specialization && (
-                        <p><strong>Specialization:</strong> {doc.specialization}</p>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <DataTable
+              data={doctors}
+              columns={doctorsColumns}
+              emptyMessage="No doctors available"
+            />
           </div>
         </main>
       </div>
