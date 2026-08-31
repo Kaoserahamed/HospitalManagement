@@ -1,0 +1,97 @@
+=================================================
+  ENVIRONMENT VARIABLES FOR VERCEL DEPLOYMENT
+=================================================
+
+📝 Copy these into Vercel Dashboard when deploying
+
+=================================================
+BACKEND SERVICE ENVIRONMENT VARIABLES
+=================================================
+
+Name: DATABASE_URL
+Value: mysql+asyncmy://YOUR_DB_USER:YOUR_DB_PASSWORD@YOUR_DB_HOST/hospital_db
+
+Name: SECRET_KEY
+Value: PAX3RS0ThetYnI5H09cGG9cKTGP0zk8Qr10FC-qQmWw
+
+Name: ALGORITHM
+Value: HS256
+
+Name: ACCESS_TOKEN_EXPIRE_MINUTES
+Value: 60
+
+=================================================
+FRONTEND SERVICE ENVIRONMENT VARIABLES
+=================================================
+
+Name: VITE_API_URL
+Value: https://YOUR-PROJECT-NAME.vercel.app/api
+
+⚠️ NOTE: You'll need to deploy FIRST to get your Vercel URL,
+then add this variable and REDEPLOY.
+
+=================================================
+QUICK SETUP STEPS
+=================================================
+
+1. ✅ CODE PUSHED TO GITHUB
+   Repository: https://github.com/Kaoserahamed/HospitalManagement
+
+2. 🗄️ SETUP DATABASE (Choose one):
+   
+   Option A - PlanetScale (Fastest):
+   → Go to: https://planetscale.com/
+   → Sign up with GitHub
+   → Create database: hospital_db
+   → Get connection string
+   → Change mysql:// to mysql+asyncmy://
+   
+   Option B - Railway:
+   → Go to: https://railway.app/
+   → New Project → Provision MySQL
+   → Copy connection string
+   → Change mysql:// to mysql+asyncmy://
+
+3. 🚀 DEPLOY TO VERCEL:
+   → Browser opened to: https://vercel.com/new/clone?repository-url=https://github.com/Kaoserahamed/HospitalManagement
+   → Click "Create"
+   → Add BACKEND environment variables (above)
+   → Click "Deploy"
+   → Wait 2-3 minutes
+
+4. 🔄 ADD FRONTEND ENV & REDEPLOY:
+   → Go to your project settings
+   → Add VITE_API_URL with your deployment URL
+   → Trigger redeploy
+
+5. 📊 INITIALIZE DATABASE:
+   → Run: python setup_production_db.py "YOUR_DATABASE_URL"
+   
+   Or manually:
+   → Connect to your database
+   → Run: database/complete_schema.sql
+   → Run: python backend/seed_admin.py
+
+6. ✅ TEST:
+   → Visit: https://your-project.vercel.app
+   → Login: admin@hospital.com / Admin@123
+
+=================================================
+TROUBLESHOOTING
+=================================================
+
+❌ 500 Error → Check DATABASE_URL format in Vercel
+❌ CORS Error → Check VITE_API_URL is correct
+❌ Can't login → Run database initialization script
+❌ Build fails → Check build logs in Vercel dashboard
+
+=================================================
+SUPPORT
+=================================================
+
+All documentation files are in the repository:
+- README.md - Project overview
+- DEPLOY_NOW.md - Quick deployment guide
+- vercel.json - Multi-service configuration
+
+=================================================
