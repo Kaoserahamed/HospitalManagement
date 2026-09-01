@@ -20,13 +20,7 @@ app = FastAPI(title="Hospital Management System API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://hospital-management-vert-nu.vercel.app",
-        "https://hospital-management-kaoser614-7344s-projects.vercel.app",
-        "https://*.vercel.app"
-    ],
+    allow_origins=["*"],  # Allow all origins for demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
