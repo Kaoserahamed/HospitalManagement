@@ -62,3 +62,5 @@ coverage/
 # Database
 *.sql.backup
 *.db
+.vercel
+.env*
