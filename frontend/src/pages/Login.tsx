@@ -63,6 +63,24 @@ const Login = () => {
           <p>Login to your account</p>
         </div>
 
+        {/* Demo Credentials */}
+        <div style={{
+          background: '#f0f9ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '20px',
+          fontSize: '0.875rem'
+        }}>
+          <div style={{ fontWeight: '600', color: '#1e40af', marginBottom: '8px' }}>
+            Demo Admin Account:
+          </div>
+          <div style={{ color: '#1e3a8a', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div><strong>Email:</strong> admin@hospital.com</div>
+            <div><strong>Password:</strong> Admin@123</div>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="email">
