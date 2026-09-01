@@ -15,6 +15,7 @@
       "destination": "/frontend/$1"
     }
   ],
-  "buildCommand": "npm install --prefix frontend && npm run build --prefix frontend",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "installCommand": "echo 'skip'",
   "outputDirectory": "frontend/dist"
 }
