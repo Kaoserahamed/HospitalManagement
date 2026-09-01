@@ -41,3 +41,7 @@ app.include_router(prescription_router)
 @app.get("/")
 async def root():
     return {"message": "API Running"}
+
+@app.options("/{full_path:path}")
+async def options_handler(full_path: str):
+    return {}
