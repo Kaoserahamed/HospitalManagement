@@ -42,6 +42,10 @@ app.include_router(prescription_router)
 async def root():
     return {"message": "API Running"}
 
+@app.get("/health")
+async def health():
+    return {"status": "healthy", "service": "Hospital Management API"}
+
 @app.options("/{full_path:path}")
 async def options_handler(full_path: str):
     return {}
