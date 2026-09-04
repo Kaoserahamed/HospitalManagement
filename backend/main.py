@@ -7,15 +7,6 @@ from routes.doctor_schedule import router as schedule_router
 from routes.patient import router as patient_router
 from routes.prescription import router as prescription_router
 
-# Import models to register them
-from models.user import User
-from models.department import Department
-from models.doctor import DoctorProfile
-from models.patient import Patient
-from models.appointment import Appointment
-from models.doctor_schedule import DoctorSchedule
-from models.prescription import Prescription
-
 app = FastAPI(title="Hospital Management System API")
 
 app.add_middleware(
