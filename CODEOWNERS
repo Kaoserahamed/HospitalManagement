@@ -1,0 +1,29 @@
+# CODEOWNERS — default owners for every path not matched below
+*                                   @Kaoserahamed
+
+# Backend application code
+/backend/                           @Kaoserahamed
+
+# Frontend application code
+/frontend/                          @Kaoserahamed
+
+# Database schema and migrations
+/database/                          @Kaoserahamed
+/backend/alembic/                   @Kaoserahamed
+
+# Security-sensitive areas require the owner's review
+/backend/core/security.py           @Kaoserahamed
+/backend/dependencies/auth.py       @Kaoserahamed
+/backend/core/config.py             @Kaoserahamed
+/docs/threat-model.md               @Kaoserahamed
+/docs/security.md                   @Kaoserahamed
+/SECURITY.md                        @Kaoserahamed
+
+# CI/CD pipelines
+/.github/                           @Kaoserahamed
+
+# Infrastructure and deployment
+/k8s/                               @Kaoserahamed
+/infra/terraform/                   @Kaoserahamed
+/Dockerfile*                        @Kaoserahamed
+/docker-compose*.yml                @Kaoserahamed
