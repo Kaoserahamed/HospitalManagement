@@ -33,7 +33,7 @@ A comprehensive web-based hospital management system built with modern technolog
 - **Framework**: FastAPI (Python)
 - **ORM**: SQLAlchemy 2.0
 - **Database**: MySQL 8.0+
-- **Authentication**: JWT (JSON Web Tokens) with python-jose
+- **Authentication**: JWT (JSON Web Tokens) with PyJWT — issuer/audience-pinned claims
 - **Password Hashing**: pwdlib with Argon2
 - **Async Database Driver**: asyncmy
 - **API Documentation**: Auto-generated OpenAPI (Swagger)
@@ -264,7 +264,7 @@ Full API documentation available at: `http://localhost:8000/docs`
 - asyncmy==0.2.9
 - pydantic==2.9.2
 - pydantic-settings==2.6.1
-- python-jose[cryptography]==3.3.0
+- pyjwt==2.10.1
 - pwdlib[argon2]==0.2.1
 - python-multipart==0.0.12
 

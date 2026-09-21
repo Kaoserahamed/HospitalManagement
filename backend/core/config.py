@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, ge=5, le=480)
+    # Standard JWT claims bound at issue and verified on every decode so that
+    # tokens minted by other systems (or with a different issuer key) are
+    # rejected even when the signature is valid.
+    JWT_ISSUER: str = "hospital-management-api"
+    JWT_AUDIENCE: str = "hospital-management-clients"
 
     # -- CORS ------------------------------------------------------------------
     # Comma-separated list of allowed origins. Must be overridden per

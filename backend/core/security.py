@@ -1,6 +1,8 @@
 from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
-from jose import JWTError, jwt
+import jwt
+from jwt import InvalidTokenError
 from pwdlib import PasswordHash
 
 from core.config import settings
@@ -34,14 +36,42 @@ def validate_password_strength(password: str) -> str | None:
 
 
 def create_access_token(data: dict) -> str:
+    """Mint a signed access token with standard claim binding.
+
+    Every token carries ``iat``/``exp``/``iss``/``aud``/``jti`` so that
+    decode-side verification can reject tokens from other issuers or
+    audiences even when signed with the same key, and so tokens are
+    individually identifiable (foundation for future revocation).
+    """
     to_encode = data.copy()
-    expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    now = datetime.now(UTC)
+    to_encode.update(
+        {
+            "iat": now,
+            "exp": now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+            "iss": settings.JWT_ISSUER,
+            "aud": settings.JWT_AUDIENCE,
+            "jti": uuid4().hex,
+        }
+    )
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def decode_access_token(token: str) -> dict | None:
+    """Verify and decode a token; returns None for any invalid token.
+
+    Verification is pinned to the configured issuer, audience, and algorithm
+    (which settings validation restricts to HS256/384/512), so expired,
+    foreign-issuer, wrong-audience, and unsigned/none-algorithm tokens are
+    all rejected here.
+    """
     try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-    except JWTError:
+        return jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+            issuer=settings.JWT_ISSUER,
+            audience=settings.JWT_AUDIENCE,
+        )
+    except InvalidTokenError:
         return None

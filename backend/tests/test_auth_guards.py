@@ -79,7 +79,7 @@ class TestStaffGuard:
     async def test_expired_token_rejected(self):
         from datetime import UTC, datetime, timedelta
 
-        from jose import jwt
+        import jwt
 
         from core.config import settings
 
@@ -88,6 +88,8 @@ class TestStaffGuard:
                 "sub": "u-1",
                 "role": "doctor",
                 "type": "staff",
+                "iss": settings.JWT_ISSUER,
+                "aud": settings.JWT_AUDIENCE,
                 "exp": datetime.now(UTC) - timedelta(hours=1),
             },
             settings.SECRET_KEY,
