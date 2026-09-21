@@ -9,6 +9,7 @@ from routes.appointment import router as appointment_router
 from routes.auth import router as auth_router
 from routes.department import router as department_router
 from routes.doctor_schedule import router as schedule_router
+from routes.health import router as health_router
 from routes.patient import router as patient_router
 from routes.prescription import router as prescription_router
 
@@ -38,16 +39,12 @@ app.include_router(appointment_router)
 app.include_router(schedule_router)
 app.include_router(patient_router)
 app.include_router(prescription_router)
+app.include_router(health_router)
 
 
 @app.get("/")
 async def root():
     return {"message": "API Running"}
-
-
-@app.get("/health")
-async def health():
-    return {"status": "healthy", "service": "Hospital Management API"}
 
 
 @app.options("/{full_path:path}")
