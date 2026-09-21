@@ -11,8 +11,10 @@ class AuthController:
         user = await self.auth_service.create_user_by_admin(data)
         return UserResponse.model_validate(user)
 
-    async def get_all_users(self) -> list[UserResponse]:
-        users = await self.auth_service.get_all_users()
+    async def get_all_users(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[UserResponse]:
+        users = await self.auth_service.get_all_users(limit=limit, offset=offset)
         return [UserResponse.model_validate(user) for user in users]
 
     async def login(self, data: UserLogin) -> TokenResponse:

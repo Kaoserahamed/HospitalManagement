@@ -25,9 +25,11 @@ class DoctorScheduleController:
         schedules = await self.service.get_doctor_schedules(doctor_id)
         return [DoctorScheduleResponse.model_validate(s) for s in schedules]
 
-    async def get_all_schedules(self) -> list[DoctorScheduleResponse]:
+    async def get_all_schedules(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[DoctorScheduleResponse]:
         """Get all schedules"""
-        schedules = await self.service.get_all_schedules()
+        schedules = await self.service.get_all_schedules(limit=limit, offset=offset)
         return [DoctorScheduleResponse.model_validate(s) for s in schedules]
 
     async def delete_schedule(self, schedule_id: str) -> dict:

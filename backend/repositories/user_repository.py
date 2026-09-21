@@ -14,10 +14,16 @@ class UserRepository:
         result = await self.session.execute(select(User).where(User.id == user_id))
         return result.scalars().first()
 
-    async def get_all(self) -> list[User]:
-        result = await self.session.execute(
-            select(User).where(User.role != UserRole.PATIENT)
-        )
+    async def get_all(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[User]:
+        query = select(User).where(User.role != UserRole.PATIENT)
+        query = query.order_by(User.created_at.desc(), User.email)
+        if offset:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+        result = await self.session.execute(query)
         return list(result.scalars().all())
 
     async def create(self, user: User) -> User:

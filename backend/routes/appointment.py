@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, status, Query
+
 from controllers.appointment_controller import AppointmentController
 from dependencies.appointment import get_appointment_controller
 from dependencies.auth import get_current_patient, get_current_user, require_roles
+from dependencies.pagination import PaginationParams, get_pagination
 from schemas.schemas import (
     AppointmentCreate, AppointmentUpdate, AppointmentStatusUpdate,
     AppointmentResponse, AppointmentWithDetails
@@ -101,11 +103,14 @@ async def cancel_appointment(
 @router.get("", response_model=list[AppointmentWithDetails])
 async def get_all_appointments(
     status_filter: AppointmentStatus | None = Query(None, alias="status"),
+    pagination: PaginationParams = Depends(get_pagination),
     current_user: User = Depends(require_roles(UserRole.RECEPTIONIST, UserRole.ADMIN)),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
-    """Receptionist/Admin: Get all appointments"""
-    return await controller.get_all_appointments(status=status_filter)
+    """Receptionist/Admin: Get all appointments (bounded, paginated)."""
+    return await controller.get_all_appointments(
+        status=status_filter, limit=pagination.limit, offset=pagination.offset
+    )
 
 
 @router.get("/{appointment_id}", response_model=AppointmentResponse)

@@ -75,9 +75,11 @@ class DoctorScheduleService:
         """Get all schedules for a doctor"""
         return await self.schedule_repo.get_by_doctor(doctor_id, active_only=False)
 
-    async def get_all_schedules(self) -> list[DoctorSchedule]:
-        """Get all schedules"""
-        return await self.schedule_repo.get_all()
+    async def get_all_schedules(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[DoctorSchedule]:
+        """Get all schedules, optionally bounded."""
+        return await self.schedule_repo.get_all(limit=limit, offset=offset)
 
     async def delete_schedule(self, schedule_id: str) -> bool:
         """Delete a schedule"""

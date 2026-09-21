@@ -201,9 +201,16 @@ class AppointmentService:
         appointments = await self.appointment_repo.get_by_doctor(doctor_id)
         return [self._appointment_to_details(apt) for apt in appointments]
 
-    async def get_all_appointments(self, status: AppointmentStatus | None = None) -> list[AppointmentWithDetails]:
-        """Get all appointments"""
-        appointments = await self.appointment_repo.get_all(status=status)
+    async def get_all_appointments(
+        self,
+        status: AppointmentStatus | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[AppointmentWithDetails]:
+        """Get all appointments, optionally bounded."""
+        appointments = await self.appointment_repo.get_all(
+            status=status, limit=limit, offset=offset
+        )
         return [self._appointment_to_details(apt) for apt in appointments]
 
     async def get_appointment(self, appointment_id: str) -> Appointment:

@@ -27,12 +27,18 @@ class PatientRepository:
         )
         return result.scalars().first()
 
-    async def get_all(self, active_only: bool = False) -> list[Patient]:
-        """Get all patients"""
+    async def get_all(
+        self, active_only: bool = False, limit: int | None = None, offset: int = 0
+    ) -> list[Patient]:
+        """Get all patients, newest first, optionally bounded."""
         query = select(Patient)
         if active_only:
-            query = query.where(Patient.is_active == True)
-        query = query.order_by(Patient.created_at.desc())
+            query = query.where(Patient.is_active == True)  # noqa: E712
+        query = query.order_by(Patient.created_at.desc(), Patient.id)
+        if offset:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
         result = await self.session.execute(query)
         return list(result.scalars().all())
 

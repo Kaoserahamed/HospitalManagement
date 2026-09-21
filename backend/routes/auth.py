@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, status
+
 from controllers.auth_controller import AuthController
 from dependencies.auth import get_auth_controller, get_current_user, get_current_patient, require_roles
+from dependencies.pagination import PaginationParams, get_pagination
 from schemas.user import UserCreate, UserLogin, UserUpdate, PasswordChange, UserResponse, TokenResponse
 from schemas.patient import PatientCreate, PatientLogin, PatientResponse
 from models.user import User, UserRole
@@ -20,11 +22,14 @@ async def create_user(
 
 @router.get("/users", response_model=list[UserResponse])
 async def get_all_users(
+    pagination: PaginationParams = Depends(get_pagination),
     current_user: User = Depends(require_roles(UserRole.ADMIN)),
     controller: AuthController = Depends(get_auth_controller),
 ):
-    """Admin-only endpoint to get all users"""
-    return await controller.get_all_users()
+    """Admin-only endpoint to get all staff users (bounded, paginated)."""
+    return await controller.get_all_users(
+        limit=pagination.limit, offset=pagination.offset
+    )
 
 @router.post("/login", response_model=TokenResponse)
 async def login(data: UserLogin, controller: AuthController = Depends(get_auth_controller)):

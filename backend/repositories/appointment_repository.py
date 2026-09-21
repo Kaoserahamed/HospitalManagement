@@ -62,15 +62,28 @@ class AppointmentRepository:
         )
         return list(result.scalars().all())
 
-    async def get_all(self, status: AppointmentStatus | None = None) -> list[Appointment]:
+    async def get_all(
+        self,
+        status: AppointmentStatus | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[Appointment]:
         query = select(Appointment).options(
             selectinload(Appointment.patient),
             selectinload(Appointment.doctor),
-            selectinload(Appointment.department)
+            selectinload(Appointment.department),
         )
         if status:
             query = query.where(Appointment.status == status)
-        query = query.order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc())
+        query = query.order_by(
+            Appointment.appointment_date.desc(),
+            Appointment.appointment_time.desc(),
+            Appointment.id,
+        )
+        if offset:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
         result = await self.session.execute(query)
         return list(result.scalars().all())
 

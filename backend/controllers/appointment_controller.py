@@ -33,8 +33,15 @@ class AppointmentController:
     async def get_doctor_appointments(self, doctor_id: str) -> list[AppointmentWithDetails]:
         return await self.appointment_service.get_doctor_appointments(doctor_id)
 
-    async def get_all_appointments(self, status: AppointmentStatus | None = None) -> list[AppointmentWithDetails]:
-        return await self.appointment_service.get_all_appointments(status=status)
+    async def get_all_appointments(
+        self,
+        status: AppointmentStatus | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[AppointmentWithDetails]:
+        return await self.appointment_service.get_all_appointments(
+            status=status, limit=limit, offset=offset
+        )
 
     async def get_appointment(self, appointment_id: str) -> AppointmentResponse:
         appointment = await self.appointment_service.get_appointment(appointment_id)

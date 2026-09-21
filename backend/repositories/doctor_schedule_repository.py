@@ -35,12 +35,23 @@ class DoctorScheduleRepository:
         )
         return list(result.scalars().all())
 
-    async def get_all(self) -> list[DoctorSchedule]:
-        result = await self.session.execute(
+    async def get_all(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[DoctorSchedule]:
+        query = (
             select(DoctorSchedule)
             .options(selectinload(DoctorSchedule.doctor))
-            .order_by(DoctorSchedule.doctor_id, DoctorSchedule.day_of_week, DoctorSchedule.start_time)
+            .order_by(
+                DoctorSchedule.doctor_id,
+                DoctorSchedule.day_of_week,
+                DoctorSchedule.start_time,
+            )
         )
+        if offset:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+        result = await self.session.execute(query)
         return list(result.scalars().all())
 
     async def create(self, schedule: DoctorSchedule) -> DoctorSchedule:

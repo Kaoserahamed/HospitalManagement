@@ -28,9 +28,11 @@ class AuthService:
         )
         return await self.user_repo.create(user)
 
-    async def get_all_users(self) -> list[User]:
-        """Get all users"""
-        return await self.user_repo.get_all()
+    async def get_all_users(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[User]:
+        """Get all staff users, optionally bounded."""
+        return await self.user_repo.get_all(limit=limit, offset=offset)
 
     async def update_user(self, user_id: str, data: UserUpdate) -> User:
         user = await self.user_repo.get_by_id(user_id)
