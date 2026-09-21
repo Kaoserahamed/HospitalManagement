@@ -318,6 +318,63 @@ class TestUpdateRules:
         assert exc.value.status_code == 404
 
 
+class TestAppointmentReads:
+    async def _seed(self, doctor_id="d-1"):
+        appointment = Appointment(
+            id="a-1",
+            patient_id="p-1",
+            doctor_id=doctor_id,
+            department_id="dept-1",
+            appointment_date=date(2030, 5, 1),
+            appointment_time=time(10, 0),
+            status=AppointmentStatus.SCHEDULED,
+        )
+        repo = FakeAppointmentRepository()
+        repo.items["a-1"] = appointment
+        return _build_service(repo=repo)
+
+    async def test_doctor_reads_own_appointment(self):
+        service = await self._seed()
+        appointment = await service.get_appointment("a-1", requester_id="d-1", requester_role="doctor")
+        assert appointment.id == "a-1"
+
+    async def test_other_doctor_forbidden(self):
+        service = await self._seed()
+        with pytest.raises(HTTPException) as exc:
+            await service.get_appointment("a-1", requester_id="d-2", requester_role="doctor")
+        assert exc.value.status_code == 403
+
+    async def test_admin_allowed(self):
+        service = await self._seed()
+        appointment = await service.get_appointment("a-1", requester_id="admin-1", requester_role="admin")
+        assert appointment.id == "a-1"
+
+    async def test_receptionist_allowed(self):
+        service = await self._seed()
+        appointment = await service.get_appointment(
+            "a-1", requester_id="r-1", requester_role="receptionist"
+        )
+        assert appointment.id == "a-1"
+
+    async def test_patient_forbidden(self):
+        service = await self._seed()
+        with pytest.raises(HTTPException) as exc:
+            await service.get_appointment("a-1", requester_id="p-1", requester_role="patient")
+        assert exc.value.status_code == 403
+
+    async def test_unknown_role_forbidden(self):
+        service = await self._seed()
+        with pytest.raises(HTTPException) as exc:
+            await service.get_appointment("a-1", requester_id="x-1", requester_role="unknown")
+        assert exc.value.status_code == 403
+
+    async def test_unknown_appointment_not_found(self):
+        service = _build_service()
+        with pytest.raises(HTTPException) as exc:
+            await service.get_appointment("ghost", requester_id="admin-1", requester_role="admin")
+        assert exc.value.status_code == 404
+
+
 class TestStatusAndCancellation:
     async def _seed(self, status=AppointmentStatus.SCHEDULED):
         appointment = Appointment(
