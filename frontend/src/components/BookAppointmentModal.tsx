@@ -39,6 +39,9 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
     } else {
       setFilteredDoctors([])
     }
+    // Depend only on the department: doctors and formData are intentionally
+    // excluded (formData is reset inside via the setter form of its fields).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.department_id])
 
   useEffect(() => {
@@ -48,6 +51,9 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
       setAvailableSlots([])
       setFormData({ ...formData, appointment_time: '' })
     }
+    // Slots depend only on the doctor/date pair, not the whole form object;
+    // loadAvailableSlots reads those same fields when invoked.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.doctor_id, formData.appointment_date])
 
   const loadData = async () => {
@@ -75,9 +81,9 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
       } else {
         setError('')
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to load available slots:', error)
-      setError(error.response?.data?.detail || 'Failed to load available time slots')
+      setError(error instanceof Error ? error.message : 'Failed to load available time slots')
       setAvailableSlots([])
     } finally {
       setLoadingSlots(false)
@@ -98,8 +104,8 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
         reason: formData.reason || undefined,
       })
       onBooked()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to book appointment')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to book appointment')
     } finally {
       setLoading(false)
     }

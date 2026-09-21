@@ -19,7 +19,10 @@ const Dashboard = () => {
   const currentPath = location.pathname
 
   useEffect(() => {
+    // Initial load only; loadUsers reads fresh state when invoked by
+    // handleUserCreated after mutations.
     loadUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadUsers = async () => {
@@ -47,7 +50,7 @@ const Dashboard = () => {
     {
       key: 'name',
       header: 'Name',
-      render: (_: any, row: User) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: User) => <strong>Dr. {row.first_name} {row.last_name}</strong>
     },
     {
       key: 'email',
@@ -73,7 +76,7 @@ const Dashboard = () => {
     {
       key: 'name',
       header: 'Name',
-      render: (_: any, row: User) => <strong>{row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: User) => <strong>{row.first_name} {row.last_name}</strong>
     },
     {
       key: 'email',

@@ -36,8 +36,8 @@ const AssignDoctorModal = ({ onClose, onAssignmentComplete, doctors, departments
         await departmentAPI.removeAssignment(formData.user_id)
       }
       onAssignmentComplete()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Operation failed')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Operation failed')
     } finally {
       setLoading(false)
     }

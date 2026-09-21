@@ -48,8 +48,8 @@ const Login = () => {
       } else if (userData.role === 'patient') {
         navigate('/patient-dashboard')
       }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid credentials')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invalid credentials')
     } finally {
       setLoading(false)
     }

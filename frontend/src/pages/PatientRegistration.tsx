@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authAPI } from '../api/auth'
+import { authAPI, PatientRegisterData } from '../api/auth'
 import './Login.css'
 
 const PatientRegistration = () => {
@@ -40,8 +40,8 @@ const PatientRegistration = () => {
       await authAPI.registerPatient(data)
       alert('Registration successful! You can now book appointments.')
       navigate('/login')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed')
     } finally {
       setLoading(false)
     }
@@ -130,7 +130,9 @@ const PatientRegistration = () => {
                 <label>Gender *</label>
                 <select
                   value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value as PatientRegisterData['gender'] })
+                  }
                   disabled={loading}
                   required
                 >

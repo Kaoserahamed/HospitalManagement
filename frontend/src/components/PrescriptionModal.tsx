@@ -74,9 +74,9 @@ const PrescriptionModal = ({
       alert('Prescription created successfully')
       onSuccess()
       onClose()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create prescription:', error)
-      alert(error.response?.data?.detail || 'Failed to create prescription')
+      alert(error instanceof Error ? error.message : 'Failed to create prescription')
     } finally {
       setLoading(false)
     }

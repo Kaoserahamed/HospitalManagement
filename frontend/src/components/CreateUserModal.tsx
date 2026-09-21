@@ -33,8 +33,8 @@ const CreateUserModal = ({ onClose, onUserCreated }: CreateUserModalProps) => {
       }
       const newUser = await authAPI.createUser(userData)
       onUserCreated(newUser)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create user')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create user')
     } finally {
       setLoading(false)
     }

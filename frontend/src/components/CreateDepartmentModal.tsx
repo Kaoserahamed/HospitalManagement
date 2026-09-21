@@ -27,8 +27,8 @@ const CreateDepartmentModal = ({ onClose, onDepartmentCreated }: CreateDepartmen
         description: formData.description || undefined
       })
       onDepartmentCreated(newDepartment)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create department')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create department')
     } finally {
       setLoading(false)
     }

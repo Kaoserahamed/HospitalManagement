@@ -40,8 +40,8 @@ const ScheduleManagement = ({ doctors, onClose }: ScheduleManagementProps) => {
     try {
       await scheduleAPI.deleteSchedule(scheduleId)
       loadSchedules()
-    } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to delete schedule')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to delete schedule')
     }
   }
 
@@ -188,8 +188,8 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
       await scheduleAPI.createSchedule(formData)
       alert('Schedule created successfully!')
       onCreate()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create schedule')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create schedule')
     } finally {
       setLoading(false)
     }

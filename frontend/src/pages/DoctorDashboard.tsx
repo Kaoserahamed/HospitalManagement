@@ -41,8 +41,8 @@ const DoctorDashboard = () => {
     try {
       await appointmentAPI.updateStatus(appointmentId, { status: newStatus })
       loadData()
-    } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to update appointment status')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to update appointment status')
     }
   }
 

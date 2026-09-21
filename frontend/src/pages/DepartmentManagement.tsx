@@ -70,7 +70,7 @@ const DepartmentManagement = () => {
     {
       key: 'name',
       header: 'Name',
-      render: (_: any, row: DoctorWithDepartment) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: DoctorWithDepartment) => <strong>Dr. {row.first_name} {row.last_name}</strong>
     },
     {
       key: 'email',

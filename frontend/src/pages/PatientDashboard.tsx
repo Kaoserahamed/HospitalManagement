@@ -50,8 +50,8 @@ const PatientDashboard = () => {
     try {
       await appointmentAPI.cancelMyAppointment(appointmentId)
       loadAppointments()
-    } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to cancel appointment')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to cancel appointment')
     }
   }
 

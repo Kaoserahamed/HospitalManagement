@@ -4,17 +4,9 @@ import { LogOut, Calendar, Filter, Plus, UserPlus } from 'lucide-react'
 import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment'
 import { authAPI, PatientRegisterData } from '../api/auth'
 import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
+import { patientAPI, PatientUser } from '../api/patient'
 import { scheduleAPI, AvailableSlot } from '../api/schedule'
 import './Dashboard.css'
-
-interface PatientUser {
-  id: string
-  nid: string
-  first_name: string
-  last_name: string
-  phone: string
-  is_active: boolean
-}
 
 const ReceptionistDashboard = () => {
   const { user, logout } = useAuth()
@@ -26,18 +18,17 @@ const ReceptionistDashboard = () => {
   const [showBookingModal, setShowBookingModal] = useState(false)
 
   useEffect(() => {
+    // Load on mount and whenever the filter changes; loadData always reads
+    // the current statusFilter from closure scope at call time.
     loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter])
 
   const loadData = async () => {
     try {
       const [appts, patientsList] = await Promise.all([
         appointmentAPI.getAllAppointments(statusFilter === 'all' ? undefined : statusFilter),
-        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/patients`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }).then(res => res.json())
+        patientAPI.getAllPatients(),
       ])
       setAppointments(appts)
       setPatients(patientsList)
@@ -56,8 +47,8 @@ const ReceptionistDashboard = () => {
     try {
       await appointmentAPI.cancelMyAppointment(appointmentId)
       loadData()
-    } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to cancel appointment')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to cancel appointment')
     }
   }
 
@@ -326,8 +317,8 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
       await authAPI.registerPatient(data)
       alert('Patient registered successfully!')
       onRegistered()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed')
     } finally {
       setLoading(false)
     }
@@ -414,7 +405,9 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
               <label>Gender *</label>
               <select
                 value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value as PatientRegisterData['gender'] })
+                }
                 required
                 disabled={loading}
               >
@@ -496,6 +489,9 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
     } else {
       setFilteredDoctors([])
     }
+    // Depend only on the department; the reset above writes the specific
+    // fields it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.department_id])
 
   useEffect(() => {
@@ -505,6 +501,9 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
       setAvailableSlots([])
       setFormData({ ...formData, appointment_time: '' })
     }
+    // Slots depend only on the doctor/date pair; loadAvailableSlots reads
+    // those same fields when invoked.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.doctor_id, formData.appointment_date])
 
   const loadData = async () => {
@@ -532,9 +531,9 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
       } else {
         setError('')
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to load available slots:', error)
-      setError(error.response?.data?.detail || 'Failed to load available time slots')
+      setError(error instanceof Error ? error.message : 'Failed to load available time slots')
       setAvailableSlots([])
     } finally {
       setLoadingSlots(false)
@@ -556,8 +555,8 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
       })
       alert('Appointment booked successfully!')
       onBooked()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to book appointment')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to book appointment')
     } finally {
       setLoading(false)
     }

@@ -1,24 +1,28 @@
 import React from 'react'
 
-interface Column {
+interface Column<T = unknown> {
   key: string
   header: string
-  render?: (value: any, row: any) => React.ReactNode
+  // Presentational boundary: the column author decides how to display the
+  // raw cell value, while `row` remains fully typed through the DataTable
+  // generic. `any` here avoids forcing every call site into blind casts.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  render?: (value: any, row: T) => React.ReactNode
 }
 
-interface DataTableProps {
-  data: any[]
-  columns: Column[]
+interface DataTableProps<T = unknown> {
+  data: T[]
+  columns: Column<T>[]
   emptyMessage?: string
   emptySubtitle?: string
 }
 
-const DataTable: React.FC<DataTableProps> = ({ 
-  data, 
-  columns, 
+const DataTable = <T,>({
+  data,
+  columns,
   emptyMessage = "No data available",
-  emptySubtitle 
-}) => {
+  emptySubtitle
+}: DataTableProps<T>) => {
   if (data.length === 0) {
     return (
       <div className="empty-state">
@@ -57,7 +61,7 @@ const DataTable: React.FC<DataTableProps> = ({
         <tbody>
           {data.map((row, index) => (
             <tr 
-              key={row.id || index} 
+              key={(row as { id?: string | number }).id || index}
               style={{ 
                 borderBottom: index < data.length - 1 ? '1px solid #f3f4f6' : 'none',
                 transition: 'background-color 0.15s'
@@ -74,9 +78,9 @@ const DataTable: React.FC<DataTableProps> = ({
                     color: column.key === 'name' ? '#111827' : '#6b7280' 
                   }}
                 >
-                  {column.render 
-                    ? column.render(row[column.key], row)
-                    : row[column.key] || '-'
+                  {column.render
+                    ? column.render((row as Record<string, unknown>)[column.key], row)
+                    : String((row as Record<string, unknown>)[column.key] ?? '-')
                   }
                 </td>
               ))}

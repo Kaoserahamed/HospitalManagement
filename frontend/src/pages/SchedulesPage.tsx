@@ -49,8 +49,8 @@ const SchedulesPage = () => {
     try {
       await scheduleAPI.deleteSchedule(scheduleId)
       loadData()
-    } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to delete schedule')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to delete schedule')
     }
   }
 
@@ -72,7 +72,7 @@ const SchedulesPage = () => {
     {
       key: 'doctor',
       header: 'Doctor',
-      render: (_: any, row: DoctorSchedule) => <strong>{getDoctorName(row.doctor_id)}</strong>
+      render: (_: unknown, row: DoctorSchedule) => <strong>{getDoctorName(row.doctor_id)}</strong>
     },
     {
       key: 'day_of_week',
@@ -84,7 +84,7 @@ const SchedulesPage = () => {
     {
       key: 'time',
       header: 'Time',
-      render: (_: any, row: DoctorSchedule) => `${formatTime(row.start_time)} - ${formatTime(row.end_time)}`
+      render: (_: unknown, row: DoctorSchedule) => `${formatTime(row.start_time)} - ${formatTime(row.end_time)}`
     },
     {
       key: 'slot_duration',
@@ -103,7 +103,7 @@ const SchedulesPage = () => {
     {
       key: 'actions',
       header: 'Actions',
-      render: (_: any, row: DoctorSchedule) => (
+      render: (_: unknown, row: DoctorSchedule) => (
         <button
           onClick={() => handleDeleteSchedule(row.id)}
           style={{
@@ -322,8 +322,8 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
       await scheduleAPI.createSchedule(formData)
       alert('Schedule created successfully!')
       onCreate()
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create schedule')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create schedule')
     } finally {
       setLoading(false)
     }

@@ -9,6 +9,13 @@ interface PatientHistoryModalProps {
   onClose: () => void
 }
 
+interface Medication {
+  name: string
+  dosage?: string
+  frequency?: string
+  duration?: string
+}
+
 const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistoryModalProps) => {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,9 +43,10 @@ const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistory
     })
   }
 
-  const parseMedications = (medicationsJson: string) => {
+  const parseMedications = (medicationsJson: string): Medication[] => {
     try {
-      return JSON.parse(medicationsJson)
+      const parsed: unknown = JSON.parse(medicationsJson)
+      return Array.isArray(parsed) ? (parsed as Medication[]) : []
     } catch {
       return []
     }
@@ -134,7 +142,7 @@ const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistory
                       Medications
                     </h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {parseMedications(presc.medications).map((med: any, idx: number) => (
+                      {parseMedications(presc.medications).map((med, idx) => (
                         <div
                           key={idx}
                           style={{
