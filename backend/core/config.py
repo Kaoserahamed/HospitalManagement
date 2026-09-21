@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     JWT_ISSUER: str = "hospital-management-api"
     JWT_AUDIENCE: str = "hospital-management-clients"
 
+    # -- Abuse protection ------------------------------------------------------
+    # Per-client-IP sliding window applied to credential endpoints. Limits
+    # are per API process; a shared store is needed for global budgets.
+    LOGIN_RATE_LIMIT_MAX: int = Field(default=10, ge=1, le=1000)
+    LOGIN_RATE_LIMIT_WINDOW_SECONDS: int = Field(default=300, ge=1, le=86400)
+
     # -- CORS ------------------------------------------------------------------
     # Comma-separated list of allowed origins. Must be overridden per
     # environment; production rejects wildcard origins.

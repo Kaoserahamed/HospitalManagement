@@ -1,12 +1,25 @@
 from fastapi import APIRouter, Depends, status
 
 from controllers.auth_controller import AuthController
-from dependencies.auth import get_auth_controller, get_current_user, get_current_patient, require_roles
+from core.rate_limit import login_rate_limit
+from dependencies.auth import (
+    get_auth_controller,
+    get_current_patient,
+    get_current_user,
+    require_roles,
+)
 from dependencies.pagination import PaginationParams, get_pagination
-from schemas.user import UserCreate, UserLogin, UserUpdate, PasswordChange, UserResponse, TokenResponse
-from schemas.patient import PatientCreate, PatientLogin, PatientResponse
-from models.user import User, UserRole
 from models.patient import Patient
+from models.user import User, UserRole
+from schemas.patient import PatientCreate, PatientLogin, PatientResponse
+from schemas.user import (
+    PasswordChange,
+    TokenResponse,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+    UserUpdate,
+)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -32,8 +45,12 @@ async def get_all_users(
     )
 
 @router.post("/login", response_model=TokenResponse)
-async def login(data: UserLogin, controller: AuthController = Depends(get_auth_controller)):
-    """Staff login (email + password)"""
+async def login(
+    data: UserLogin,
+    controller: AuthController = Depends(get_auth_controller),
+    _: None = Depends(login_rate_limit),
+):
+    """Staff login (email + password), rate limited per client IP"""
     return await controller.login(data)
 
 @router.get("/me", response_model=UserResponse)
@@ -84,8 +101,9 @@ async def register_patient(
 async def patient_login(
     data: PatientLogin,
     controller: AuthController = Depends(get_auth_controller),
+    _: None = Depends(login_rate_limit),
 ):
-    """Patient login (NID + phone)"""
+    """Patient login (NID + phone), rate limited per client IP"""
     return await controller.patient_login(data)
 
 @router.get("/patients/me", response_model=PatientResponse)
