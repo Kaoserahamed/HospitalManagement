@@ -14,6 +14,8 @@ from dependencies import appointment as appointment_deps
 from dependencies import auth as auth_deps
 from dependencies import department as department_deps
 from dependencies import doctor_schedule as schedule_deps
+from dependencies import patient as patient_deps
+from dependencies import prescription as prescription_deps
 from main import app
 
 ADMIN = {
@@ -269,6 +271,63 @@ class TestAuthorizationScope:
         # patient bearer token cannot satisfy get_current_user.
         assert response.status_code in (401, 403)
         assert response.json()["code"] in ("UNAUTHORIZED", "FORBIDDEN")
+
+    def test_patient_detail_passes_requester_identity(self, api):
+        api["client"].app.dependency_overrides[auth_deps.get_current_user] = lambda: type(
+            "U", (), {**DOCTOR, "is_active": True}
+        )()
+
+        class RecordingPatientController:
+            async def get_patient(self, patient_id, requester_id=None, requester_role=None):
+                assert requester_id == "doc-1"
+                assert requester_role == "doctor"
+                return {
+                    "id": patient_id,
+                    "nid": "NID-1",
+                    "phone": "01700000001",
+                    "first_name": "Asha",
+                    "last_name": "Rahman",
+                    "date_of_birth": "1990-01-01",
+                    "gender": "female",
+                    "blood_group": None,
+                    "address": None,
+                    "emergency_contact_name": None,
+                    "emergency_contact_phone": None,
+                    "medical_history": None,
+                    "allergies": None,
+                    "is_active": True,
+                }
+
+        api["client"].app.dependency_overrides[patient_deps.get_patient_controller] = (
+            lambda: RecordingPatientController()
+        )
+        response = api["client"].get(
+            "/patients/pat-1", headers={"Authorization": "Bearer anything"}
+        )
+        assert response.status_code == 200
+        assert response.json()["id"] == "pat-1"
+
+    def test_staff_prescription_listing_passes_requester_identity(self, api):
+        api["client"].app.dependency_overrides[auth_deps.get_current_user] = lambda: type(
+            "U", (), {**DOCTOR, "is_active": True}
+        )()
+
+        class RecordingPrescriptionController:
+            async def get_patient_prescriptions(
+                self, patient_id, requester_id=None, requester_role=None
+            ):
+                assert requester_id == "doc-1"
+                assert requester_role == "doctor"
+                return []
+
+        api["client"].app.dependency_overrides[prescription_deps.get_prescription_controller] = (
+            lambda: RecordingPrescriptionController()
+        )
+        response = api["client"].get(
+            "/prescriptions/patient/pat-1", headers={"Authorization": "Bearer anything"}
+        )
+        assert response.status_code == 200
+        assert response.json() == []
 
 
 class TestPatientEndpoints:

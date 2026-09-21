@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, status
+
 from controllers.prescription_controller import PrescriptionController
-from dependencies.prescription import get_prescription_controller
 from dependencies.auth import get_current_patient, require_roles
-from schemas.prescription import PrescriptionCreate, PrescriptionUpdate, PrescriptionResponse
-from models.user import User, UserRole
+from dependencies.prescription import get_prescription_controller
 from models.patient import Patient
+from models.user import User, UserRole
+from schemas.prescription import PrescriptionCreate, PrescriptionResponse, PrescriptionUpdate
 
 router = APIRouter(prefix="/prescriptions", tags=["Prescriptions"])
 
@@ -61,15 +62,19 @@ async def get_patient_my_prescriptions(
     return await controller.get_patient_prescriptions(current_patient.id)
 
 
-# Staff endpoints (view any patient's prescriptions)
+# Staff endpoints (front-desk: receptionists/admin see all; doctors see own)
 @router.get("/patient/{patient_id}", response_model=list[PrescriptionResponse])
 async def get_patient_prescriptions(
     patient_id: str,
     current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)),
     controller: PrescriptionController = Depends(get_prescription_controller),
 ):
-    """Staff: Get prescriptions for a specific patient"""
-    return await controller.get_patient_prescriptions(patient_id)
+    """Staff: Get prescriptions for a specific patient (doctor reads own only)"""
+    role = current_user.role
+    role_value = role.value if isinstance(role, UserRole) else role
+    return await controller.get_patient_prescriptions(
+        patient_id, requester_id=current_user.id, requester_role=role_value
+    )
 
 
 @router.get("/{prescription_id}", response_model=PrescriptionResponse)

@@ -1,5 +1,5 @@
+from schemas.prescription import PrescriptionCreate, PrescriptionResponse, PrescriptionUpdate
 from services.prescription_service import PrescriptionService
-from schemas.prescription import PrescriptionCreate, PrescriptionUpdate, PrescriptionResponse
 
 
 class PrescriptionController:
@@ -16,9 +16,16 @@ class PrescriptionController:
         prescription = await self.service.get_prescription(prescription_id, requester_id=doctor_id)
         return PrescriptionResponse.model_validate(prescription)
 
-    async def get_patient_prescriptions(self, patient_id: str) -> list[PrescriptionResponse]:
-        """Get all prescriptions for a patient"""
-        prescriptions = await self.service.get_patient_prescriptions(patient_id)
+    async def get_patient_prescriptions(
+        self,
+        patient_id: str,
+        requester_id: str | None = None,
+        requester_role: str | None = None,
+    ) -> list[PrescriptionResponse]:
+        """Get prescriptions for a patient (doctor reads own only)"""
+        prescriptions = await self.service.get_patient_prescriptions(
+            patient_id, requester_id=requester_id, requester_role=requester_role
+        )
         return [PrescriptionResponse.model_validate(p) for p in prescriptions]
 
     async def get_doctor_prescriptions(self, doctor_id: str) -> list[PrescriptionResponse]:

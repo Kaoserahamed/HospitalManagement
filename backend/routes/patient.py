@@ -41,5 +41,9 @@ async def get_patient(
     current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)),
     controller: PatientController = Depends(get_patient_controller),
 ):
-    """Get a specific patient"""
-    return await controller.get_patient(patient_id)
+    """Get a specific patient (care-relationship scoped for doctors)"""
+    role = current_user.role
+    role_value = role.value if isinstance(role, UserRole) else role
+    return await controller.get_patient(
+        patient_id, requester_id=current_user.id, requester_role=role_value
+    )

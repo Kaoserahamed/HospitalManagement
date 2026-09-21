@@ -204,3 +204,40 @@ class TestListings:
         by_doctor = await service.get_doctor_prescriptions("d-2")
         assert [r.id for r in by_patient] == ["rx-1"]
         assert [r.id for r in by_doctor] == ["rx-2"]
+
+
+class TestStaffListingScoping:
+    """Doctors see only their own prescriptions for a patient via the staff
+    endpoint; receptionists/admins keep front-desk read access."""
+
+    def _seed(self):
+        own = Prescription(
+            id="rx-1", appointment_id="apt-1", patient_id="p-1",
+            doctor_id="d-1", diagnosis="A", medications="[]",
+        )
+        other = Prescription(
+            id="rx-2", appointment_id="apt-2", patient_id="p-1",
+            doctor_id="d-2", diagnosis="B", medications="[]",
+        )
+        service = _service(_appointment())
+        service.prescription_repo.items = {"rx-1": own, "rx-2": other}
+        return service
+
+    async def test_doctor_sees_only_own_prescriptions(self):
+        service = self._seed()
+        result = await service.get_patient_prescriptions(
+            "p-1", requester_id="d-1", requester_role="doctor"
+        )
+        assert [r.id for r in result] == ["rx-1"]
+
+    async def test_receptionist_sees_all(self):
+        service = self._seed()
+        result = await service.get_patient_prescriptions(
+            "p-1", requester_id="r-1", requester_role="receptionist"
+        )
+        assert [r.id for r in result] == ["rx-1", "rx-2"]
+
+    async def test_patient_self_access_sees_all_own(self):
+        service = self._seed()
+        result = await service.get_patient_prescriptions("p-1")
+        assert [r.id for r in result] == ["rx-1", "rx-2"]

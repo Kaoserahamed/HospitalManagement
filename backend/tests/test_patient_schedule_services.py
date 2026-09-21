@@ -54,10 +54,71 @@ class TestPatientService:
 
     async def test_get_patient_found(self):
         service = PatientService(FakePatientRepository([_patient()]))
-        assert (await service.get_patient("p-1")).id == "p-1"
+        patient = await service.get_patient("p-1", requester_id="r-1", requester_role="receptionist")
+        assert patient.id == "p-1"
 
     async def test_get_patient_missing(self):
         service = PatientService(FakePatientRepository())
         with pytest.raises(HTTPException) as exc:
-            await service.get_patient("ghost")
+            await service.get_patient("ghost", requester_id="r-1", requester_role="receptionist")
         assert exc.value.status_code == 404
+
+
+class _FakeRelationshipRepository:
+    """Appointment repo stub exposing only the care-relationship check."""
+
+    def __init__(self, relationships: set[tuple[str, str]] | None = None):
+        self.relationships = relationships or set()
+
+    async def doctor_has_patient(self, doctor_id, patient_id):
+        return (doctor_id, patient_id) in self.relationships
+
+
+class TestPatientReadScoping:
+    """Doctors need a care relationship; patients read only their own record."""
+
+    def _service(self, relationship: bool, with_repo: bool = True):
+        appointment_repo = (
+            _FakeRelationshipRepository({("d-1", "p-1")} if relationship else set())
+            if with_repo
+            else None
+        )
+        return PatientService(FakePatientRepository([_patient()]), appointment_repo)
+
+    async def test_doctor_with_relationship_allowed(self):
+        service = self._service(relationship=True)
+        patient = await service.get_patient("p-1", requester_id="d-1", requester_role="doctor")
+        assert patient.id == "p-1"
+
+    async def test_doctor_without_relationship_forbidden(self):
+        service = self._service(relationship=False)
+        with pytest.raises(HTTPException) as exc:
+            await service.get_patient("p-1", requester_id="d-2", requester_role="doctor")
+        assert exc.value.status_code == 403
+
+    async def test_doctor_without_relationship_repo_fails_closed(self):
+        service = self._service(relationship=True, with_repo=False)
+        with pytest.raises(HTTPException) as exc:
+            await service.get_patient("p-1", requester_id="d-1", requester_role="doctor")
+        assert exc.value.status_code == 403
+
+    async def test_receptionist_allowed(self):
+        service = self._service(relationship=False)
+        patient = await service.get_patient("p-1", requester_id="r-1", requester_role="receptionist")
+        assert patient.id == "p-1"
+
+    async def test_admin_allowed(self):
+        service = self._service(relationship=False)
+        patient = await service.get_patient("p-1", requester_id="a-1", requester_role="admin")
+        assert patient.id == "p-1"
+
+    async def test_patient_reads_own_record(self):
+        service = self._service(relationship=False)
+        patient = await service.get_patient("p-1", requester_id="p-1", requester_role="patient")
+        assert patient.id == "p-1"
+
+    async def test_patient_cannot_read_other_record(self):
+        service = self._service(relationship=True)
+        with pytest.raises(HTTPException) as exc:
+            await service.get_patient("p-1", requester_id="p-2", requester_role="patient")
+        assert exc.value.status_code == 403

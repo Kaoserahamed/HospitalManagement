@@ -1,9 +1,11 @@
 import json
+
 from fastapi import HTTPException, status
-from repositories.prescription_repository import PrescriptionRepository
-from repositories.appointment_repository import AppointmentRepository
-from schemas.prescription import PrescriptionCreate, PrescriptionUpdate
+
 from models.prescription import Prescription
+from repositories.appointment_repository import AppointmentRepository
+from repositories.prescription_repository import PrescriptionRepository
+from schemas.prescription import PrescriptionCreate, PrescriptionUpdate
 
 
 class PrescriptionService:
@@ -20,23 +22,23 @@ class PrescriptionService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Appointment not found"
             )
-        
+
         # Verify doctor matches the appointment's doctor
         if appointment.doctor_id != doctor_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You can only create prescriptions for your own appointments"
             )
-        
+
         # Verify patient matches the appointment's patient
         if appointment.patient_id != data.patient_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Patient ID does not match the appointment"
             )
-        
+
         medications_json = json.dumps([med.model_dump() for med in data.medications])
-        
+
         prescription = Prescription(
             appointment_id=data.appointment_id,
             patient_id=data.patient_id,
@@ -65,9 +67,22 @@ class PrescriptionService:
             )
         return prescription
 
-    async def get_patient_prescriptions(self, patient_id: str) -> list[Prescription]:
-        """Get all prescriptions for a patient"""
-        return await self.prescription_repo.get_by_patient(patient_id)
+    async def get_patient_prescriptions(
+        self,
+        patient_id: str,
+        requester_id: str | None = None,
+        requester_role: str | None = None,
+    ) -> list[Prescription]:
+        """Get all prescriptions for a patient.
+
+        Patient self-access returns the full list. When a staff requester is
+        supplied, doctors are limited to their own prescriptions for that
+        patient; receptionists/admins keep front-desk read access.
+        """
+        prescriptions = await self.prescription_repo.get_by_patient(patient_id)
+        if requester_role == "doctor":
+            return [rx for rx in prescriptions if rx.doctor_id == requester_id]
+        return prescriptions
 
     async def get_doctor_prescriptions(self, doctor_id: str) -> list[Prescription]:
         """Get all prescriptions by a doctor"""
@@ -81,7 +96,7 @@ class PrescriptionService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Prescription not found"
             )
-        
+
         # Verify doctor owns this prescription
         if prescription.doctor_id != doctor_id:
             raise HTTPException(
@@ -108,7 +123,7 @@ class PrescriptionService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Prescription not found"
             )
-        
+
         # Verify doctor owns this prescription
         if prescription.doctor_id != doctor_id:
             raise HTTPException(

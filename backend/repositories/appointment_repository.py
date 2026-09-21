@@ -1,11 +1,11 @@
+from datetime import date, time
+
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy import and_, or_
-from datetime import date, time
+
 from models.appointment import Appointment, AppointmentStatus
-from models.user import User
-from models.department import Department
 
 
 class AppointmentRepository:
@@ -87,10 +87,25 @@ class AppointmentRepository:
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
+    async def doctor_has_patient(self, doctor_id: str, patient_id: str) -> bool:
+        """True when the doctor has any appointment record for this patient.
+
+        Used for care-relationship authorization on patient record reads.
+        """
+        result = await self.session.execute(
+            select(Appointment.id).where(
+                and_(
+                    Appointment.doctor_id == doctor_id,
+                    Appointment.patient_id == patient_id,
+                )
+            ).limit(1)
+        )
+        return result.scalars().first() is not None
+
     async def check_conflict(
-        self, 
-        doctor_id: str, 
-        appointment_date: date, 
+        self,
+        doctor_id: str,
+        appointment_date: date,
         appointment_time: time,
         exclude_appointment_id: str | None = None
     ) -> Appointment | None:
@@ -105,7 +120,7 @@ class AppointmentRepository:
         )
         if exclude_appointment_id:
             query = query.where(Appointment.id != exclude_appointment_id)
-        
+
         result = await self.session.execute(query)
         return result.scalars().first()
 
