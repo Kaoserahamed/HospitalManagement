@@ -23,6 +23,7 @@ from schemas.user import (
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
+
 # Staff authentication
 @router.post("/users", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def create_user(
@@ -33,6 +34,7 @@ async def create_user(
     """Admin-only endpoint to create doctors, receptionists, and other admins"""
     return await controller.create_user_by_admin(data)
 
+
 @router.get("/users", response_model=list[UserResponse])
 async def get_all_users(
     pagination: PaginationParams = Depends(get_pagination),
@@ -40,9 +42,8 @@ async def get_all_users(
     controller: AuthController = Depends(get_auth_controller),
 ):
     """Admin-only endpoint to get all staff users (bounded, paginated)."""
-    return await controller.get_all_users(
-        limit=pagination.limit, offset=pagination.offset
-    )
+    return await controller.get_all_users(limit=pagination.limit, offset=pagination.offset)
+
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
@@ -52,6 +53,7 @@ async def login(
 ):
     """Staff login (email + password), rate limited per client IP"""
     return await controller.login(data)
+
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: User = Depends(get_current_user)):
@@ -89,13 +91,16 @@ async def change_password(
 
 
 # Patient authentication
-@router.post("/patients/register", response_model=PatientResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/patients/register", response_model=PatientResponse, status_code=status.HTTP_201_CREATED
+)
 async def register_patient(
     data: PatientCreate,
     controller: AuthController = Depends(get_auth_controller),
 ):
     """Public patient registration (NID + phone)"""
     return await controller.register_patient(data)
+
 
 @router.post("/patients/login", response_model=TokenResponse)
 async def patient_login(
@@ -105,6 +110,7 @@ async def patient_login(
 ):
     """Patient login (NID + phone), rate limited per client IP"""
     return await controller.patient_login(data)
+
 
 @router.get("/patients/me", response_model=PatientResponse)
 async def get_patient_me(current_patient: Patient = Depends(get_current_patient)):

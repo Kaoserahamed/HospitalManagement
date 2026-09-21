@@ -93,9 +93,7 @@ class TestLoginRateLimitContract:
 
     def test_other_endpoints_unaffected(self, client):
         _override_limiter(max_events=0)  # deny every login attempt
-        response = client.get(
-            "/auth/me", headers={"Authorization": "Bearer anything"}
-        )
+        response = client.get("/auth/me", headers={"Authorization": "Bearer anything"})
         # /auth/me is not rate limited; its 401 comes from the token guard,
         # proving the limiter only applies to credential endpoints.
         assert response.status_code == 401

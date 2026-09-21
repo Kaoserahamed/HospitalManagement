@@ -1,64 +1,68 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react'
-import CreateUserModal from '../components/CreateUserModal'
-import DataTable from '../components/DataTable'
-import { User } from '../types'
-import { authAPI } from '../api/auth'
-import './Dashboard.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react';
+import CreateUserModal from '../components/CreateUserModal';
+import DataTable from '../components/DataTable';
+import { User } from '../types';
+import { authAPI } from '../api/auth';
+import './Dashboard.css';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [showModal, setShowModal] = useState(false)
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showModal, setShowModal] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const currentPath = location.pathname
+  const currentPath = location.pathname;
 
   useEffect(() => {
     // Initial load only; loadUsers reads fresh state when invoked by
     // handleUserCreated after mutations.
-    loadUsers()
+    loadUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const loadUsers = async () => {
     try {
-      const allUsers = await authAPI.getAllUsers()
+      const allUsers = await authAPI.getAllUsers();
       // Filter out the current admin from the list
-      setUsers(allUsers.filter((u) => u.id !== user?.id))
+      setUsers(allUsers.filter((u) => u.id !== user?.id));
     } catch (error) {
-      console.error('Failed to load users:', error)
+      console.error('Failed to load users:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleUserCreated = (newUser: User) => {
-    setUsers([...users, newUser])
-    setShowModal(false)
-  }
+    setUsers([...users, newUser]);
+    setShowModal(false);
+  };
 
-  const doctors = users.filter(u => u.role === 'doctor')
-  const receptionists = users.filter(u => u.role === 'receptionist')
+  const doctors = users.filter((u) => u.role === 'doctor');
+  const receptionists = users.filter((u) => u.role === 'receptionist');
 
   // Define columns for doctors table
   const doctorsColumns = [
     {
       key: 'name',
       header: 'Name',
-      render: (_: unknown, row: User) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: User) => (
+        <strong>
+          Dr. {row.first_name} {row.last_name}
+        </strong>
+      ),
     },
     {
       key: 'email',
-      header: 'Email'
+      header: 'Email',
     },
     {
       key: 'phone',
-      header: 'Phone'
+      header: 'Phone',
     },
     {
       key: 'is_active',
@@ -67,24 +71,28 @@ const Dashboard = () => {
         <span className={value ? 'status-active' : 'status-inactive'}>
           {value ? 'Active' : 'Inactive'}
         </span>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   // Define columns for receptionists table
   const receptionistsColumns = [
     {
       key: 'name',
       header: 'Name',
-      render: (_: unknown, row: User) => <strong>{row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: User) => (
+        <strong>
+          {row.first_name} {row.last_name}
+        </strong>
+      ),
     },
     {
       key: 'email',
-      header: 'Email'
+      header: 'Email',
     },
     {
       key: 'phone',
-      header: 'Phone'
+      header: 'Phone',
     },
     {
       key: 'is_active',
@@ -93,16 +101,18 @@ const Dashboard = () => {
         <span className={value ? 'status-active' : 'status-inactive'}>
           {value ? 'Active' : 'Inactive'}
         </span>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <div>Loading...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -124,13 +134,17 @@ const Dashboard = () => {
 
       <div style={{ display: 'flex', height: 'calc(100vh - 65px)' }}>
         {/* Sidebar */}
-        <aside style={{
-          width: '250px',
-          backgroundColor: 'white',
-          borderRight: '1px solid #e0e0e0',
-          padding: '1.5rem 0',
-        }}>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}>
+        <aside
+          style={{
+            width: '250px',
+            backgroundColor: 'white',
+            borderRight: '1px solid #e0e0e0',
+            padding: '1.5rem 0',
+          }}
+        >
+          <nav
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}
+          >
             <button
               onClick={() => navigate('/dashboard')}
               style={{
@@ -150,12 +164,12 @@ const Dashboard = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -181,12 +195,12 @@ const Dashboard = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -212,12 +226,12 @@ const Dashboard = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -242,15 +256,15 @@ const Dashboard = () => {
 
           {/* Doctors Section */}
           <div style={{ marginBottom: '3rem' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <h3 style={{ fontSize: '1.25rem', color: '#333' }}>
-                Doctors ({doctors.length})
-              </h3>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.5rem',
+              }}
+            >
+              <h3 style={{ fontSize: '1.25rem', color: '#333' }}>Doctors ({doctors.length})</h3>
             </div>
             <DataTable
               data={doctors}
@@ -262,12 +276,14 @@ const Dashboard = () => {
 
           {/* Receptionists Section */}
           <div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '1.5rem'
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.5rem',
+              }}
+            >
               <h3 style={{ fontSize: '1.25rem', color: '#333' }}>
                 Receptionists ({receptionists.length})
               </h3>
@@ -283,13 +299,10 @@ const Dashboard = () => {
       </div>
 
       {showModal && (
-        <CreateUserModal
-          onClose={() => setShowModal(false)}
-          onUserCreated={handleUserCreated}
-        />
+        <CreateUserModal onClose={() => setShowModal(false)} onUserCreated={handleUserCreated} />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

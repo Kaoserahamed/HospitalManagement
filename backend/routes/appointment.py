@@ -1,16 +1,19 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, Query, status
 
 from controllers.appointment_controller import AppointmentController
 from dependencies.appointment import get_appointment_controller
 from dependencies.auth import get_current_patient, require_roles
 from dependencies.pagination import PaginationParams, get_pagination
-from schemas.schemas import (
-    AppointmentCreate, AppointmentUpdate, AppointmentStatusUpdate,
-    AppointmentResponse, AppointmentWithDetails
-)
-from models.user import User, UserRole
-from models.patient import Patient
 from models.appointment import AppointmentStatus
+from models.patient import Patient
+from models.user import User, UserRole
+from schemas.schemas import (
+    AppointmentCreate,
+    AppointmentResponse,
+    AppointmentStatusUpdate,
+    AppointmentUpdate,
+    AppointmentWithDetails,
+)
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
 
@@ -42,7 +45,7 @@ async def cancel_my_appointment(
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
     """Patient: Cancel my appointment"""
-    return await controller.cancel_appointment(appointment_id, current_patient.id, "patient")
+    return await controller.cancel_appointment(appointment_id, current_patient.id, UserRole.PATIENT)
 
 
 # Doctor endpoints
@@ -116,7 +119,9 @@ async def get_all_appointments(
 @router.get("/{appointment_id}", response_model=AppointmentResponse)
 async def get_appointment(
     appointment_id: str,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)),
+    current_user: User = Depends(
+        require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)
+    ),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
     """Admin/Receptionist/Doctor: Get a specific appointment (ownership-scoped)"""

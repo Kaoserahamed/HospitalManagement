@@ -1,5 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from models.prescription import Prescription
 
 
@@ -19,17 +20,29 @@ class PrescriptionRepository:
         return result.scalar_one_or_none()
 
     async def get_by_appointment(self, appointment_id: str) -> list[Prescription]:
-        stmt = select(Prescription).where(Prescription.appointment_id == appointment_id).order_by(Prescription.created_at.desc())
+        stmt = (
+            select(Prescription)
+            .where(Prescription.appointment_id == appointment_id)
+            .order_by(Prescription.created_at.desc())
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
     async def get_by_patient(self, patient_id: str) -> list[Prescription]:
-        stmt = select(Prescription).where(Prescription.patient_id == patient_id).order_by(Prescription.created_at.desc())
+        stmt = (
+            select(Prescription)
+            .where(Prescription.patient_id == patient_id)
+            .order_by(Prescription.created_at.desc())
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
     async def get_by_doctor(self, doctor_id: str) -> list[Prescription]:
-        stmt = select(Prescription).where(Prescription.doctor_id == doctor_id).order_by(Prescription.created_at.desc())
+        stmt = (
+            select(Prescription)
+            .where(Prescription.doctor_id == doctor_id)
+            .order_by(Prescription.created_at.desc())
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 

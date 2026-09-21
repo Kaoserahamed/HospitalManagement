@@ -6,7 +6,9 @@ class PrescriptionController:
     def __init__(self, service: PrescriptionService):
         self.service = service
 
-    async def create_prescription(self, doctor_id: str, data: PrescriptionCreate) -> PrescriptionResponse:
+    async def create_prescription(
+        self, doctor_id: str, data: PrescriptionCreate
+    ) -> PrescriptionResponse:
         """Doctor creates a prescription"""
         prescription = await self.service.create_prescription(doctor_id, data)
         return PrescriptionResponse.model_validate(prescription)
@@ -33,7 +35,9 @@ class PrescriptionController:
         prescriptions = await self.service.get_doctor_prescriptions(doctor_id)
         return [PrescriptionResponse.model_validate(p) for p in prescriptions]
 
-    async def update_prescription(self, prescription_id: str, doctor_id: str, data: PrescriptionUpdate) -> PrescriptionResponse:
+    async def update_prescription(
+        self, prescription_id: str, doctor_id: str, data: PrescriptionUpdate
+    ) -> PrescriptionResponse:
         """Doctor updates their prescription"""
         prescription = await self.service.update_prescription(prescription_id, doctor_id, data)
         return PrescriptionResponse.model_validate(prescription)

@@ -1,112 +1,114 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { LogOut, Plus, Calendar, Pill, FileText } from 'lucide-react'
-import { appointmentAPI, AppointmentWithDetails } from '../api/appointment'
-import { prescriptionAPI, Prescription, MedicationItem } from '../api/prescription'
-import BookAppointmentModal from '../components/BookAppointmentModal'
-import './Dashboard.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { LogOut, Plus, Calendar, Pill, FileText } from 'lucide-react';
+import { appointmentAPI, AppointmentWithDetails } from '../api/appointment';
+import { prescriptionAPI, Prescription, MedicationItem } from '../api/prescription';
+import BookAppointmentModal from '../components/BookAppointmentModal';
+import './Dashboard.css';
 
 const PatientDashboard = () => {
-  const { user, logout } = useAuth()
-  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([])
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showBookModal, setShowBookModal] = useState(false)
-  const [activeTab, setActiveTab] = useState<'appointments' | 'medicines'>('appointments')
+  const { user, logout } = useAuth();
+  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showBookModal, setShowBookModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'appointments' | 'medicines'>('appointments');
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       const [appointmentsData, prescriptionsData] = await Promise.all([
         appointmentAPI.getMyAppointments(),
-        prescriptionAPI.getPatientMyPrescriptions()
-      ])
-      setAppointments(appointmentsData)
-      setPrescriptions(prescriptionsData)
+        prescriptionAPI.getPatientMyPrescriptions(),
+      ]);
+      setAppointments(appointmentsData);
+      setPrescriptions(prescriptionsData);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadAppointments = async () => {
     try {
-      const data = await appointmentAPI.getMyAppointments()
-      setAppointments(data)
+      const data = await appointmentAPI.getMyAppointments();
+      setAppointments(data);
     } catch (error) {
-      console.error('Failed to load appointments:', error)
+      console.error('Failed to load appointments:', error);
     }
-  }
+  };
 
   const handleCancelAppointment = async (appointmentId: string) => {
     if (!confirm('Are you sure you want to cancel this appointment?')) {
-      return
+      return;
     }
 
     try {
-      await appointmentAPI.cancelMyAppointment(appointmentId)
-      loadAppointments()
+      await appointmentAPI.cancelMyAppointment(appointmentId);
+      loadAppointments();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to cancel appointment')
+      alert(error instanceof Error ? error.message : 'Failed to cancel appointment');
     }
-  }
+  };
 
   const handleAppointmentBooked = () => {
-    setShowBookModal(false)
-    loadData()
-  }
+    setShowBookModal(false);
+    loadData();
+  };
 
   const parseMedications = (medicationsJson: string): MedicationItem[] => {
     try {
-      return JSON.parse(medicationsJson)
+      return JSON.parse(medicationsJson);
     } catch {
-      return []
+      return [];
     }
-  }
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const formatTime = (timeStr: string) => {
     return new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    })
-  }
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return '#3b82f6'
+        return '#3b82f6';
       case 'confirmed':
-        return '#10b981'
+        return '#10b981';
       case 'completed':
-        return '#6b7280'
+        return '#6b7280';
       case 'cancelled':
-        return '#ef4444'
+        return '#ef4444';
       case 'no_show':
-        return '#f59e0b'
+        return '#f59e0b';
       default:
-        return '#6b7280'
+        return '#6b7280';
     }
-  }
+  };
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <div>Loading...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -141,12 +143,14 @@ const PatientDashboard = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '0.5rem', 
-          marginBottom: '2rem',
-          borderBottom: '1px solid #e0e0e0'
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            marginBottom: '2rem',
+            borderBottom: '1px solid #e0e0e0',
+          }}
+        >
           <button
             onClick={() => setActiveTab('appointments')}
             style={{
@@ -161,7 +165,8 @@ const PatientDashboard = () => {
               fontSize: '0.95rem',
               fontWeight: '600',
               cursor: 'pointer',
-              borderBottom: activeTab === 'appointments' ? '2px solid #3b82f6' : '2px solid transparent'
+              borderBottom:
+                activeTab === 'appointments' ? '2px solid #3b82f6' : '2px solid transparent',
             }}
           >
             <Calendar size={18} />
@@ -181,7 +186,8 @@ const PatientDashboard = () => {
               fontSize: '0.95rem',
               fontWeight: '600',
               cursor: 'pointer',
-              borderBottom: activeTab === 'medicines' ? '2px solid #3b82f6' : '2px solid transparent'
+              borderBottom:
+                activeTab === 'medicines' ? '2px solid #3b82f6' : '2px solid transparent',
             }}
           >
             <Pill size={18} />
@@ -196,7 +202,9 @@ const PatientDashboard = () => {
               <div className="empty-state">
                 <Calendar size={48} style={{ color: '#ccc', marginBottom: '1rem' }} />
                 <p>No appointments yet</p>
-                <p className="empty-subtitle">Click "Book Appointment" to schedule your first appointment</p>
+                <p className="empty-subtitle">
+                  Click "Book Appointment" to schedule your first appointment
+                </p>
               </div>
             ) : (
               appointments.map((apt) => (
@@ -238,7 +246,13 @@ const PatientDashboard = () => {
                       </p>
                     )}
                     {(apt.status === 'scheduled' || apt.status === 'confirmed') && (
-                      <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                      <div
+                        style={{
+                          marginTop: '1rem',
+                          paddingTop: '1rem',
+                          borderTop: '1px solid #f0f0f0',
+                        }}
+                      >
                         <button
                           onClick={() => handleCancelAppointment(apt.id)}
                           style={{
@@ -270,7 +284,9 @@ const PatientDashboard = () => {
               <div className="empty-state">
                 <FileText size={48} style={{ color: '#ccc', marginBottom: '1rem' }} />
                 <p>No prescription history found</p>
-                <p className="empty-subtitle">Your medicine prescriptions will appear here after doctor visits</p>
+                <p className="empty-subtitle">
+                  Your medicine prescriptions will appear here after doctor visits
+                </p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -330,46 +346,50 @@ const PatientDashboard = () => {
                         Prescribed Medicines
                       </h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        {parseMedications(prescription.medications).map((med: MedicationItem, idx: number) => (
-                          <div
-                            key={idx}
-                            style={{
-                              padding: '0.75rem',
-                              backgroundColor: '#f9fafb',
-                              borderRadius: '6px',
-                              border: '1px solid #e5e7eb',
-                            }}
-                          >
+                        {parseMedications(prescription.medications).map(
+                          (med: MedicationItem, idx: number) => (
                             <div
+                              key={idx}
                               style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                                gap: '0.5rem',
+                                padding: '0.75rem',
+                                backgroundColor: '#f9fafb',
+                                borderRadius: '6px',
+                                border: '1px solid #e5e7eb',
                               }}
                             >
-                              <div>
-                                <strong style={{ fontSize: '0.875rem', color: '#111827' }}>
-                                  {med.name}
-                                </strong>
-                              </div>
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                <strong>Dosage:</strong> {med.dosage}
-                              </div>
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                <strong>Frequency:</strong> {med.frequency}
-                              </div>
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                <strong>Duration:</strong> {med.duration}
+                              <div
+                                style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                  gap: '0.5rem',
+                                }}
+                              >
+                                <div>
+                                  <strong style={{ fontSize: '0.875rem', color: '#111827' }}>
+                                    {med.name}
+                                  </strong>
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                  <strong>Dosage:</strong> {med.dosage}
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                  <strong>Frequency:</strong> {med.frequency}
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                                  <strong>Duration:</strong> {med.duration}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     </div>
 
                     {prescription.instructions && (
                       <div style={{ marginTop: '1rem' }}>
-                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#111827' }}>
+                        <h4
+                          style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#111827' }}
+                        >
                           Instructions
                         </h4>
                         <p style={{ margin: 0, fontSize: '0.875rem', color: '#6b7280' }}>
@@ -380,7 +400,9 @@ const PatientDashboard = () => {
 
                     {prescription.follow_up_date && (
                       <div style={{ marginTop: '1rem' }}>
-                        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#111827' }}>
+                        <h4
+                          style={{ margin: '0 0 0.5rem 0', fontSize: '0.95rem', color: '#111827' }}
+                        >
                           Follow-up Date
                         </h4>
                         <p style={{ margin: 0, fontSize: '0.875rem', color: '#6b7280' }}>
@@ -403,7 +425,7 @@ const PatientDashboard = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PatientDashboard
+export default PatientDashboard;

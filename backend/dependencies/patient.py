@@ -24,6 +24,6 @@ def get_patient_service(
 
 
 def get_patient_controller(
-    service: PatientService = Depends(get_patient_service)
+    service: PatientService = Depends(get_patient_service),
 ) -> PatientController:
     return PatientController(service)

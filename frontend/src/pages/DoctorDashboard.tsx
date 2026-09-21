@@ -1,99 +1,99 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { LogOut, Calendar, FilePlus, History } from 'lucide-react'
-import { departmentAPI, Department } from '../api/department'
-import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment'
-import PrescriptionModal from '../components/PrescriptionModal'
-import PatientHistoryModal from '../components/PatientHistoryModal'
-import './Dashboard.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { LogOut, Calendar, FilePlus, History } from 'lucide-react';
+import { departmentAPI, Department } from '../api/department';
+import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment';
+import PrescriptionModal from '../components/PrescriptionModal';
+import PatientHistoryModal from '../components/PatientHistoryModal';
+import './Dashboard.css';
 
 const DoctorDashboard = () => {
-  const { user, logout } = useAuth()
-  const [department, setDepartment] = useState<Department | null>(null)
-  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
-  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const { user, logout } = useAuth();
+  const [department, setDepartment] = useState<Department | null>(null);
+  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentWithDetails | null>(
     null
-  )
+  );
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       const [dept, appts] = await Promise.all([
         departmentAPI.getMyDepartment(),
         appointmentAPI.getMySchedule(),
-      ])
-      setDepartment(dept)
-      setAppointments(appts)
+      ]);
+      setDepartment(dept);
+      setAppointments(appts);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleUpdateStatus = async (appointmentId: string, newStatus: AppointmentStatus) => {
     try {
-      await appointmentAPI.updateStatus(appointmentId, { status: newStatus })
-      loadData()
+      await appointmentAPI.updateStatus(appointmentId, { status: newStatus });
+      loadData();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to update appointment status')
+      alert(error instanceof Error ? error.message : 'Failed to update appointment status');
     }
-  }
+  };
 
   const handlePrescribe = (apt: AppointmentWithDetails) => {
-    setSelectedAppointment(apt)
-    setShowPrescriptionModal(true)
-  }
+    setSelectedAppointment(apt);
+    setShowPrescriptionModal(true);
+  };
 
   const handleViewHistory = (apt: AppointmentWithDetails) => {
-    setSelectedAppointment(apt)
-    setShowHistoryModal(true)
-  }
+    setSelectedAppointment(apt);
+    setShowHistoryModal(true);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return '#3b82f6'
+        return '#3b82f6';
       case 'confirmed':
-        return '#10b981'
+        return '#10b981';
       case 'completed':
-        return '#6b7280'
+        return '#6b7280';
       case 'cancelled':
-        return '#ef4444'
+        return '#ef4444';
       case 'no_show':
-        return '#f59e0b'
+        return '#f59e0b';
       default:
-        return '#6b7280'
+        return '#6b7280';
     }
-  }
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const formatTime = (timeStr: string) => {
     return new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    })
-  }
+    });
+  };
 
   const upcomingAppointments = appointments.filter(
     (apt) =>
       (apt.status === 'scheduled' || apt.status === 'confirmed') &&
       new Date(apt.appointment_date) >= new Date(new Date().setHours(0, 0, 0, 0))
-  )
+  );
 
   return (
     <div className="dashboard">
@@ -117,9 +117,7 @@ const DoctorDashboard = () => {
           <div>
             <h2>My Schedule</h2>
             <p>
-              {department
-                ? `${department.name} Department`
-                : 'Welcome, Dr. ' + user?.first_name}
+              {department ? `${department.name} Department` : 'Welcome, Dr. ' + user?.first_name}
             </p>
           </div>
         </div>
@@ -296,8 +294,8 @@ const DoctorDashboard = () => {
           patientId={selectedAppointment.patient_id}
           patientName={selectedAppointment.patient_name}
           onClose={() => {
-            setShowPrescriptionModal(false)
-            setSelectedAppointment(null)
+            setShowPrescriptionModal(false);
+            setSelectedAppointment(null);
           }}
           onSuccess={loadData}
         />
@@ -308,13 +306,13 @@ const DoctorDashboard = () => {
           patientId={selectedAppointment.patient_id}
           patientName={selectedAppointment.patient_name}
           onClose={() => {
-            setShowHistoryModal(false)
-            setSelectedAppointment(null)
+            setShowHistoryModal(false);
+            setSelectedAppointment(null);
           }}
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default DoctorDashboard
+export default DoctorDashboard;

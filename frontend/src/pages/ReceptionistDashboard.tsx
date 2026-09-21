@@ -1,106 +1,106 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { LogOut, Calendar, Filter, Plus, UserPlus } from 'lucide-react'
-import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment'
-import { authAPI, PatientRegisterData } from '../api/auth'
-import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
-import { patientAPI, PatientUser } from '../api/patient'
-import { scheduleAPI, AvailableSlot } from '../api/schedule'
-import './Dashboard.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { LogOut, Calendar, Filter, Plus, UserPlus } from 'lucide-react';
+import { appointmentAPI, AppointmentWithDetails, AppointmentStatus } from '../api/appointment';
+import { authAPI, PatientRegisterData } from '../api/auth';
+import { departmentAPI, Department, DoctorWithDepartment } from '../api/department';
+import { patientAPI, PatientUser } from '../api/patient';
+import { scheduleAPI, AvailableSlot } from '../api/schedule';
+import './Dashboard.css';
 
 const ReceptionistDashboard = () => {
-  const { user, logout } = useAuth()
-  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([])
-  const [patients, setPatients] = useState<PatientUser[]>([])
-  const [loading, setLoading] = useState(true)
-  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'all'>('all')
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
-  const [showBookingModal, setShowBookingModal] = useState(false)
+  const { user, logout } = useAuth();
+  const [appointments, setAppointments] = useState<AppointmentWithDetails[]>([]);
+  const [patients, setPatients] = useState<PatientUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'all'>('all');
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   useEffect(() => {
     // Load on mount and whenever the filter changes; loadData always reads
     // the current statusFilter from closure scope at call time.
-    loadData()
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter])
+  }, [statusFilter]);
 
   const loadData = async () => {
     try {
       const [appts, patientsList] = await Promise.all([
         appointmentAPI.getAllAppointments(statusFilter === 'all' ? undefined : statusFilter),
         patientAPI.getAllPatients(),
-      ])
-      setAppointments(appts)
-      setPatients(patientsList)
+      ]);
+      setAppointments(appts);
+      setPatients(patientsList);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCancelAppointment = async (appointmentId: string) => {
     if (!confirm('Are you sure you want to cancel this appointment?')) {
-      return
+      return;
     }
 
     try {
-      await appointmentAPI.cancelMyAppointment(appointmentId)
-      loadData()
+      await appointmentAPI.cancelMyAppointment(appointmentId);
+      loadData();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to cancel appointment')
+      alert(error instanceof Error ? error.message : 'Failed to cancel appointment');
     }
-  }
+  };
 
   const handleRegisterPatient = () => {
-    setShowRegisterModal(false)
-    loadData()
-  }
+    setShowRegisterModal(false);
+    loadData();
+  };
 
   const handleBookAppointment = () => {
-    setShowBookingModal(false)
-    loadData()
-  }
+    setShowBookingModal(false);
+    loadData();
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return '#3b82f6'
+        return '#3b82f6';
       case 'confirmed':
-        return '#10b981'
+        return '#10b981';
       case 'completed':
-        return '#6b7280'
+        return '#6b7280';
       case 'cancelled':
-        return '#ef4444'
+        return '#ef4444';
       case 'no_show':
-        return '#f59e0b'
+        return '#f59e0b';
       default:
-        return '#6b7280'
+        return '#6b7280';
     }
-  }
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const formatTime = (timeStr: string) => {
     return new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    })
-  }
+    });
+  };
 
   // Sort appointments by date and time
   const sortedAppointments = [...appointments].sort((a, b) => {
-    const dateA = new Date(`${a.appointment_date}T${a.appointment_time}`)
-    const dateB = new Date(`${b.appointment_date}T${b.appointment_time}`)
-    return dateB.getTime() - dateA.getTime()
-  })
+    const dateA = new Date(`${a.appointment_date}T${a.appointment_time}`);
+    const dateB = new Date(`${b.appointment_date}T${b.appointment_time}`);
+    return dateB.getTime() - dateA.getTime();
+  });
 
   return (
     <div className="dashboard">
@@ -261,7 +261,10 @@ const ReceptionistDashboard = () => {
       </main>
 
       {showRegisterModal && (
-        <RegisterPatientModal onClose={() => setShowRegisterModal(false)} onRegistered={handleRegisterPatient} />
+        <RegisterPatientModal
+          onClose={() => setShowRegisterModal(false)}
+          onRegistered={handleRegisterPatient}
+        />
       )}
 
       {showBookingModal && (
@@ -272,13 +275,13 @@ const ReceptionistDashboard = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 // Register Patient Modal Component
 interface RegisterPatientModalProps {
-  onClose: () => void
-  onRegistered: () => void
+  onClose: () => void;
+  onRegistered: () => void;
 }
 
 const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalProps) => {
@@ -295,14 +298,14 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
     emergency_contact_phone: '',
     medical_history: '',
     allergies: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       const data = {
@@ -313,16 +316,16 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
         emergency_contact_phone: formData.emergency_contact_phone || undefined,
         medical_history: formData.medical_history || undefined,
         allergies: formData.allergies || undefined,
-      }
-      await authAPI.registerPatient(data)
-      alert('Patient registered successfully!')
-      onRegistered()
+      };
+      await authAPI.registerPatient(data);
+      alert('Patient registered successfully!');
+      onRegistered();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -406,7 +409,10 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
               <select
                 value={formData.gender}
                 onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value as PatientRegisterData['gender'] })
+                  setFormData({
+                    ...formData,
+                    gender: e.target.value as PatientRegisterData['gender'],
+                  })
                 }
                 required
                 disabled={loading}
@@ -449,22 +455,26 @@ const RegisterPatientModal = ({ onClose, onRegistered }: RegisterPatientModalPro
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Book Appointment for Patient Modal Component
 interface BookAppointmentForPatientModalProps {
-  patients: PatientUser[]
-  onClose: () => void
-  onBooked: () => void
+  patients: PatientUser[];
+  onClose: () => void;
+  onBooked: () => void;
 }
 
-const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookAppointmentForPatientModalProps) => {
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([])
-  const [filteredDoctors, setFilteredDoctors] = useState<DoctorWithDepartment[]>([])
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([])
-  const [loadingSlots, setLoadingSlots] = useState(false)
+const BookAppointmentForPatientModal = ({
+  patients,
+  onClose,
+  onBooked,
+}: BookAppointmentForPatientModalProps) => {
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<DoctorWithDepartment[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [formData, setFormData] = useState({
     patient_id: '',
     department_id: '',
@@ -472,78 +482,83 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
     appointment_date: '',
     appointment_time: '',
     reason: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (formData.department_id) {
-      const filtered = doctors.filter((d) => d.department_id === formData.department_id && d.is_active)
-      setFilteredDoctors(filtered)
-      setFormData({ ...formData, doctor_id: '', appointment_time: '' })
-      setAvailableSlots([])
+      const filtered = doctors.filter(
+        (d) => d.department_id === formData.department_id && d.is_active
+      );
+      setFilteredDoctors(filtered);
+      setFormData({ ...formData, doctor_id: '', appointment_time: '' });
+      setAvailableSlots([]);
     } else {
-      setFilteredDoctors([])
+      setFilteredDoctors([]);
     }
     // Depend only on the department; the reset above writes the specific
     // fields it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.department_id])
+  }, [formData.department_id]);
 
   useEffect(() => {
     if (formData.doctor_id && formData.appointment_date) {
-      loadAvailableSlots()
+      loadAvailableSlots();
     } else {
-      setAvailableSlots([])
-      setFormData({ ...formData, appointment_time: '' })
+      setAvailableSlots([]);
+      setFormData({ ...formData, appointment_time: '' });
     }
     // Slots depend only on the doctor/date pair; loadAvailableSlots reads
     // those same fields when invoked.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.doctor_id, formData.appointment_date])
+  }, [formData.doctor_id, formData.appointment_date]);
 
   const loadData = async () => {
     try {
       const [depts, docs] = await Promise.all([
         departmentAPI.getAllDepartments(true),
         departmentAPI.getAllDoctorsWithDepartments(),
-      ])
-      setDepartments(depts)
-      setDoctors(docs)
+      ]);
+      setDepartments(depts);
+      setDoctors(docs);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     }
-  }
+  };
 
   const loadAvailableSlots = async () => {
-    if (!formData.doctor_id || !formData.appointment_date) return
+    if (!formData.doctor_id || !formData.appointment_date) return;
 
-    setLoadingSlots(true)
+    setLoadingSlots(true);
     try {
-      const slots = await scheduleAPI.getAvailability(formData.doctor_id, formData.appointment_date)
-      setAvailableSlots(slots)
+      const slots = await scheduleAPI.getAvailability(
+        formData.doctor_id,
+        formData.appointment_date
+      );
+      setAvailableSlots(slots);
       if (slots.filter((s) => s.available).length === 0) {
-        setError('No available slots for this date. Please select another date.')
+        setError('No available slots for this date. Please select another date.');
       } else {
-        setError('')
+        setError('');
       }
     } catch (error) {
-      console.error('Failed to load available slots:', error)
-      setError(error instanceof Error ? error.message : 'Failed to load available time slots')
-      setAvailableSlots([])
+      console.error('Failed to load available slots:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load available time slots');
+      setAvailableSlots([]);
     } finally {
-      setLoadingSlots(false)
+      setLoadingSlots(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       await appointmentAPI.createAppointmentForPatient(formData.patient_id, {
@@ -552,17 +567,17 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
         appointment_date: formData.appointment_date,
         appointment_time: formData.appointment_time,
         reason: formData.reason || undefined,
-      })
-      alert('Appointment booked successfully!')
-      onBooked()
+      });
+      alert('Appointment booked successfully!');
+      onBooked();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to book appointment')
+      setError(err instanceof Error ? err.message : 'Failed to book appointment');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -637,7 +652,13 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
                 id="appointment_date"
                 type="date"
                 value={formData.appointment_date}
-                onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    appointment_date: e.target.value,
+                    appointment_time: '',
+                  })
+                }
                 min={today}
                 required
                 disabled={loading || !formData.doctor_id}
@@ -657,8 +678,8 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
                   {loadingSlots
                     ? 'Loading slots...'
                     : !formData.appointment_date
-                    ? '-- Select Date First --'
-                    : '-- Select Time --'}
+                      ? '-- Select Date First --'
+                      : '-- Select Time --'}
                 </option>
                 {availableSlots
                   .filter((slot) => slot.available)
@@ -721,7 +742,7 @@ const BookAppointmentForPatientModal = ({ patients, onClose, onBooked }: BookApp
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ReceptionistDashboard
+export default ReceptionistDashboard;

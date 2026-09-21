@@ -1,48 +1,48 @@
-import { useState, FormEvent } from 'react'
-import { X } from 'lucide-react'
-import { departmentAPI, Department } from '../api/department'
-import './CreateUserModal.css'
+import { useState, FormEvent } from 'react';
+import { X } from 'lucide-react';
+import { departmentAPI, Department } from '../api/department';
+import './CreateUserModal.css';
 
 interface CreateDepartmentModalProps {
-  onClose: () => void
-  onDepartmentCreated: (department: Department) => void
+  onClose: () => void;
+  onDepartmentCreated: (department: Department) => void;
 }
 
 const CreateDepartmentModal = ({ onClose, onDepartmentCreated }: CreateDepartmentModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       const newDepartment = await departmentAPI.createDepartment({
         name: formData.name,
-        description: formData.description || undefined
-      })
-      onDepartmentCreated(newDepartment)
+        description: formData.description || undefined,
+      });
+      onDepartmentCreated(newDepartment);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create department')
+      setError(err instanceof Error ? err.message : 'Failed to create department');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
+    e.stopPropagation();
+  };
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -83,7 +83,7 @@ const CreateDepartmentModal = ({ onClose, onDepartmentCreated }: CreateDepartmen
                 borderRadius: '8px',
                 fontSize: '1rem',
                 fontFamily: 'inherit',
-                resize: 'vertical'
+                resize: 'vertical',
               }}
             />
           </div>
@@ -101,7 +101,7 @@ const CreateDepartmentModal = ({ onClose, onDepartmentCreated }: CreateDepartmen
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateDepartmentModal
+export default CreateDepartmentModal;

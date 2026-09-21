@@ -163,7 +163,7 @@ def get_settings() -> Settings:
     Cached so that repeated calls across the application share one object;
     tests that need fresh settings can use ``get_settings.cache_clear()``.
     """
-    return Settings()
+    return Settings()  # type: ignore[call-arg]  # pydantic-settings resolves fields from env
 
 
 # Application-wide settings instance (import-time creation is intentional:

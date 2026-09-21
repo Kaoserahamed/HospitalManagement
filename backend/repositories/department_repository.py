@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import update
+
 from models.department import Department
 
 
@@ -9,7 +9,9 @@ class DepartmentRepository:
         self.session = session
 
     async def get_by_id(self, department_id: str) -> Department | None:
-        result = await self.session.execute(select(Department).where(Department.id == department_id))
+        result = await self.session.execute(
+            select(Department).where(Department.id == department_id)
+        )
         return result.scalars().first()
 
     async def get_by_name(self, name: str) -> Department | None:
@@ -19,7 +21,7 @@ class DepartmentRepository:
     async def get_all(self, active_only: bool = False) -> list[Department]:
         query = select(Department)
         if active_only:
-            query = query.where(Department.is_active == True)
+            query = query.where(Department.is_active.is_(True))
         result = await self.session.execute(query)
         return list(result.scalars().all())
 

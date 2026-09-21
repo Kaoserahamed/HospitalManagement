@@ -1,4 +1,8 @@
 from fastapi import HTTPException, status
+
+from models.department import Department
+from models.doctor import DoctorProfile
+from models.user import UserRole
 from repositories.department_repository import DepartmentRepository
 from repositories.doctor_repository import DoctorRepository
 from repositories.user_repository import UserRepository
@@ -6,11 +10,8 @@ from schemas.department import (
     DepartmentCreate,
     DepartmentUpdate,
     DoctorAssignmentRequest,
-    DoctorWithDepartment
+    DoctorWithDepartment,
 )
-from models.department import Department
-from models.doctor import DoctorProfile
-from models.user import UserRole
 
 
 class DepartmentService:
@@ -18,7 +19,7 @@ class DepartmentService:
         self,
         department_repo: DepartmentRepository,
         doctor_repo: DoctorRepository,
-        user_repo: UserRepository
+        user_repo: UserRepository,
     ):
         self.department_repo = department_repo
         self.doctor_repo = doctor_repo
@@ -31,14 +32,10 @@ class DepartmentService:
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Department with this name already exists"
+                detail="Department with this name already exists",
             )
 
-        department = Department(
-            name=data.name,
-            description=data.description,
-            is_active=True
-        )
+        department = Department(name=data.name, description=data.description, is_active=True)
         return await self.department_repo.create(department)
 
     async def update_department(self, department_id: str, data: DepartmentUpdate) -> Department:
@@ -46,8 +43,7 @@ class DepartmentService:
         department = await self.department_repo.get_by_id(department_id)
         if not department:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Department not found"
             )
 
         # Check for duplicate name if name is being updated
@@ -56,7 +52,7 @@ class DepartmentService:
             if existing:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Department with this name already exists"
+                    detail="Department with this name already exists",
                 )
             department.name = data.name
 
@@ -77,8 +73,7 @@ class DepartmentService:
         department = await self.department_repo.get_by_id(department_id)
         if not department:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Department not found"
             )
         return department
 
@@ -87,27 +82,22 @@ class DepartmentService:
         # Verify user exists and is a doctor
         user = await self.user_repo.get_by_id(data.user_id)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         if user.role != UserRole.DOCTOR:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User is not a doctor"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="User is not a doctor"
             )
 
         # Verify department exists and is active
         department = await self.department_repo.get_by_id(data.department_id)
         if not department:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Department not found"
             )
         if not department.is_active:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cannot assign doctor to inactive department"
+                detail="Cannot assign doctor to inactive department",
             )
 
         # Check if doctor profile already exists
@@ -123,7 +113,7 @@ class DepartmentService:
             doctor_profile = DoctorProfile(
                 user_id=data.user_id,
                 department_id=data.department_id,
-                specialization=data.specialization
+                specialization=data.specialization,
             )
             return await self.doctor_repo.create(doctor_profile)
 
@@ -132,8 +122,7 @@ class DepartmentService:
         doctor_profile = await self.doctor_repo.get_by_user_id(user_id)
         if not doctor_profile:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Doctor profile not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Doctor profile not found"
             )
 
         doctor_profile.department_id = None
@@ -142,7 +131,7 @@ class DepartmentService:
     async def get_all_doctors_with_departments(self) -> list[DoctorWithDepartment]:
         """Get all doctors with their department information"""
         doctors_data = await self.doctor_repo.get_all_doctors()
-        
+
         result = []
         for user, profile, department in doctors_data:
             department_name = None
@@ -152,21 +141,23 @@ class DepartmentService:
             if profile:
                 department_id = profile.department_id
                 specialization = profile.specialization
-            
+
             if department:
                 department_name = department.name
 
-            result.append(DoctorWithDepartment(
-                id=user.id,
-                email=user.email,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                phone=user.phone,
-                is_active=user.is_active,
-                department_id=department_id,
-                department_name=department_name,
-                specialization=specialization
-            ))
+            result.append(
+                DoctorWithDepartment(
+                    id=user.id,
+                    email=user.email,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    phone=user.phone,
+                    is_active=user.is_active,
+                    department_id=department_id,
+                    department_name=department_name,
+                    specialization=specialization,
+                )
+            )
 
         return result
 
@@ -175,5 +166,5 @@ class DepartmentService:
         doctor_profile = await self.doctor_repo.get_by_user_id(user_id)
         if not doctor_profile or not doctor_profile.department_id:
             return None
-        
+
         return await self.department_repo.get_by_id(doctor_profile.department_id)

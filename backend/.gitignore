@@ -1,2 +1,36 @@
 .vercel
 .env*
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Coverage / reports
+*.cov
+coverage.xml
+coverage.html
+
+# Local verification artifacts
+ruff_verify.txt
+mypy_verify.txt
+format_verify.txt
+pytest_verify.txt
+ruff_fix.txt
+ruff_clean.txt
+ruff_remaining.txt
+mypy_clean.txt
+mypy2.txt
+mypy_root.txt
+mypy_proper.txt
+mypy_backend.txt
+mypy_all.txt
+mypy_verify.txt
+fix_indent.py
+fix_mypy.py

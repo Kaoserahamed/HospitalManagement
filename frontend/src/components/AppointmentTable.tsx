@@ -6,19 +6,19 @@
  * and any future view can share a single, tested component.
  */
 
-import { Calendar, LogOut } from 'lucide-react'
-import { useState } from 'react'
+import { Calendar } from 'lucide-react';
+import { useState } from 'react';
 
-import type { AppointmentStatus, AppointmentWithDetails } from '../api/appointment'
-import { formatDate, formatTime, getStatusColor } from '../utils/appointmentFormatting'
+import type { AppointmentStatus, AppointmentWithDetails } from '../api/appointment';
+import { formatDate, formatTime, getStatusColor } from '../utils/appointmentFormatting';
 
 export interface AppointmentTableProps {
-  appointments: AppointmentWithDetails[]
-  onCancel?: (appointmentId: string) => Promise<void>
+  appointments: AppointmentWithDetails[];
+  onCancel?: (appointmentId: string) => Promise<void>;
   /** When true, shows a cancel button for active appointments. */
-  showCancel?: boolean
+  showCancel?: boolean;
   /** Optional empty-state text override. */
-  emptyMessage?: string
+  emptyMessage?: string;
 }
 
 const AppointmentTable = ({
@@ -27,20 +27,20 @@ const AppointmentTable = ({
   showCancel = false,
   emptyMessage = 'No appointments found',
 }: AppointmentTableProps) => {
-  const [cancelling, setCancelling] = useState<string | null>(null)
+  const [cancelling, setCancelling] = useState<string | null>(null);
 
   const handleCancel = async (id: string) => {
-    if (!onCancel) return
-    setCancelling(id)
+    if (!onCancel) return;
+    setCancelling(id);
     try {
-      await onCancel(id)
+      await onCancel(id);
     } finally {
-      setCancelling(null)
+      setCancelling(null);
     }
-  }
+  };
 
   const showCancelButton = (status: AppointmentStatus | string) =>
-    showCancel && (status === 'scheduled' || status === 'confirmed')
+    showCancel && (status === 'scheduled' || status === 'confirmed');
 
   if (appointments.length === 0) {
     return (
@@ -48,7 +48,7 @@ const AppointmentTable = ({
         <Calendar size={48} style={{ color: '#ccc', marginBottom: '1rem' }} />
         <p>{emptyMessage}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -132,7 +132,7 @@ const AppointmentTable = ({
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default AppointmentTable
+export default AppointmentTable;

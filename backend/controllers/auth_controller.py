@@ -1,7 +1,15 @@
-from services.auth_service import AuthService
-from schemas.user import UserCreate, UserLogin, UserUpdate, PasswordChange, UserResponse, TokenResponse
 from models.user import User
 from schemas.patient import PatientCreate, PatientLogin, PatientResponse
+from schemas.user import (
+    PasswordChange,
+    TokenResponse,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+    UserUpdate,
+)
+from services.auth_service import AuthService
+
 
 class AuthController:
     def __init__(self, auth_service: AuthService):
@@ -11,9 +19,7 @@ class AuthController:
         user = await self.auth_service.create_user_by_admin(data)
         return UserResponse.model_validate(user)
 
-    async def get_all_users(
-        self, limit: int | None = None, offset: int = 0
-    ) -> list[UserResponse]:
+    async def get_all_users(self, limit: int | None = None, offset: int = 0) -> list[UserResponse]:
         users = await self.auth_service.get_all_users(limit=limit, offset=offset)
         return [UserResponse.model_validate(user) for user in users]
 

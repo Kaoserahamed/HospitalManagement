@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
+
+from models.department import Department
 from models.doctor import DoctorProfile
 from models.user import User, UserRole
-from models.department import Department
 
 
 class DoctorRepository:
@@ -29,28 +30,24 @@ class DoctorRepository:
     async def get_all_doctors(self) -> list[tuple[User, DoctorProfile | None, Department | None]]:
         """Get all users with doctor role and their profiles with departments"""
         from sqlalchemy.orm import selectinload
-        
+
         # Get all doctor users
-        result = await self.session.execute(
-            select(User)
-            .where(User.role == UserRole.DOCTOR)
-        )
+        result = await self.session.execute(select(User).where(User.role == UserRole.DOCTOR))
         users = list(result.scalars().all())
-        
+
         # Get all doctor profiles with departments
         profiles_result = await self.session.execute(
-            select(DoctorProfile)
-            .options(selectinload(DoctorProfile.department))
+            select(DoctorProfile).options(selectinload(DoctorProfile.department))
         )
         profiles = {p.user_id: p for p in profiles_result.scalars().all()}
-        
+
         # Combine users with their profiles and departments
         results = []
         for user in users:
             profile = profiles.get(user.id)
             department = profile.department if profile and profile.department_id else None
             results.append((user, profile, department))
-        
+
         return results
 
     async def get_doctors_by_department(self, department_id: str) -> list[DoctorProfile]:

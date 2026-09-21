@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from models.user import User, UserRole
+
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
@@ -14,9 +16,7 @@ class UserRepository:
         result = await self.session.execute(select(User).where(User.id == user_id))
         return result.scalars().first()
 
-    async def get_all(
-        self, limit: int | None = None, offset: int = 0
-    ) -> list[User]:
+    async def get_all(self, limit: int | None = None, offset: int = 0) -> list[User]:
         query = select(User).where(User.role != UserRole.PATIENT)
         query = query.order_by(User.created_at.desc(), User.email)
         if offset:

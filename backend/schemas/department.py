@@ -1,15 +1,18 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
 
 
 class DepartmentCreate(BaseModel):
     """Schema for creating a department"""
+
     name: str
     description: str | None = None
 
 
 class DepartmentUpdate(BaseModel):
     """Schema for updating a department"""
+
     name: str | None = None
     description: str | None = None
     is_active: bool | None = None
@@ -17,6 +20,7 @@ class DepartmentUpdate(BaseModel):
 
 class DepartmentResponse(BaseModel):
     """Schema for department response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -29,6 +33,7 @@ class DepartmentResponse(BaseModel):
 
 class DoctorAssignmentRequest(BaseModel):
     """Schema for assigning doctor to department"""
+
     user_id: str
     department_id: str
     specialization: str | None = None
@@ -36,6 +41,7 @@ class DoctorAssignmentRequest(BaseModel):
 
 class DoctorProfileResponse(BaseModel):
     """Schema for doctor profile response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -48,6 +54,7 @@ class DoctorProfileResponse(BaseModel):
 
 class DoctorWithDepartment(BaseModel):
     """Schema for doctor with department info"""
+
     id: str
     email: str
     first_name: str

@@ -1,30 +1,43 @@
-from services.appointment_service import AppointmentService
-from schemas.schemas import (
-    AppointmentCreate, AppointmentUpdate, AppointmentStatusUpdate,
-    AppointmentResponse, AppointmentWithDetails
-)
 from models.appointment import AppointmentStatus
 from models.user import UserRole
+from schemas.schemas import (
+    AppointmentCreate,
+    AppointmentResponse,
+    AppointmentStatusUpdate,
+    AppointmentUpdate,
+    AppointmentWithDetails,
+)
+from services.appointment_service import AppointmentService
 
 
 class AppointmentController:
     def __init__(self, appointment_service: AppointmentService):
         self.appointment_service = appointment_service
 
-    async def create_appointment(self, patient_id: str, data: AppointmentCreate) -> AppointmentResponse:
+    async def create_appointment(
+        self, patient_id: str, data: AppointmentCreate
+    ) -> AppointmentResponse:
         appointment = await self.appointment_service.create_appointment(patient_id, data)
         return AppointmentResponse.model_validate(appointment)
 
-    async def update_appointment(self, appointment_id: str, data: AppointmentUpdate) -> AppointmentResponse:
+    async def update_appointment(
+        self, appointment_id: str, data: AppointmentUpdate
+    ) -> AppointmentResponse:
         appointment = await self.appointment_service.update_appointment(appointment_id, data)
         return AppointmentResponse.model_validate(appointment)
 
-    async def update_status(self, appointment_id: str, data: AppointmentStatusUpdate) -> AppointmentResponse:
+    async def update_status(
+        self, appointment_id: str, data: AppointmentStatusUpdate
+    ) -> AppointmentResponse:
         appointment = await self.appointment_service.update_status(appointment_id, data)
         return AppointmentResponse.model_validate(appointment)
 
-    async def cancel_appointment(self, appointment_id: str, user_id: str, user_role: UserRole) -> AppointmentResponse:
-        appointment = await self.appointment_service.cancel_appointment(appointment_id, user_id, user_role)
+    async def cancel_appointment(
+        self, appointment_id: str, user_id: str, user_role: UserRole
+    ) -> AppointmentResponse:
+        appointment = await self.appointment_service.cancel_appointment(
+            appointment_id, user_id, user_role
+        )
         return AppointmentResponse.model_validate(appointment)
 
     async def get_patient_appointments(self, patient_id: str) -> list[AppointmentWithDetails]:
@@ -43,7 +56,9 @@ class AppointmentController:
             status=status, limit=limit, offset=offset
         )
 
-    async def get_appointment(self, appointment_id: str, requester_id: str, requester_role: str) -> AppointmentResponse:
+    async def get_appointment(
+        self, appointment_id: str, requester_id: str, requester_role: str
+    ) -> AppointmentResponse:
         appointment = await self.appointment_service.get_appointment(
             appointment_id, requester_id=requester_id, requester_role=requester_role
         )

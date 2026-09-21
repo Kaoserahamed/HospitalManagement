@@ -9,7 +9,9 @@ from schemas.prescription import PrescriptionCreate, PrescriptionUpdate
 
 
 class PrescriptionService:
-    def __init__(self, prescription_repo: PrescriptionRepository, appointment_repo: AppointmentRepository):
+    def __init__(
+        self, prescription_repo: PrescriptionRepository, appointment_repo: AppointmentRepository
+    ):
         self.prescription_repo = prescription_repo
         self.appointment_repo = appointment_repo
 
@@ -19,22 +21,21 @@ class PrescriptionService:
         appointment = await self.appointment_repo.get_by_id(data.appointment_id)
         if not appointment:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Appointment not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found"
             )
 
         # Verify doctor matches the appointment's doctor
         if appointment.doctor_id != doctor_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You can only create prescriptions for your own appointments"
+                detail="You can only create prescriptions for your own appointments",
             )
 
         # Verify patient matches the appointment's patient
         if appointment.patient_id != data.patient_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Patient ID does not match the appointment"
+                detail="Patient ID does not match the appointment",
             )
 
         medications_json = json.dumps([med.model_dump() for med in data.medications])
@@ -57,8 +58,7 @@ class PrescriptionService:
         prescription = await self.prescription_repo.get_by_id(prescription_id)
         if not prescription:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Prescription not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Prescription not found"
             )
         if requester_id is not None and prescription.doctor_id != requester_id:
             raise HTTPException(
@@ -88,20 +88,21 @@ class PrescriptionService:
         """Get all prescriptions by a doctor"""
         return await self.prescription_repo.get_by_doctor(doctor_id)
 
-    async def update_prescription(self, prescription_id: str, doctor_id: str, data: PrescriptionUpdate) -> Prescription:
+    async def update_prescription(
+        self, prescription_id: str, doctor_id: str, data: PrescriptionUpdate
+    ) -> Prescription:
         """Doctor updates their prescription"""
         prescription = await self.prescription_repo.get_by_id(prescription_id)
         if not prescription:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Prescription not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Prescription not found"
             )
 
         # Verify doctor owns this prescription
         if prescription.doctor_id != doctor_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You can only update your own prescriptions"
+                detail="You can only update your own prescriptions",
             )
 
         if data.diagnosis is not None:
@@ -120,15 +121,14 @@ class PrescriptionService:
         prescription = await self.prescription_repo.get_by_id(prescription_id)
         if not prescription:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Prescription not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Prescription not found"
             )
 
         # Verify doctor owns this prescription
         if prescription.doctor_id != doctor_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You can only delete your own prescriptions"
+                detail="You can only delete your own prescriptions",
             )
 
         await self.prescription_repo.delete(prescription)

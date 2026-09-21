@@ -1,12 +1,12 @@
-import { useState, FormEvent } from 'react'
-import { X } from 'lucide-react'
-import { authAPI } from '../api/auth'
-import { User, UserRole } from '../types'
-import './CreateUserModal.css'
+import { useState, FormEvent } from 'react';
+import { X } from 'lucide-react';
+import { authAPI } from '../api/auth';
+import { User, UserRole } from '../types';
+import './CreateUserModal.css';
 
 interface CreateUserModalProps {
-  onClose: () => void
-  onUserCreated: (user: User) => void
+  onClose: () => void;
+  onUserCreated: (user: User) => void;
 }
 
 const CreateUserModal = ({ onClose, onUserCreated }: CreateUserModalProps) => {
@@ -17,38 +17,38 @@ const CreateUserModal = ({ onClose, onUserCreated }: CreateUserModalProps) => {
     first_name: '',
     last_name: '',
     phone: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       const userData = {
         ...formData,
         phone: formData.phone || undefined,
-      }
-      const newUser = await authAPI.createUser(userData)
-      onUserCreated(newUser)
+      };
+      const newUser = await authAPI.createUser(userData);
+      onUserCreated(newUser);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create user')
+      setError(err instanceof Error ? err.message : 'Failed to create user');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
+    e.stopPropagation();
+  };
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -151,7 +151,7 @@ const CreateUserModal = ({ onClose, onUserCreated }: CreateUserModalProps) => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateUserModal
+export default CreateUserModal;

@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Depends, status
+
 from controllers.department_controller import DepartmentController
-from dependencies.department import get_department_controller
 from dependencies.auth import require_roles
+from dependencies.department import get_department_controller
+from models.user import User, UserRole
 from schemas.department import (
     DepartmentCreate,
-    DepartmentUpdate,
     DepartmentResponse,
+    DepartmentUpdate,
     DoctorAssignmentRequest,
     DoctorProfileResponse,
-    DoctorWithDepartment
+    DoctorWithDepartment,
 )
-from models.user import User, UserRole
 
 router = APIRouter(prefix="/departments", tags=["Departments"])
 

@@ -1,12 +1,12 @@
-from services.department_service import DepartmentService
 from schemas.department import (
     DepartmentCreate,
-    DepartmentUpdate,
     DepartmentResponse,
+    DepartmentUpdate,
     DoctorAssignmentRequest,
     DoctorProfileResponse,
-    DoctorWithDepartment
+    DoctorWithDepartment,
 )
+from services.department_service import DepartmentService
 
 
 class DepartmentController:
@@ -17,7 +17,9 @@ class DepartmentController:
         department = await self.department_service.create_department(data)
         return DepartmentResponse.model_validate(department)
 
-    async def update_department(self, department_id: str, data: DepartmentUpdate) -> DepartmentResponse:
+    async def update_department(
+        self, department_id: str, data: DepartmentUpdate
+    ) -> DepartmentResponse:
         department = await self.department_service.update_department(department_id, data)
         return DepartmentResponse.model_validate(department)
 

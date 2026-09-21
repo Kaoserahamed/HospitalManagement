@@ -45,11 +45,7 @@ class SlidingWindowLimiter:
         """Drop exhausted keys when the table grows beyond its bound."""
         if len(self._events) <= MAX_TRACKED_KEYS:
             return
-        stale = [
-            key
-            for key, window in self._events.items()
-            if not window or window[-1] <= cutoff
-        ]
+        stale = [key for key, window in self._events.items() if not window or window[-1] <= cutoff]
         for key in stale:
             del self._events[key]
 

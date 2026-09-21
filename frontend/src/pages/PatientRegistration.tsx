@@ -1,10 +1,10 @@
-import { useState, FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { authAPI, PatientRegisterData } from '../api/auth'
-import './Login.css'
+import { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authAPI, PatientRegisterData } from '../api/auth';
+import './Login.css';
 
 const PatientRegistration = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nid: '',
     phone: '',
@@ -18,14 +18,14 @@ const PatientRegistration = () => {
     emergency_contact_phone: '',
     medical_history: '',
     allergies: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       const data = {
@@ -36,16 +36,16 @@ const PatientRegistration = () => {
         emergency_contact_phone: formData.emergency_contact_phone || undefined,
         medical_history: formData.medical_history || undefined,
         allergies: formData.allergies || undefined,
-      }
-      await authAPI.registerPatient(data)
-      alert('Registration successful! You can now book appointments.')
-      navigate('/login')
+      };
+      await authAPI.registerPatient(data);
+      alert('Registration successful! You can now book appointments.');
+      navigate('/login');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="login-container" style={{ padding: '2rem 1rem' }}>
@@ -59,7 +59,7 @@ const PatientRegistration = () => {
           {/* Personal Information */}
           <div style={{ borderBottom: '2px solid #f0f0f0', paddingBottom: '1rem' }}>
             <h3 style={{ marginBottom: '1rem', color: '#667eea' }}>Personal Information</h3>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label>National ID (NID) *</label>
@@ -87,7 +87,14 @@ const PatientRegistration = () => {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '1rem',
+                marginTop: '1rem',
+              }}
+            >
               <div className="form-group">
                 <label>First Name *</label>
                 <input
@@ -131,7 +138,10 @@ const PatientRegistration = () => {
                 <select
                   value={formData.gender}
                   onChange={(e) =>
-                    setFormData({ ...formData, gender: e.target.value as PatientRegisterData['gender'] })
+                    setFormData({
+                      ...formData,
+                      gender: e.target.value as PatientRegisterData['gender'],
+                    })
                   }
                   disabled={loading}
                   required
@@ -168,7 +178,13 @@ const PatientRegistration = () => {
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 disabled={loading}
                 rows={2}
-                style={{ padding: '0.75rem', border: '2px solid #e0e0e0', borderRadius: '8px', fontSize: '1rem', fontFamily: 'inherit' }}
+                style={{
+                  padding: '0.75rem',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                }}
               />
             </div>
 
@@ -191,7 +207,13 @@ const PatientRegistration = () => {
                 disabled={loading}
                 rows={2}
                 placeholder="Previous conditions, surgeries, etc."
-                style={{ padding: '0.75rem', border: '2px solid #e0e0e0', borderRadius: '8px', fontSize: '1rem', fontFamily: 'inherit' }}
+                style={{
+                  padding: '0.75rem',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                }}
               />
             </div>
           </div>
@@ -205,7 +227,9 @@ const PatientRegistration = () => {
                 <input
                   type="text"
                   value={formData.emergency_contact_name}
-                  onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, emergency_contact_name: e.target.value })
+                  }
                   disabled={loading}
                 />
               </div>
@@ -214,7 +238,9 @@ const PatientRegistration = () => {
                 <input
                   type="tel"
                   value={formData.emergency_contact_phone}
-                  onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, emergency_contact_phone: e.target.value })
+                  }
                   disabled={loading}
                 />
               </div>
@@ -249,7 +275,7 @@ const PatientRegistration = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PatientRegistration
+export default PatientRegistration;

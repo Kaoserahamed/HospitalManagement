@@ -19,7 +19,7 @@ class AppointmentRepository:
             .options(
                 selectinload(Appointment.patient),
                 selectinload(Appointment.doctor),
-                selectinload(Appointment.department)
+                selectinload(Appointment.department),
             )
         )
         return result.scalars().first()
@@ -31,7 +31,7 @@ class AppointmentRepository:
             .options(
                 selectinload(Appointment.patient),
                 selectinload(Appointment.doctor),
-                selectinload(Appointment.department)
+                selectinload(Appointment.department),
             )
             .order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc())
         )
@@ -41,10 +41,7 @@ class AppointmentRepository:
         result = await self.session.execute(
             select(Appointment)
             .where(Appointment.doctor_id == doctor_id)
-            .options(
-                selectinload(Appointment.patient),
-                selectinload(Appointment.department)
-            )
+            .options(selectinload(Appointment.patient), selectinload(Appointment.department))
             .order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc())
         )
         return list(result.scalars().all())
@@ -56,7 +53,7 @@ class AppointmentRepository:
             .options(
                 selectinload(Appointment.patient),
                 selectinload(Appointment.doctor),
-                selectinload(Appointment.department)
+                selectinload(Appointment.department),
             )
             .order_by(Appointment.appointment_date.desc(), Appointment.appointment_time.desc())
         )
@@ -93,12 +90,14 @@ class AppointmentRepository:
         Used for care-relationship authorization on patient record reads.
         """
         result = await self.session.execute(
-            select(Appointment.id).where(
+            select(Appointment.id)
+            .where(
                 and_(
                     Appointment.doctor_id == doctor_id,
                     Appointment.patient_id == patient_id,
                 )
-            ).limit(1)
+            )
+            .limit(1)
         )
         return result.scalars().first() is not None
 
@@ -107,7 +106,7 @@ class AppointmentRepository:
         doctor_id: str,
         appointment_date: date,
         appointment_time: time,
-        exclude_appointment_id: str | None = None
+        exclude_appointment_id: str | None = None,
     ) -> Appointment | None:
         """Check if there's a conflicting appointment for the same doctor/time"""
         query = select(Appointment).where(
@@ -115,7 +114,7 @@ class AppointmentRepository:
                 Appointment.doctor_id == doctor_id,
                 Appointment.appointment_date == appointment_date,
                 Appointment.appointment_time == appointment_time,
-                Appointment.status.in_([AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED])
+                Appointment.status.in_([AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED]),
             )
         )
         if exclude_appointment_id:
@@ -134,10 +133,13 @@ class AppointmentRepository:
             .options(
                 selectinload(Appointment.patient),
                 selectinload(Appointment.doctor),
-                selectinload(Appointment.department)
+                selectinload(Appointment.department),
             )
         )
-        return result.scalars().first()
+        refreshed: Appointment | None = result.scalars().first()
+        if refreshed is None:
+            return appointment
+        return refreshed
 
     async def update(self, appointment: Appointment) -> Appointment:
         await self.session.commit()
@@ -148,10 +150,13 @@ class AppointmentRepository:
             .options(
                 selectinload(Appointment.patient),
                 selectinload(Appointment.doctor),
-                selectinload(Appointment.department)
+                selectinload(Appointment.department),
             )
         )
-        return result.scalars().first()
+        refreshed: Appointment | None = result.scalars().first()
+        if refreshed is None:  # pragma: no cover — appointment was just committed
+            raise RuntimeError("Appointment not found after update")
+        return refreshed
 
     async def delete(self, appointment_id: str) -> bool:
         appointment = await self.get_by_id(appointment_id)

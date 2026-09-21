@@ -1,56 +1,56 @@
-import { useState, useEffect } from 'react'
-import { prescriptionAPI, Prescription } from '../api/prescription'
-import { X, FileText, Calendar, Pill } from 'lucide-react'
-import './CreateUserModal.css'
+import { useState, useEffect } from 'react';
+import { prescriptionAPI, Prescription } from '../api/prescription';
+import { X, FileText, Calendar, Pill } from 'lucide-react';
+import './CreateUserModal.css';
 
 interface PatientHistoryModalProps {
-  patientId: string
-  patientName: string
-  onClose: () => void
+  patientId: string;
+  patientName: string;
+  onClose: () => void;
 }
 
 interface Medication {
-  name: string
-  dosage?: string
-  frequency?: string
-  duration?: string
+  name: string;
+  dosage?: string;
+  frequency?: string;
+  duration?: string;
 }
 
 const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistoryModalProps) => {
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
-  const [loading, setLoading] = useState(true)
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     const loadHistory = async () => {
       try {
-        const prescs = await prescriptionAPI.getPatientPrescriptions(patientId)
-        setPrescriptions(prescs)
+        const prescs = await prescriptionAPI.getPatientPrescriptions(patientId);
+        setPrescriptions(prescs);
       } catch (error) {
-        console.error('Failed to load patient history:', error)
+        console.error('Failed to load patient history:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    loadHistory()
-  }, [patientId])
+    };
+    loadHistory();
+  }, [patientId]);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const parseMedications = (medicationsJson: string): Medication[] => {
     try {
-      const parsed: unknown = JSON.parse(medicationsJson)
-      return Array.isArray(parsed) ? (parsed as Medication[]) : []
+      const parsed: unknown = JSON.parse(medicationsJson);
+      return Array.isArray(parsed) ? (parsed as Medication[]) : [];
     } catch {
-      return []
+      return [];
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -106,12 +106,8 @@ const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistory
                     }}
                   >
                     <div>
-                      <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#111827' }}>
-                        Diagnosis
-                      </h3>
-                      <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>
-                        {presc.diagnosis}
-                      </p>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#111827' }}>Diagnosis</h3>
+                      <p style={{ margin: '0.5rem 0 0 0', color: '#374151' }}>{presc.diagnosis}</p>
                     </div>
                     <span
                       style={{
@@ -207,7 +203,7 @@ const PatientHistoryModal = ({ patientId, patientName, onClose }: PatientHistory
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PatientHistoryModal
+export default PatientHistoryModal;

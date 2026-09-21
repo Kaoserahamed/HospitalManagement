@@ -5,11 +5,14 @@ Run this script once to create the initial admin user
 Prerequisites:
 - Database and users table must already exist (run schema.sql first)
 
-Usage: 
+Usage:
+
     cd backend
     python seed_admin.py
 """
+
 import asyncio
+
 from core.database import AsyncSessionLocal
 from core.security import hash_password
 from models.user import User, UserRole
@@ -20,16 +23,16 @@ async def seed_admin():
     """Create initial admin user if not exists"""
     async with AsyncSessionLocal() as session:
         repo = UserRepository(session)
-        
+
         # Check if admin exists
         admin_email = "admin@hospital.com"
         existing_admin = await repo.get_by_email(admin_email)
-        
+
         if existing_admin:
             print(f"✓ Admin user already exists: {admin_email}")
             print(f"  Role: {existing_admin.role.value}")
             return
-        
+
         # Create admin user
         admin_user = User(
             email=admin_email,
@@ -38,15 +41,15 @@ async def seed_admin():
             first_name="System",
             last_name="Administrator",
             phone="+1234567890",
-            is_active=True
+            is_active=True,
         )
-        
+
         await repo.create(admin_user)
-        print(f"✓ Admin user created successfully!")
+        print("✓ Admin user created successfully!")
         print(f"  Email: {admin_email}")
-        print(f"  Password: Admin@123")
-        print(f"  Role: admin")
-        print(f"  ⚠️  IMPORTANT: Change the password after first login!")
+        print("  Password: Admin@123")
+        print("  Role: admin")
+        print("  ⚠️  IMPORTANT: Change the password after first login!")
 
 
 if __name__ == "__main__":

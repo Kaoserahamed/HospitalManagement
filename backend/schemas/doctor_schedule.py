@@ -1,10 +1,14 @@
+from datetime import date, time
+from datetime import date as dt_date
+
 from pydantic import BaseModel, ConfigDict, field_validator
-from datetime import time, date
+
 from models.doctor_schedule import DayOfWeek
 
 
 class DoctorScheduleCreate(BaseModel):
     """Schema for creating doctor schedule"""
+
     doctor_id: str
     day_of_week: DayOfWeek
     start_time: time
@@ -21,8 +25,8 @@ class DoctorScheduleCreate(BaseModel):
     @field_validator("end_time")
     @classmethod
     def validate_times(cls, end_time: time, info) -> time:
-        if 'start_time' in info.data:
-            start_time = info.data['start_time']
+        if "start_time" in info.data:
+            start_time = info.data["start_time"]
             if end_time <= start_time:
                 raise ValueError("End time must be after start time")
         return end_time
@@ -30,6 +34,7 @@ class DoctorScheduleCreate(BaseModel):
 
 class DoctorScheduleUpdate(BaseModel):
     """Schema for updating doctor schedule"""
+
     day_of_week: DayOfWeek | None = None
     start_time: time | None = None
     end_time: time | None = None
@@ -46,6 +51,7 @@ class DoctorScheduleUpdate(BaseModel):
 
 class DoctorScheduleResponse(BaseModel):
     """Schema for doctor schedule response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -59,6 +65,7 @@ class DoctorScheduleResponse(BaseModel):
 
 class AvailableSlot(BaseModel):
     """Schema for available appointment slot"""
+
     date: date
     time: time
     available: bool
@@ -66,12 +73,13 @@ class AvailableSlot(BaseModel):
 
 class DoctorAvailabilityRequest(BaseModel):
     """Schema for checking doctor availability"""
+
     doctor_id: str
     date: date
 
     @field_validator("date")
     @classmethod
-    def validate_date(cls, value: date) -> date:
+    def validate_date(cls, value: dt_date) -> dt_date:
         if value < date.today():
             raise ValueError("Date cannot be in the past")
         return value

@@ -1,1 +1,1 @@
-export type { AppointmentStatus } from '../api/appointment'
+export type { AppointmentStatus } from '../api/appointment';

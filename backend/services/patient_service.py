@@ -18,9 +18,7 @@ class PatientService:
         self, active_only: bool = False, limit: int | None = None, offset: int = 0
     ) -> list[Patient]:
         """Get all patients, optionally bounded."""
-        return await self.patient_repo.get_all(
-            active_only, limit=limit, offset=offset
-        )
+        return await self.patient_repo.get_all(active_only, limit=limit, offset=offset)
 
     async def get_patient(
         self,
@@ -37,10 +35,7 @@ class PatientService:
         """
         patient = await self.patient_repo.get_by_id(patient_id)
         if not patient:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Patient not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
 
         if requester_role == "patient":
             if requester_id != patient_id:

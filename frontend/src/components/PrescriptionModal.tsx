@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import { prescriptionAPI, MedicationItem, PrescriptionCreate } from '../api/prescription'
-import { X, Plus, Trash2 } from 'lucide-react'
-import './CreateUserModal.css'
+import { useState } from 'react';
+import { prescriptionAPI, MedicationItem, PrescriptionCreate } from '../api/prescription';
+import { X, Plus, Trash2 } from 'lucide-react';
+import './CreateUserModal.css';
 
 interface PrescriptionModalProps {
-  appointmentId: string
-  patientId: string
-  patientName: string
-  onClose: () => void
-  onSuccess: () => void
+  appointmentId: string;
+  patientId: string;
+  patientName: string;
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
 const PrescriptionModal = ({
@@ -18,48 +18,48 @@ const PrescriptionModal = ({
   onClose,
   onSuccess,
 }: PrescriptionModalProps) => {
-  const [diagnosis, setDiagnosis] = useState('')
+  const [diagnosis, setDiagnosis] = useState('');
   const [medications, setMedications] = useState<MedicationItem[]>([
     { name: '', dosage: '', frequency: '', duration: '' },
-  ])
-  const [instructions, setInstructions] = useState('')
-  const [followUpDate, setFollowUpDate] = useState('')
-  const [loading, setLoading] = useState(false)
+  ]);
+  const [instructions, setInstructions] = useState('');
+  const [followUpDate, setFollowUpDate] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const addMedication = () => {
-    setMedications([...medications, { name: '', dosage: '', frequency: '', duration: '' }])
-  }
+    setMedications([...medications, { name: '', dosage: '', frequency: '', duration: '' }]);
+  };
 
   const removeMedication = (index: number) => {
     if (medications.length > 1) {
-      setMedications(medications.filter((_, i) => i !== index))
+      setMedications(medications.filter((_, i) => i !== index));
     }
-  }
+  };
 
   const updateMedication = (index: number, field: keyof MedicationItem, value: string) => {
-    const updated = [...medications]
-    updated[index][field] = value
-    setMedications(updated)
-  }
+    const updated = [...medications];
+    updated[index][field] = value;
+    setMedications(updated);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!diagnosis.trim()) {
-      alert('Please enter diagnosis')
-      return
+      alert('Please enter diagnosis');
+      return;
     }
 
     const validMedications = medications.filter(
       (med) => med.name.trim() && med.dosage.trim() && med.frequency.trim() && med.duration.trim()
-    )
+    );
 
     if (validMedications.length === 0) {
-      alert('Please add at least one complete medication')
-      return
+      alert('Please add at least one complete medication');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const data: PrescriptionCreate = {
         appointment_id: appointmentId,
@@ -68,24 +68,24 @@ const PrescriptionModal = ({
         medications: validMedications,
         instructions: instructions.trim() || undefined,
         follow_up_date: followUpDate || undefined,
-      }
+      };
 
-      await prescriptionAPI.create(data)
-      alert('Prescription created successfully')
-      onSuccess()
-      onClose()
+      await prescriptionAPI.create(data);
+      alert('Prescription created successfully');
+      onSuccess();
+      onClose();
     } catch (error) {
-      console.error('Failed to create prescription:', error)
-      alert(error instanceof Error ? error.message : 'Failed to create prescription')
+      console.error('Failed to create prescription:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create prescription');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div 
-        className="modal-content" 
+      <div
+        className="modal-content"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto' }}
       >
@@ -97,27 +97,45 @@ const PrescriptionModal = ({
         </div>
         <form onSubmit={handleSubmit} style={{ padding: '1.5rem' }}>
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}>Patient</label>
-            <input 
-              type="text" 
-              value={patientName} 
-              disabled 
-              style={{ 
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              Patient
+            </label>
+            <input
+              type="text"
+              value={patientName}
+              disabled
+              style={{
                 width: '100%',
                 padding: '0.75rem',
-                backgroundColor: '#f3f4f6', 
+                backgroundColor: '#f3f4f6',
                 color: '#6b7280',
                 border: '1px solid #d1d5db',
                 borderRadius: '6px',
                 fontSize: '0.95rem',
                 cursor: 'not-allowed',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
               Diagnosis <span style={{ color: 'red' }}>*</span>
             </label>
             <textarea
@@ -134,14 +152,23 @@ const PrescriptionModal = ({
                 fontSize: '0.95rem',
                 fontFamily: 'inherit',
                 resize: 'vertical',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <label style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.75rem',
+              }}
+            >
+              <label
+                style={{ margin: 0, fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}
+              >
                 Medications <span style={{ color: 'red' }}>*</span>
               </label>
               <button
@@ -222,7 +249,7 @@ const PrescriptionModal = ({
                       border: '1px solid #d1d5db',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
                     }}
                   />
                   <input
@@ -237,7 +264,7 @@ const PrescriptionModal = ({
                       border: '1px solid #d1d5db',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
                     }}
                   />
                   <input
@@ -252,7 +279,7 @@ const PrescriptionModal = ({
                       border: '1px solid #d1d5db',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
                     }}
                   />
                   <input
@@ -267,7 +294,7 @@ const PrescriptionModal = ({
                       border: '1px solid #d1d5db',
                       borderRadius: '6px',
                       fontSize: '0.9rem',
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
                     }}
                   />
                 </div>
@@ -276,7 +303,17 @@ const PrescriptionModal = ({
           </div>
 
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}>Instructions</label>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              Instructions
+            </label>
             <textarea
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
@@ -290,13 +327,23 @@ const PrescriptionModal = ({
                 fontSize: '0.95rem',
                 fontFamily: 'inherit',
                 resize: 'vertical',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: '600', color: '#374151' }}>Follow-up Date</label>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              Follow-up Date
+            </label>
             <input
               type="date"
               value={followUpDate}
@@ -308,22 +355,25 @@ const PrescriptionModal = ({
                 border: '1px solid #d1d5db',
                 borderRadius: '6px',
                 fontSize: '0.95rem',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
               }}
             />
           </div>
 
-          <div className="modal-actions" style={{ 
-            display: 'flex', 
-            gap: '1rem', 
-            justifyContent: 'flex-end',
-            marginTop: '1.5rem',
-            paddingTop: '1.5rem',
-            borderTop: '1px solid #e5e7eb'
-          }}>
-            <button 
-              type="button" 
-              onClick={onClose} 
+          <div
+            className="modal-actions"
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'flex-end',
+              marginTop: '1.5rem',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid #e5e7eb',
+            }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
               disabled={loading}
               style={{
                 padding: '0.75rem 1.5rem',
@@ -334,13 +384,13 @@ const PrescriptionModal = ({
                 fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1
+                opacity: loading ? 0.6 : 1,
               }}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               style={{
                 padding: '0.75rem 1.5rem',
@@ -351,7 +401,7 @@ const PrescriptionModal = ({
                 fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1
+                opacity: loading ? 0.6 : 1,
               }}
             >
               {loading ? 'Creating...' : 'Create Prescription'}
@@ -360,7 +410,7 @@ const PrescriptionModal = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PrescriptionModal
+export default PrescriptionModal;

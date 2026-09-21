@@ -1,9 +1,11 @@
-from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
+
+from pydantic import BaseModel, ConfigDict
 
 
 class MedicationItem(BaseModel):
     """Single medication item"""
+
     name: str
     dosage: str
     frequency: str
@@ -12,6 +14,7 @@ class MedicationItem(BaseModel):
 
 class PrescriptionCreate(BaseModel):
     """Schema for creating a prescription"""
+
     appointment_id: str
     patient_id: str
     diagnosis: str
@@ -22,6 +25,7 @@ class PrescriptionCreate(BaseModel):
 
 class PrescriptionUpdate(BaseModel):
     """Schema for updating a prescription"""
+
     diagnosis: str | None = None
     medications: list[MedicationItem] | None = None
     instructions: str | None = None
@@ -30,6 +34,7 @@ class PrescriptionUpdate(BaseModel):
 
 class PrescriptionResponse(BaseModel):
     """Schema for prescription response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -45,5 +50,6 @@ class PrescriptionResponse(BaseModel):
 
 class PrescriptionWithDetails(PrescriptionResponse):
     """Prescription with patient and doctor names"""
+
     patient_name: str | None = None
     doctor_name: str | None = None

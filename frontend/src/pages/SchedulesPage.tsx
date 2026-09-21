@@ -1,95 +1,94 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react'
-import { scheduleAPI, DoctorSchedule, DoctorScheduleCreate, DayOfWeek } from '../api/schedule'
-import { authAPI } from '../api/auth'
-import { User } from '../types'
-import DataTable from '../components/DataTable'
-import './Dashboard.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, Plus, Users, Building2, Calendar } from 'lucide-react';
+import { scheduleAPI, DoctorSchedule, DoctorScheduleCreate, DayOfWeek } from '../api/schedule';
+import { authAPI } from '../api/auth';
+import { User } from '../types';
+import DataTable from '../components/DataTable';
+import './Dashboard.css';
 
 const SchedulesPage = () => {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [schedules, setSchedules] = useState<DoctorSchedule[]>([])
-  const [doctors, setDoctors] = useState<User[]>([])
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [schedules, setSchedules] = useState<DoctorSchedule[]>([]);
+  const [doctors, setDoctors] = useState<User[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const currentPath = location.pathname
+  const currentPath = location.pathname;
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       const [allUsers, allSchedules] = await Promise.all([
         authAPI.getAllUsers(),
-        scheduleAPI.getAllSchedules()
-      ])
-      setDoctors(allUsers.filter(u => u.role === 'doctor'))
-      setSchedules(allSchedules)
+        scheduleAPI.getAllSchedules(),
+      ]);
+      setDoctors(allUsers.filter((u) => u.role === 'doctor'));
+      setSchedules(allSchedules);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateSchedule = () => {
-    setShowCreateModal(false)
-    loadData()
-  }
+    setShowCreateModal(false);
+    loadData();
+  };
 
   const handleDeleteSchedule = async (scheduleId: string) => {
-    if (!confirm('Are you sure you want to delete this schedule?')) return
+    if (!confirm('Are you sure you want to delete this schedule?')) return;
 
     try {
-      await scheduleAPI.deleteSchedule(scheduleId)
-      loadData()
+      await scheduleAPI.deleteSchedule(scheduleId);
+      loadData();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to delete schedule')
+      alert(error instanceof Error ? error.message : 'Failed to delete schedule');
     }
-  }
+  };
 
   const getDoctorName = (doctorId: string) => {
-    const doctor = doctors.find((d) => d.id === doctorId)
-    return doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` : 'Unknown'
-  }
+    const doctor = doctors.find((d) => d.id === doctorId);
+    return doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` : 'Unknown';
+  };
 
   const formatTime = (timeStr: string) => {
     return new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    })
-  }
+    });
+  };
 
   // Define columns for schedules table
   const schedulesColumns = [
     {
       key: 'doctor',
       header: 'Doctor',
-      render: (_: unknown, row: DoctorSchedule) => <strong>{getDoctorName(row.doctor_id)}</strong>
+      render: (_: unknown, row: DoctorSchedule) => <strong>{getDoctorName(row.doctor_id)}</strong>,
     },
     {
       key: 'day_of_week',
       header: 'Day',
-      render: (value: string) => (
-        <span style={{ textTransform: 'capitalize' }}>{value}</span>
-      )
+      render: (value: string) => <span style={{ textTransform: 'capitalize' }}>{value}</span>,
     },
     {
       key: 'time',
       header: 'Time',
-      render: (_: unknown, row: DoctorSchedule) => `${formatTime(row.start_time)} - ${formatTime(row.end_time)}`
+      render: (_: unknown, row: DoctorSchedule) =>
+        `${formatTime(row.start_time)} - ${formatTime(row.end_time)}`,
     },
     {
       key: 'slot_duration',
       header: 'Duration',
-      render: (value: number) => `${value} minutes`
+      render: (value: number) => `${value} minutes`,
     },
     {
       key: 'is_active',
@@ -98,7 +97,7 @@ const SchedulesPage = () => {
         <span className={value ? 'status-active' : 'status-inactive'}>
           {value ? 'Active' : 'Inactive'}
         </span>
-      )
+      ),
     },
     {
       key: 'actions',
@@ -118,26 +117,28 @@ const SchedulesPage = () => {
             transition: 'all 0.15s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#fee2e2'
-            e.currentTarget.style.borderColor = '#fca5a5'
+            e.currentTarget.style.backgroundColor = '#fee2e2';
+            e.currentTarget.style.borderColor = '#fca5a5';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#fef2f2'
-            e.currentTarget.style.borderColor = '#fecaca'
+            e.currentTarget.style.backgroundColor = '#fef2f2';
+            e.currentTarget.style.borderColor = '#fecaca';
           }}
         >
           Delete
         </button>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         Loading...
       </div>
-    )
+    );
   }
 
   return (
@@ -159,13 +160,17 @@ const SchedulesPage = () => {
 
       <div style={{ display: 'flex', height: 'calc(100vh - 65px)' }}>
         {/* Sidebar */}
-        <aside style={{
-          width: '250px',
-          backgroundColor: 'white',
-          borderRight: '1px solid #e0e0e0',
-          padding: '1.5rem 0',
-        }}>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}>
+        <aside
+          style={{
+            width: '250px',
+            backgroundColor: 'white',
+            borderRight: '1px solid #e0e0e0',
+            padding: '1.5rem 0',
+          }}
+        >
+          <nav
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}
+          >
             <button
               onClick={() => navigate('/dashboard')}
               style={{
@@ -185,12 +190,12 @@ const SchedulesPage = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -216,12 +221,12 @@ const SchedulesPage = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -247,12 +252,12 @@ const SchedulesPage = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -285,21 +290,21 @@ const SchedulesPage = () => {
       </div>
 
       {showCreateModal && (
-        <CreateScheduleModal 
-          doctors={doctors} 
-          onClose={() => setShowCreateModal(false)} 
-          onCreate={handleCreateSchedule} 
+        <CreateScheduleModal
+          doctors={doctors}
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreateSchedule}
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 // Create Schedule Modal Component
 interface CreateScheduleModalProps {
-  doctors: User[]
-  onClose: () => void
-  onCreate: () => void
+  doctors: User[];
+  onClose: () => void;
+  onCreate: () => void;
 }
 
 const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModalProps) => {
@@ -309,25 +314,25 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
     start_time: '09:00',
     end_time: '17:00',
     slot_duration: 30,
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      await scheduleAPI.createSchedule(formData)
-      alert('Schedule created successfully!')
-      onCreate()
+      await scheduleAPI.createSchedule(formData);
+      alert('Schedule created successfully!');
+      onCreate();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create schedule')
+      setError(err instanceof Error ? err.message : 'Failed to create schedule');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -363,7 +368,9 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
             <select
               id="day_of_week"
               value={formData.day_of_week}
-              onChange={(e) => setFormData({ ...formData, day_of_week: e.target.value as DayOfWeek })}
+              onChange={(e) =>
+                setFormData({ ...formData, day_of_week: e.target.value as DayOfWeek })
+              }
               required
               disabled={loading}
             >
@@ -408,7 +415,9 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
             <select
               id="slot_duration"
               value={formData.slot_duration}
-              onChange={(e) => setFormData({ ...formData, slot_duration: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, slot_duration: parseInt(e.target.value) })
+              }
               required
               disabled={loading}
             >
@@ -433,7 +442,7 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SchedulesPage
+export default SchedulesPage;

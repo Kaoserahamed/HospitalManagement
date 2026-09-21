@@ -25,7 +25,7 @@ def _build_settings(monkeypatch, **overrides):
     base.update(overrides)
     for key, value in base.items():
         monkeypatch.setenv(key, value)
-    return config.Settings()
+    return config.Settings()  # type: ignore[call-arg]
 
 
 class TestEnvironmentValidation:
@@ -114,7 +114,7 @@ class TestDatabaseValidation:
     def test_database_url_required(self, monkeypatch, clean_env):
         monkeypatch.setenv("SECRET_KEY", "a-sufficiently-long-secret-key-for-testing")
         with pytest.raises(ValidationError, match="DATABASE_URL"):
-            config.Settings()
+            config.Settings()  # type: ignore[call-arg]
 
 
 class TestSettingsCaching:
@@ -135,7 +135,7 @@ class TestDefaults:
         """A fresh clone with only required vars set must boot in local mode."""
         monkeypatch.setenv("DATABASE_URL", "mysql+asyncmy://u:p@localhost/hospital_db")
         monkeypatch.setenv("SECRET_KEY", "a-sufficiently-long-secret-key-for-testing")
-        settings = config.Settings()
+        settings = config.Settings()  # type: ignore[call-arg]
         assert settings.ENVIRONMENT == "local"
         assert settings.LOG_LEVEL == "INFO"
         assert "http://localhost:3000" in settings.cors_origin_list

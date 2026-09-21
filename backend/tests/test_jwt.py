@@ -117,9 +117,7 @@ class TestTokenVerification:
 
         signing_input = b64({"alg": "RS256", "typ": "JWT"}) + b"." + b64(payload)
         signature = base64.urlsafe_b64encode(
-            hmac.new(
-                settings.SECRET_KEY.encode(), signing_input, hashlib.sha256
-            ).digest()
+            hmac.new(settings.SECRET_KEY.encode(), signing_input, hashlib.sha256).digest()
         ).rstrip(b"=")
         token = (signing_input + b"." + signature).decode()
         assert decode_access_token(token) is None

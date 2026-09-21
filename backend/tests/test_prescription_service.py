@@ -212,12 +212,20 @@ class TestStaffListingScoping:
 
     def _seed(self):
         own = Prescription(
-            id="rx-1", appointment_id="apt-1", patient_id="p-1",
-            doctor_id="d-1", diagnosis="A", medications="[]",
+            id="rx-1",
+            appointment_id="apt-1",
+            patient_id="p-1",
+            doctor_id="d-1",
+            diagnosis="A",
+            medications="[]",
         )
         other = Prescription(
-            id="rx-2", appointment_id="apt-2", patient_id="p-1",
-            doctor_id="d-2", diagnosis="B", medications="[]",
+            id="rx-2",
+            appointment_id="apt-2",
+            patient_id="p-1",
+            doctor_id="d-2",
+            diagnosis="B",
+            medications="[]",
         )
         service = _service(_appointment())
         service.prescription_repo.items = {"rx-1": own, "rx-2": other}

@@ -7,7 +7,7 @@
  * status badge / date / time rendering a single source of truth.
  */
 
-import type { AppointmentStatus } from '../api/appointment'
+import type { AppointmentStatus } from '../api/appointment';
 
 /** Hex colour (without alpha) used for status badges and accents. */
 const STATUS_COLORS: Record<string, string> = {
@@ -16,14 +16,14 @@ const STATUS_COLORS: Record<string, string> = {
   completed: '#6b7280', // gray
   cancelled: '#ef4444', // red
   no_show: '#f59e0b', // amber
-}
+};
 
-const DEFAULT_STATUS_COLOR = '#6b7280'
+const DEFAULT_STATUS_COLOR = '#6b7280';
 
 /** Map an appointment status to its display colour. */
 export const getStatusColor = (status: string): string => {
-  return STATUS_COLORS[status] ?? DEFAULT_STATUS_COLOR
-}
+  return STATUS_COLORS[status] ?? DEFAULT_STATUS_COLOR;
+};
 
 /** Format an ISO date string (YYYY-MM-DD) to a locale date string. */
 export const formatDate = (dateStr: string): string => {
@@ -31,8 +31,8 @@ export const formatDate = (dateStr: string): string => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  })
-}
+  });
+};
 
 /** Format an ISO time string (HH:MM) to a locale time string. */
 export const formatTime = (timeStr: string): string => {
@@ -40,8 +40,8 @@ export const formatTime = (timeStr: string): string => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-  })
-}
+  });
+};
 
 /** Human-readable label for a status value. */
 export const getStatusLabel = (status: AppointmentStatus | string): string => {
@@ -51,19 +51,21 @@ export const getStatusLabel = (status: AppointmentStatus | string): string => {
     completed: 'Completed',
     cancelled: 'Cancelled',
     no_show: 'No Show',
-  }
-  return labels[status] ?? status.charAt(0).toUpperCase() + status.slice(1)
-}
+  };
+  return labels[status] ?? status.charAt(0).toUpperCase() + status.slice(1);
+};
 
 /** Sort appointments by date+time, most-recent first. */
-export const sortAppointmentsByDate = <T extends { appointment_date: string; appointment_time: string }>(
-  appointments: T[],
+export const sortAppointmentsByDate = <
+  T extends { appointment_date: string; appointment_time: string },
+>(
+  appointments: T[]
 ): T[] => {
   return [...appointments].sort((a, b) => {
-    const dateA = new Date(`${a.appointment_date}T${a.appointment_time}`)
-    const dateB = new Date(`${b.appointment_date}T${b.appointment_time}`)
-    return dateB.getTime() - dateA.getTime()
-  })
-}
+    const dateA = new Date(`${a.appointment_date}T${a.appointment_time}`);
+    const dateB = new Date(`${b.appointment_date}T${b.appointment_time}`);
+    return dateB.getTime() - dateA.getTime();
+  });
+};
 
-export { AppointmentStatus }
+export { AppointmentStatus };

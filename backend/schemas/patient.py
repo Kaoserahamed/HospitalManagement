@@ -1,10 +1,13 @@
-from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import date
-from models.patient import Gender, BloodGroup
+
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from models.patient import BloodGroup, Gender
 
 
 class PatientCreate(BaseModel):
     """Schema for patient registration (used by both public and receptionist)"""
+
     nid: str
     phone: str
     first_name: str
@@ -48,12 +51,14 @@ class PatientCreate(BaseModel):
 
 class PatientLogin(BaseModel):
     """Schema for patient login (NID + phone)"""
+
     nid: str
     phone: str
 
 
 class PatientUpdate(BaseModel):
     """Schema for updating patient information"""
+
     first_name: str | None = None
     last_name: str | None = None
     phone: str | None = None
@@ -70,6 +75,7 @@ class PatientUpdate(BaseModel):
 
 class PatientResponse(BaseModel):
     """Schema for patient response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -90,6 +96,7 @@ class PatientResponse(BaseModel):
 
 class PatientListItem(BaseModel):
     """Schema for patient list (minimal info)"""
+
     id: str
     nid: str
     first_name: str

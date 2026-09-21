@@ -10,9 +10,7 @@ class PatientController:
         self, active_only: bool = False, limit: int | None = None, offset: int = 0
     ) -> list[PatientListItem]:
         """Get all patients"""
-        patients = await self.service.get_all_patients(
-            active_only, limit=limit, offset=offset
-        )
+        patients = await self.service.get_all_patients(active_only, limit=limit, offset=offset)
         return [PatientListItem.model_validate(p) for p in patients]
 
     async def get_patient(

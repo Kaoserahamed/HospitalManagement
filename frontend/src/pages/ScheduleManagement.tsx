@@ -1,85 +1,96 @@
-import { useState, useEffect } from 'react'
-import { Plus, X } from 'lucide-react'
-import { scheduleAPI, DoctorSchedule, DoctorScheduleCreate, DayOfWeek } from '../api/schedule'
-import { User } from '../types'
-import '../components/CreateUserModal.css'
+import { useState, useEffect } from 'react';
+import { Plus, X } from 'lucide-react';
+import { scheduleAPI, DoctorSchedule, DoctorScheduleCreate, DayOfWeek } from '../api/schedule';
+import { User } from '../types';
+import '../components/CreateUserModal.css';
 
 interface ScheduleManagementProps {
-  doctors: User[]
-  onClose: () => void
+  doctors: User[];
+  onClose: () => void;
 }
 
 const ScheduleManagement = ({ doctors, onClose }: ScheduleManagementProps) => {
-  const [schedules, setSchedules] = useState<DoctorSchedule[]>([])
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [schedules, setSchedules] = useState<DoctorSchedule[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadSchedules()
-  }, [])
+    loadSchedules();
+  }, []);
 
   const loadSchedules = async () => {
     try {
-      const data = await scheduleAPI.getAllSchedules()
-      setSchedules(data)
+      const data = await scheduleAPI.getAllSchedules();
+      setSchedules(data);
     } catch (error) {
-      console.error('Failed to load schedules:', error)
+      console.error('Failed to load schedules:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateSchedule = () => {
-    setShowCreateModal(false)
-    loadSchedules()
-  }
+    setShowCreateModal(false);
+    loadSchedules();
+  };
 
   const handleDeleteSchedule = async (scheduleId: string) => {
-    if (!confirm('Are you sure you want to delete this schedule?')) return
+    if (!confirm('Are you sure you want to delete this schedule?')) return;
 
     try {
-      await scheduleAPI.deleteSchedule(scheduleId)
-      loadSchedules()
+      await scheduleAPI.deleteSchedule(scheduleId);
+      loadSchedules();
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to delete schedule')
+      alert(error instanceof Error ? error.message : 'Failed to delete schedule');
     }
-  }
+  };
 
   const getDoctorName = (doctorId: string) => {
-    const doctor = doctors.find((d) => d.id === doctorId)
-    return doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` : 'Unknown'
-  }
+    const doctor = doctors.find((d) => d.id === doctorId);
+    return doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` : 'Unknown';
+  };
 
   const formatTime = (timeStr: string) => {
     return new Date(`2000-01-01T${timeStr}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    })
-  }
+    });
+  };
 
   return (
-    <div style={{ 
-      position: 'fixed', 
-      inset: 0, 
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-      zIndex: 50,
-      display: 'flex'
-    }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 50,
+        display: 'flex',
+      }}
+    >
       {/* Sidebar spacer - maintains layout */}
       <div style={{ width: '250px' }}></div>
-      
+
       {/* Panel */}
-      <div style={{ 
-        backgroundColor: 'white',
-        width: '100%',
-        maxWidth: '900px',
-        overflow: 'auto',
-        padding: '2rem',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div
+        style={{
+          backgroundColor: 'white',
+          width: '100%',
+          maxWidth: '900px',
+          overflow: 'auto',
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <h2>Doctor Schedules</h2>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button onClick={() => setShowCreateModal(true)} className="create-button">
@@ -113,14 +124,17 @@ const ScheduleManagement = ({ doctors, onClose }: ScheduleManagementProps) => {
                   backgroundColor: schedule.is_active ? 'white' : '#f9f9f9',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}
+                >
                   <div>
                     <h3 style={{ marginBottom: '0.5rem' }}>{getDoctorName(schedule.doctor_id)}</h3>
                     <p style={{ color: '#666', textTransform: 'capitalize' }}>
                       <strong>Day:</strong> {schedule.day_of_week}
                     </p>
                     <p style={{ color: '#666' }}>
-                      <strong>Time:</strong> {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}
+                      <strong>Time:</strong> {formatTime(schedule.start_time)} -{' '}
+                      {formatTime(schedule.end_time)}
                     </p>
                     <p style={{ color: '#666' }}>
                       <strong>Slot Duration:</strong> {schedule.slot_duration} minutes
@@ -154,18 +168,22 @@ const ScheduleManagement = ({ doctors, onClose }: ScheduleManagementProps) => {
         )}
 
         {showCreateModal && (
-          <CreateScheduleModal doctors={doctors} onClose={() => setShowCreateModal(false)} onCreate={handleCreateSchedule} />
+          <CreateScheduleModal
+            doctors={doctors}
+            onClose={() => setShowCreateModal(false)}
+            onCreate={handleCreateSchedule}
+          />
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Create Schedule Modal
 interface CreateScheduleModalProps {
-  doctors: User[]
-  onClose: () => void
-  onCreate: () => void
+  doctors: User[];
+  onClose: () => void;
+  onCreate: () => void;
 }
 
 const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModalProps) => {
@@ -175,25 +193,25 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
     start_time: '09:00',
     end_time: '17:00',
     slot_duration: 30,
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      await scheduleAPI.createSchedule(formData)
-      alert('Schedule created successfully!')
-      onCreate()
+      await scheduleAPI.createSchedule(formData);
+      alert('Schedule created successfully!');
+      onCreate();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create schedule')
+      setError(err instanceof Error ? err.message : 'Failed to create schedule');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -229,7 +247,9 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
             <select
               id="day_of_week"
               value={formData.day_of_week}
-              onChange={(e) => setFormData({ ...formData, day_of_week: e.target.value as DayOfWeek })}
+              onChange={(e) =>
+                setFormData({ ...formData, day_of_week: e.target.value as DayOfWeek })
+              }
               required
               disabled={loading}
             >
@@ -274,7 +294,9 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
             <select
               id="slot_duration"
               value={formData.slot_duration}
-              onChange={(e) => setFormData({ ...formData, slot_duration: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setFormData({ ...formData, slot_duration: parseInt(e.target.value) })
+              }
               required
               disabled={loading}
             >
@@ -299,7 +321,7 @@ const CreateScheduleModal = ({ doctors, onClose, onCreate }: CreateScheduleModal
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ScheduleManagement
+export default ScheduleManagement;

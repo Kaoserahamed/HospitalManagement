@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from models.doctor_schedule import DoctorSchedule, DayOfWeek
+
+from models.doctor_schedule import DayOfWeek, DoctorSchedule
 
 
 class DoctorScheduleRepository:
@@ -16,28 +17,29 @@ class DoctorScheduleRepository:
         )
         return result.scalars().first()
 
-    async def get_by_doctor(self, doctor_id: str, active_only: bool = False) -> list[DoctorSchedule]:
+    async def get_by_doctor(
+        self, doctor_id: str, active_only: bool = False
+    ) -> list[DoctorSchedule]:
         query = select(DoctorSchedule).where(DoctorSchedule.doctor_id == doctor_id)
         if active_only:
-            query = query.where(DoctorSchedule.is_active == True)
+            query = query.where(DoctorSchedule.is_active.is_(True))
         query = query.order_by(DoctorSchedule.day_of_week, DoctorSchedule.start_time)
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
-    async def get_by_doctor_and_day(self, doctor_id: str, day_of_week: DayOfWeek) -> list[DoctorSchedule]:
+    async def get_by_doctor_and_day(
+        self, doctor_id: str, day_of_week: DayOfWeek
+    ) -> list[DoctorSchedule]:
         result = await self.session.execute(
-            select(DoctorSchedule)
-            .where(
+            select(DoctorSchedule).where(
                 DoctorSchedule.doctor_id == doctor_id,
                 DoctorSchedule.day_of_week == day_of_week,
-                DoctorSchedule.is_active == True
+                DoctorSchedule.is_active.is_(True),
             )
         )
         return list(result.scalars().all())
 
-    async def get_all(
-        self, limit: int | None = None, offset: int = 0
-    ) -> list[DoctorSchedule]:
+    async def get_all(self, limit: int | None = None, offset: int = 0) -> list[DoctorSchedule]:
         query = (
             select(DoctorSchedule)
             .options(selectinload(DoctorSchedule.doctor))

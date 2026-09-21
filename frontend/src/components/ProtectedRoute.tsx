@@ -1,25 +1,27 @@
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { UserRole } from '../types'
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { UserRole } from '../types';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  allowedRoles: UserRole[]
+  children: React.ReactNode;
+  allowedRoles: UserRole[];
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         <div>Loading...</div>
       </div>
-    )
+    );
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
   if (!allowedRoles.includes(user.role)) {
@@ -28,10 +30,10 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
         <h2>Access Denied</h2>
         <p>You don't have permission to access this page.</p>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;

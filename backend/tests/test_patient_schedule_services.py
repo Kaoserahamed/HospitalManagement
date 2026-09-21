@@ -54,7 +54,9 @@ class TestPatientService:
 
     async def test_get_patient_found(self):
         service = PatientService(FakePatientRepository([_patient()]))
-        patient = await service.get_patient("p-1", requester_id="r-1", requester_role="receptionist")
+        patient = await service.get_patient(
+            "p-1", requester_id="r-1", requester_role="receptionist"
+        )
         assert patient.id == "p-1"
 
     async def test_get_patient_missing(self):
@@ -104,7 +106,9 @@ class TestPatientReadScoping:
 
     async def test_receptionist_allowed(self):
         service = self._service(relationship=False)
-        patient = await service.get_patient("p-1", requester_id="r-1", requester_role="receptionist")
+        patient = await service.get_patient(
+            "p-1", requester_id="r-1", requester_role="receptionist"
+        )
         assert patient.id == "p-1"
 
     async def test_admin_allowed(self):

@@ -1,57 +1,62 @@
-import { useState, FormEvent } from 'react'
-import { X } from 'lucide-react'
-import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
-import './CreateUserModal.css'
+import { useState, FormEvent } from 'react';
+import { X } from 'lucide-react';
+import { departmentAPI, Department, DoctorWithDepartment } from '../api/department';
+import './CreateUserModal.css';
 
 interface AssignDoctorModalProps {
-  onClose: () => void
-  onAssignmentComplete: () => void
-  doctors: DoctorWithDepartment[]
-  departments: Department[]
+  onClose: () => void;
+  onAssignmentComplete: () => void;
+  doctors: DoctorWithDepartment[];
+  departments: Department[];
 }
 
-const AssignDoctorModal = ({ onClose, onAssignmentComplete, doctors, departments }: AssignDoctorModalProps) => {
+const AssignDoctorModal = ({
+  onClose,
+  onAssignmentComplete,
+  doctors,
+  departments,
+}: AssignDoctorModalProps) => {
   const [formData, setFormData] = useState({
     user_id: '',
     department_id: '',
     specialization: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [mode, setMode] = useState<'assign' | 'remove'>('assign')
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<'assign' | 'remove'>('assign');
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       if (mode === 'assign') {
         await departmentAPI.assignDoctor({
           user_id: formData.user_id,
           department_id: formData.department_id,
-          specialization: formData.specialization || undefined
-        })
+          specialization: formData.specialization || undefined,
+        });
       } else {
-        await departmentAPI.removeAssignment(formData.user_id)
+        await departmentAPI.removeAssignment(formData.user_id);
       }
-      onAssignmentComplete()
+      onAssignmentComplete();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Operation failed')
+      setError(err instanceof Error ? err.message : 'Operation failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
+    e.stopPropagation();
+  };
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -148,13 +153,17 @@ const AssignDoctorModal = ({ onClose, onAssignmentComplete, doctors, departments
               Cancel
             </button>
             <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? 'Processing...' : mode === 'assign' ? 'Assign Doctor' : 'Remove Assignment'}
+              {loading
+                ? 'Processing...'
+                : mode === 'assign'
+                  ? 'Assign Doctor'
+                  : 'Remove Assignment'}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AssignDoctorModal
+export default AssignDoctorModal;

@@ -1,14 +1,14 @@
+from datetime import date, datetime, time, timedelta
+
 from fastapi import HTTPException, status
-from datetime import date, time, datetime, timedelta
+
+from models.appointment import AppointmentStatus
+from models.doctor_schedule import DayOfWeek, DoctorSchedule
+from models.user import UserRole
+from repositories.appointment_repository import AppointmentRepository
 from repositories.doctor_schedule_repository import DoctorScheduleRepository
 from repositories.user_repository import UserRepository
-from repositories.appointment_repository import AppointmentRepository
-from schemas.schemas import (
-    DoctorScheduleCreate, DoctorScheduleUpdate, AvailableSlot
-)
-from models.doctor_schedule import DoctorSchedule, DayOfWeek
-from models.user import UserRole
-from models.appointment import AppointmentStatus
+from schemas.schemas import AvailableSlot, DoctorScheduleCreate, DoctorScheduleUpdate
 
 
 class DoctorScheduleService:
@@ -16,7 +16,7 @@ class DoctorScheduleService:
         self,
         schedule_repo: DoctorScheduleRepository,
         user_repo: UserRepository,
-        appointment_repo: AppointmentRepository
+        appointment_repo: AppointmentRepository,
     ):
         self.schedule_repo = schedule_repo
         self.user_repo = user_repo
@@ -27,10 +27,7 @@ class DoctorScheduleService:
         # Verify doctor exists
         doctor = await self.user_repo.get_by_id(data.doctor_id)
         if not doctor or doctor.role != UserRole.DOCTOR:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Doctor not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
 
         # Create schedule
         schedule = DoctorSchedule(
@@ -38,7 +35,7 @@ class DoctorScheduleService:
             day_of_week=data.day_of_week,
             start_time=data.start_time,
             end_time=data.end_time,
-            slot_duration=data.slot_duration
+            slot_duration=data.slot_duration,
         )
         return await self.schedule_repo.create(schedule)
 
@@ -46,10 +43,7 @@ class DoctorScheduleService:
         """Update a doctor schedule"""
         schedule = await self.schedule_repo.get_by_id(schedule_id)
         if not schedule:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Schedule not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Schedule not found")
 
         if data.day_of_week is not None:
             schedule.day_of_week = data.day_of_week
@@ -65,8 +59,7 @@ class DoctorScheduleService:
         # Validate times after update
         if schedule.end_time <= schedule.start_time:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="End time must be after start time"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="End time must be after start time"
             )
 
         return await self.schedule_repo.update(schedule)
@@ -102,7 +95,7 @@ class DoctorScheduleService:
         for apt in appointments:
             if apt.appointment_date == target_date and apt.status in [
                 AppointmentStatus.SCHEDULED,
-                AppointmentStatus.CONFIRMED
+                AppointmentStatus.CONFIRMED,
             ]:
                 booked_slots.add(apt.appointment_time)
 
@@ -110,22 +103,20 @@ class DoctorScheduleService:
         available_slots = []
         for schedule in schedules:
             slots = self._generate_time_slots(
-                schedule.start_time,
-                schedule.end_time,
-                schedule.slot_duration
+                schedule.start_time, schedule.end_time, schedule.slot_duration
             )
             for slot_time in slots:
                 available_slots.append(
                     AvailableSlot(
-                        date=target_date,
-                        time=slot_time,
-                        available=slot_time not in booked_slots
+                        date=target_date, time=slot_time, available=slot_time not in booked_slots
                     )
                 )
 
         return sorted(available_slots, key=lambda x: x.time)
 
-    def _generate_time_slots(self, start_time: time, end_time: time, duration_minutes: int) -> list[time]:
+    def _generate_time_slots(
+        self, start_time: time, end_time: time, duration_minutes: int
+    ) -> list[time]:
         """Generate time slots between start and end time"""
         slots = []
         current = datetime.combine(date.today(), start_time)

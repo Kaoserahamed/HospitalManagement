@@ -59,6 +59,34 @@ coverage/
 *.temp
 .cache/
 
+# Coverage / verification artifacts
+*.cov
+.coverage
+coverage.xml
+coverage.html
+htmlcov/
+ruff_verify.txt
+mypy_verify.txt
+format_verify.txt
+pytest_verify.txt
+eslint_verify.txt
+tsc_verify.txt
+prettier_verify.txt
+build_verify.txt
+test_verify.txt
+ruff_fix.txt
+ruff_clean.txt
+ruff_remaining.txt
+mypy_clean.txt
+mypy2.txt
+mypy_root.txt
+mypy_proper.txt
+mypy_backend.txt
+mypy_all.txt
+mypy_verify.txt
+fix_indent.py
+fix_mypy.py
+
 # Database
 *.sql.backup
 *.db

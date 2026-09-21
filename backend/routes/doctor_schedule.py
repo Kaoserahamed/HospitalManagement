@@ -1,15 +1,18 @@
-from fastapi import APIRouter, Depends, status, Query
 from datetime import date
+
+from fastapi import APIRouter, Depends, Query, status
 
 from controllers.doctor_schedule_controller import DoctorScheduleController
 from dependencies.auth import require_roles
 from dependencies.doctor_schedule import get_doctor_schedule_controller
 from dependencies.pagination import PaginationParams, get_pagination
-from schemas.schemas import (
-    DoctorScheduleCreate, DoctorScheduleUpdate, DoctorScheduleResponse,
-    AvailableSlot
-)
 from models.user import User, UserRole
+from schemas.schemas import (
+    AvailableSlot,
+    DoctorScheduleCreate,
+    DoctorScheduleResponse,
+    DoctorScheduleUpdate,
+)
 
 router = APIRouter(prefix="/schedules", tags=["Doctor Schedules"])
 
@@ -53,9 +56,7 @@ async def get_all_schedules(
     controller: DoctorScheduleController = Depends(get_doctor_schedule_controller),
 ):
     """Admin: Get all schedules (bounded, paginated)."""
-    return await controller.get_all_schedules(
-        limit=pagination.limit, offset=pagination.offset
-    )
+    return await controller.get_all_schedules(limit=pagination.limit, offset=pagination.offset)
 
 
 # Doctor endpoints

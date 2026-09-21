@@ -66,7 +66,9 @@ async def get_patient_my_prescriptions(
 @router.get("/patient/{patient_id}", response_model=list[PrescriptionResponse])
 async def get_patient_prescriptions(
     patient_id: str,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)),
+    current_user: User = Depends(
+        require_roles(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)
+    ),
     controller: PrescriptionController = Depends(get_prescription_controller),
 ):
     """Staff: Get prescriptions for a specific patient (doctor reads own only)"""

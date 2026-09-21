@@ -16,9 +16,7 @@ from datetime import UTC, datetime
 
 # Correlation ID for the current async task. "-" when logging outside a
 # request (startup, background jobs before instrumentation, tests).
-request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar(
-    "request_id", default="-"
-)
+request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar("request_id", default="-")
 
 #: Attribute name attached to every log record.
 REQUEST_ID_ATTRIBUTE = "request_id"
@@ -45,7 +43,9 @@ class JsonFormatter(logging.Formatter):
         }
         # Structured extras (path, method, status, duration, ...) if provided.
         standard = set(logging.LogRecord("", 0, "", 0, "", (), None).__dict__) | {
-            "asctime", "message", REQUEST_ID_ATTRIBUTE,
+            "asctime",
+            "message",
+            REQUEST_ID_ATTRIBUTE,
         }
         for key, value in record.__dict__.items():
             if key not in standard and not key.startswith("_"):

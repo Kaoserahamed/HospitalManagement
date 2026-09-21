@@ -1,10 +1,13 @@
+from datetime import date, datetime, time
+
 from pydantic import BaseModel, ConfigDict, field_validator
-from datetime import date, time, datetime
+
 from models.appointment import AppointmentStatus
 
 
 class AppointmentCreate(BaseModel):
     """Schema for creating a new appointment"""
+
     doctor_id: str
     department_id: str
     appointment_date: date
@@ -21,6 +24,7 @@ class AppointmentCreate(BaseModel):
 
 class AppointmentUpdate(BaseModel):
     """Schema for updating an appointment"""
+
     appointment_date: date | None = None
     appointment_time: time | None = None
     status: AppointmentStatus | None = None
@@ -37,12 +41,14 @@ class AppointmentUpdate(BaseModel):
 
 class AppointmentStatusUpdate(BaseModel):
     """Schema for updating appointment status"""
+
     status: AppointmentStatus
     notes: str | None = None
 
 
 class AppointmentResponse(BaseModel):
     """Schema for appointment response"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -60,6 +66,7 @@ class AppointmentResponse(BaseModel):
 
 class AppointmentWithDetails(BaseModel):
     """Schema for appointment with user and department details"""
+
     id: str
     patient_id: str
     patient_name: str

@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from models.patient import Patient
 
 
@@ -8,23 +9,17 @@ class PatientRepository:
         self.session = session
 
     async def get_by_id(self, patient_id: str) -> Patient | None:
-        result = await self.session.execute(
-            select(Patient).where(Patient.id == patient_id)
-        )
+        result = await self.session.execute(select(Patient).where(Patient.id == patient_id))
         return result.scalars().first()
 
     async def get_by_nid(self, nid: str) -> Patient | None:
         """Get patient by NID"""
-        result = await self.session.execute(
-            select(Patient).where(Patient.nid == nid)
-        )
+        result = await self.session.execute(select(Patient).where(Patient.nid == nid))
         return result.scalars().first()
 
     async def get_by_phone(self, phone: str) -> Patient | None:
         """Get patient by phone"""
-        result = await self.session.execute(
-            select(Patient).where(Patient.phone == phone)
-        )
+        result = await self.session.execute(select(Patient).where(Patient.phone == phone))
         return result.scalars().first()
 
     async def get_all(

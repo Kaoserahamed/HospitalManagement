@@ -335,7 +335,9 @@ class TestAppointmentReads:
 
     async def test_doctor_reads_own_appointment(self):
         service = await self._seed()
-        appointment = await service.get_appointment("a-1", requester_id="d-1", requester_role="doctor")
+        appointment = await service.get_appointment(
+            "a-1", requester_id="d-1", requester_role="doctor"
+        )
         assert appointment.id == "a-1"
 
     async def test_other_doctor_forbidden(self):
@@ -346,7 +348,9 @@ class TestAppointmentReads:
 
     async def test_admin_allowed(self):
         service = await self._seed()
-        appointment = await service.get_appointment("a-1", requester_id="admin-1", requester_role="admin")
+        appointment = await service.get_appointment(
+            "a-1", requester_id="admin-1", requester_role="admin"
+        )
         assert appointment.id == "a-1"
 
     async def test_receptionist_allowed(self):

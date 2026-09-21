@@ -1,99 +1,104 @@
-import { useState, useEffect, FormEvent } from 'react'
-import { X } from 'lucide-react'
-import { appointmentAPI } from '../api/appointment'
-import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
-import { scheduleAPI, AvailableSlot } from '../api/schedule'
-import './CreateUserModal.css'
+import { useState, useEffect, FormEvent } from 'react';
+import { X } from 'lucide-react';
+import { appointmentAPI } from '../api/appointment';
+import { departmentAPI, Department, DoctorWithDepartment } from '../api/department';
+import { scheduleAPI, AvailableSlot } from '../api/schedule';
+import './CreateUserModal.css';
 
 interface BookAppointmentModalProps {
-  onClose: () => void
-  onBooked: () => void
+  onClose: () => void;
+  onBooked: () => void;
 }
 
 const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) => {
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([])
-  const [filteredDoctors, setFilteredDoctors] = useState<DoctorWithDepartment[]>([])
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([])
-  const [loadingSlots, setLoadingSlots] = useState(false)
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<DoctorWithDepartment[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [formData, setFormData] = useState({
     department_id: '',
     doctor_id: '',
     appointment_date: '',
     appointment_time: '',
     reason: '',
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (formData.department_id) {
-      const filtered = doctors.filter((d) => d.department_id === formData.department_id && d.is_active)
-      setFilteredDoctors(filtered)
-      setFormData({ ...formData, doctor_id: '', appointment_time: '' })
-      setAvailableSlots([])
+      const filtered = doctors.filter(
+        (d) => d.department_id === formData.department_id && d.is_active
+      );
+      setFilteredDoctors(filtered);
+      setFormData({ ...formData, doctor_id: '', appointment_time: '' });
+      setAvailableSlots([]);
     } else {
-      setFilteredDoctors([])
+      setFilteredDoctors([]);
     }
     // Depend only on the department: doctors and formData are intentionally
     // excluded (formData is reset inside via the setter form of its fields).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.department_id])
+  }, [formData.department_id]);
 
   useEffect(() => {
     if (formData.doctor_id && formData.appointment_date) {
-      loadAvailableSlots()
+      loadAvailableSlots();
     } else {
-      setAvailableSlots([])
-      setFormData({ ...formData, appointment_time: '' })
+      setAvailableSlots([]);
+      setFormData({ ...formData, appointment_time: '' });
     }
     // Slots depend only on the doctor/date pair, not the whole form object;
     // loadAvailableSlots reads those same fields when invoked.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.doctor_id, formData.appointment_date])
+  }, [formData.doctor_id, formData.appointment_date]);
 
   const loadData = async () => {
     try {
       const [depts, docs] = await Promise.all([
         departmentAPI.getAllDepartments(true),
         departmentAPI.getAllDoctorsWithDepartments(),
-      ])
-      setDepartments(depts)
-      setDoctors(docs)
+      ]);
+      setDepartments(depts);
+      setDoctors(docs);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     }
-  }
+  };
 
   const loadAvailableSlots = async () => {
-    if (!formData.doctor_id || !formData.appointment_date) return
+    if (!formData.doctor_id || !formData.appointment_date) return;
 
-    setLoadingSlots(true)
+    setLoadingSlots(true);
     try {
-      const slots = await scheduleAPI.getAvailability(formData.doctor_id, formData.appointment_date)
-      setAvailableSlots(slots)
+      const slots = await scheduleAPI.getAvailability(
+        formData.doctor_id,
+        formData.appointment_date
+      );
+      setAvailableSlots(slots);
       if (slots.filter((s) => s.available).length === 0) {
-        setError('No available slots for this date. Please select another date.')
+        setError('No available slots for this date. Please select another date.');
       } else {
-        setError('')
+        setError('');
       }
     } catch (error) {
-      console.error('Failed to load available slots:', error)
-      setError(error instanceof Error ? error.message : 'Failed to load available time slots')
-      setAvailableSlots([])
+      console.error('Failed to load available slots:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load available time slots');
+      setAvailableSlots([]);
     } finally {
-      setLoadingSlots(false)
+      setLoadingSlots(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
       await appointmentAPI.bookAppointment({
@@ -102,26 +107,26 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
         appointment_date: formData.appointment_date,
         appointment_time: formData.appointment_time,
         reason: formData.reason || undefined,
-      })
-      onBooked()
+      });
+      onBooked();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to book appointment')
+      setError(err instanceof Error ? err.message : 'Failed to book appointment');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      onClose();
     }
-  }
+  };
 
   const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
+    e.stopPropagation();
+  };
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -183,7 +188,13 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
                 id="appointment_date"
                 type="date"
                 value={formData.appointment_date}
-                onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    appointment_date: e.target.value,
+                    appointment_time: '',
+                  })
+                }
                 min={today}
                 required
                 disabled={loading || !formData.doctor_id}
@@ -203,8 +214,8 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
                   {loadingSlots
                     ? 'Loading slots...'
                     : !formData.appointment_date
-                    ? '-- Select Date First --'
-                    : '-- Select Time --'}
+                      ? '-- Select Date First --'
+                      : '-- Select Time --'}
                 </option>
                 {availableSlots
                   .filter((slot) => slot.available)
@@ -267,7 +278,7 @@ const BookAppointmentModal = ({ onClose, onBooked }: BookAppointmentModalProps) 
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BookAppointmentModal
+export default BookAppointmentModal;

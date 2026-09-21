@@ -38,7 +38,9 @@ async def get_all_patients(
 @router.get("/{patient_id}", response_model=PatientResponse)
 async def get_patient(
     patient_id: str,
-    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)),
+    current_user: User = Depends(
+        require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)
+    ),
     controller: PatientController = Depends(get_patient_controller),
 ):
     """Get a specific patient (care-relationship scoped for doctors)"""

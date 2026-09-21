@@ -1,0 +1,16 @@
+version: "2"
+
+updates:
+  # Frontend — npm ecosystem, weekly checks
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  # Backend — pip ecosystem, weekly checks
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10

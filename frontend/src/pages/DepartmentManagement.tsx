@@ -1,93 +1,98 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { LogOut, Plus, Users as UsersIcon, Building2, Calendar } from 'lucide-react'
-import { departmentAPI, Department, DoctorWithDepartment } from '../api/department'
-import CreateDepartmentModal from '../components/CreateDepartmentModal'
-import AssignDoctorModal from '../components/AssignDoctorModal'
-import DataTable from '../components/DataTable'
-import '../pages/Dashboard.css'
-import './DepartmentManagement.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, Plus, Users as UsersIcon, Building2, Calendar } from 'lucide-react';
+import { departmentAPI, Department, DoctorWithDepartment } from '../api/department';
+import CreateDepartmentModal from '../components/CreateDepartmentModal';
+import AssignDoctorModal from '../components/AssignDoctorModal';
+import DataTable from '../components/DataTable';
+import '../pages/Dashboard.css';
+import './DepartmentManagement.css';
 
 const DepartmentManagement = () => {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showAssignModal, setShowAssignModal] = useState(false)
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [doctors, setDoctors] = useState<DoctorWithDepartment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
-  const currentPath = location.pathname
+  const currentPath = location.pathname;
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {
       const [depts, docs] = await Promise.all([
         departmentAPI.getAllDepartments(),
-        departmentAPI.getAllDoctorsWithDepartments()
-      ])
-      setDepartments(depts)
-      setDoctors(docs)
+        departmentAPI.getAllDoctorsWithDepartments(),
+      ]);
+      setDepartments(depts);
+      setDoctors(docs);
     } catch (error) {
-      console.error('Failed to load data:', error)
+      console.error('Failed to load data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDepartmentCreated = (newDept: Department) => {
-    setDepartments([...departments, newDept])
-    setShowCreateModal(false)
-  }
+    setDepartments([...departments, newDept]);
+    setShowCreateModal(false);
+  };
 
   const handleToggleActive = async (dept: Department) => {
     try {
       const updated = await departmentAPI.updateDepartment(dept.id, {
-        is_active: !dept.is_active
-      })
-      setDepartments(departments.map(d => d.id === dept.id ? updated : d))
+        is_active: !dept.is_active,
+      });
+      setDepartments(departments.map((d) => (d.id === dept.id ? updated : d)));
     } catch (error) {
-      console.error('Failed to toggle department status:', error)
+      console.error('Failed to toggle department status:', error);
     }
-  }
+  };
 
   const handleAssignmentComplete = () => {
-    setShowAssignModal(false)
-    loadData()
-  }
+    setShowAssignModal(false);
+    loadData();
+  };
 
   const getDoctorCount = (deptId: string) => {
-    return doctors.filter(d => d.department_id === deptId).length
-  }
+    return doctors.filter((d) => d.department_id === deptId).length;
+  };
 
   // Define columns for doctors table
   const doctorsColumns = [
     {
       key: 'name',
       header: 'Name',
-      render: (_: unknown, row: DoctorWithDepartment) => <strong>Dr. {row.first_name} {row.last_name}</strong>
+      render: (_: unknown, row: DoctorWithDepartment) => (
+        <strong>
+          Dr. {row.first_name} {row.last_name}
+        </strong>
+      ),
     },
     {
       key: 'email',
-      header: 'Email'
+      header: 'Email',
     },
     {
       key: 'phone',
-      header: 'Phone'
+      header: 'Phone',
     },
     {
       key: 'department_name',
       header: 'Department',
-      render: (value: string | null) => value || <span style={{ color: '#999' }}>Not assigned</span>
+      render: (value: string | null) =>
+        value || <span style={{ color: '#999' }}>Not assigned</span>,
     },
     {
       key: 'specialization',
-      header: 'Specialization'
+      header: 'Specialization',
     },
     {
       key: 'is_active',
@@ -96,16 +101,18 @@ const DepartmentManagement = () => {
         <span className={value ? 'status-active' : 'status-inactive'}>
           {value ? 'Active' : 'Inactive'}
         </span>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
+      >
         Loading...
       </div>
-    )
+    );
   }
 
   return (
@@ -127,13 +134,17 @@ const DepartmentManagement = () => {
 
       <div style={{ display: 'flex', height: 'calc(100vh - 65px)' }}>
         {/* Sidebar */}
-        <aside style={{
-          width: '250px',
-          backgroundColor: 'white',
-          borderRight: '1px solid #e0e0e0',
-          padding: '1.5rem 0',
-        }}>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}>
+        <aside
+          style={{
+            width: '250px',
+            backgroundColor: 'white',
+            borderRight: '1px solid #e0e0e0',
+            padding: '1.5rem 0',
+          }}
+        >
+          <nav
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem' }}
+          >
             <button
               onClick={() => navigate('/dashboard')}
               style={{
@@ -153,12 +164,12 @@ const DepartmentManagement = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/dashboard') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -184,12 +195,12 @@ const DepartmentManagement = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/departments') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -215,12 +226,12 @@ const DepartmentManagement = () => {
               }}
               onMouseEnter={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = '#f8f8f8'
+                  e.currentTarget.style.backgroundColor = '#f8f8f8';
                 }
               }}
               onMouseLeave={(e) => {
                 if (currentPath !== '/schedules') {
-                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -260,22 +271,19 @@ const DepartmentManagement = () => {
                 <div key={dept.id} className="user-card department-card">
                   <div className="user-card-header">
                     <h3>{dept.name}</h3>
-                    <span className={`role-badge ${dept.is_active ? 'status-active' : 'status-inactive'}`}>
+                    <span
+                      className={`role-badge ${dept.is_active ? 'status-active' : 'status-inactive'}`}
+                    >
                       {dept.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
                   <div className="user-card-body">
-                    {dept.description && (
-                      <p className="dept-description">{dept.description}</p>
-                    )}
+                    {dept.description && <p className="dept-description">{dept.description}</p>}
                     <p>
                       <strong>Assigned Doctors:</strong> {getDoctorCount(dept.id)}
                     </p>
                     <div className="dept-actions">
-                      <button
-                        onClick={() => handleToggleActive(dept)}
-                        className="dept-action-btn"
-                      >
+                      <button onClick={() => handleToggleActive(dept)} className="dept-action-btn">
                         {dept.is_active ? 'Deactivate' : 'Activate'}
                       </button>
                     </div>
@@ -310,11 +318,11 @@ const DepartmentManagement = () => {
           onClose={() => setShowAssignModal(false)}
           onAssignmentComplete={handleAssignmentComplete}
           doctors={doctors}
-          departments={departments.filter(d => d.is_active)}
+          departments={departments.filter((d) => d.is_active)}
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default DepartmentManagement
+export default DepartmentManagement;

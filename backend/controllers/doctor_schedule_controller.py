@@ -1,9 +1,12 @@
-from services.doctor_schedule_service import DoctorScheduleService
-from schemas.schemas import (
-    DoctorScheduleCreate, DoctorScheduleUpdate, DoctorScheduleResponse,
-    AvailableSlot
-)
 from datetime import date
+
+from schemas.schemas import (
+    AvailableSlot,
+    DoctorScheduleCreate,
+    DoctorScheduleResponse,
+    DoctorScheduleUpdate,
+)
+from services.doctor_schedule_service import DoctorScheduleService
 
 
 class DoctorScheduleController:
@@ -15,7 +18,9 @@ class DoctorScheduleController:
         schedule = await self.service.create_schedule(data)
         return DoctorScheduleResponse.model_validate(schedule)
 
-    async def update_schedule(self, schedule_id: str, data: DoctorScheduleUpdate) -> DoctorScheduleResponse:
+    async def update_schedule(
+        self, schedule_id: str, data: DoctorScheduleUpdate
+    ) -> DoctorScheduleResponse:
         """Update a doctor schedule"""
         schedule = await self.service.update_schedule(schedule_id, data)
         return DoctorScheduleResponse.model_validate(schedule)
@@ -35,7 +40,10 @@ class DoctorScheduleController:
     async def delete_schedule(self, schedule_id: str) -> dict:
         """Delete a schedule"""
         success = await self.service.delete_schedule(schedule_id)
-        return {"success": success, "message": "Schedule deleted" if success else "Schedule not found"}
+        return {
+            "success": success,
+            "message": "Schedule deleted" if success else "Schedule not found",
+        }
 
     async def get_available_slots(self, doctor_id: str, target_date: date) -> list[AvailableSlot]:
         """Get available appointment slots"""
