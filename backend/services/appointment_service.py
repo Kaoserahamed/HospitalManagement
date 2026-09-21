@@ -213,15 +213,37 @@ class AppointmentService:
         )
         return [self._appointment_to_details(apt) for apt in appointments]
 
-    async def get_appointment(self, appointment_id: str) -> Appointment:
-        """Get a specific appointment"""
+    async def get_appointment(
+        self,
+        appointment_id: str,
+        requester_id: str | None = None,
+        requester_role: str | None = None,
+    ) -> Appointment:
+        """Get a specific appointment (scoped to requester when provided)"""
         appointment = await self.appointment_repo.get_by_id(appointment_id)
         if not appointment:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Appointment not found"
             )
+        if requester_id is not None and not self._can_view_appointment(
+            appointment, requester_id, requester_role or ""
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to view this appointment",
+            )
         return appointment
+
+    @staticmethod
+    def _can_view_appointment(appointment: Appointment, requester_id: str, requester_role: str) -> bool:
+        if requester_role in ("admin", "receptionist"):
+            return True
+        if requester_role == "doctor":
+            return requester_id == appointment.doctor_id
+        # Patients have dedicated scoped endpoints (/my-appointments); the
+        # generic detail endpoint is staff-only, so any other role is denied.
+        return False
 
     def _appointment_to_details(self, appointment: Appointment) -> AppointmentWithDetails:
         """Convert Appointment to AppointmentWithDetails"""

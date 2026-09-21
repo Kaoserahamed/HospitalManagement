@@ -11,9 +11,9 @@ class PrescriptionController:
         prescription = await self.service.create_prescription(doctor_id, data)
         return PrescriptionResponse.model_validate(prescription)
 
-    async def get_prescription(self, prescription_id: str) -> PrescriptionResponse:
-        """Get a specific prescription"""
-        prescription = await self.service.get_prescription(prescription_id)
+    async def get_prescription(self, prescription_id: str, doctor_id: str) -> PrescriptionResponse:
+        """Doctor reads their own prescription (ownership enforced)"""
+        prescription = await self.service.get_prescription(prescription_id, requester_id=doctor_id)
         return PrescriptionResponse.model_validate(prescription)
 
     async def get_patient_prescriptions(self, patient_id: str) -> list[PrescriptionResponse]:

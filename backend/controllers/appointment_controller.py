@@ -43,6 +43,8 @@ class AppointmentController:
             status=status, limit=limit, offset=offset
         )
 
-    async def get_appointment(self, appointment_id: str) -> AppointmentResponse:
-        appointment = await self.appointment_service.get_appointment(appointment_id)
+    async def get_appointment(self, appointment_id: str, requester_id: str, requester_role: str) -> AppointmentResponse:
+        appointment = await self.appointment_service.get_appointment(
+            appointment_id, requester_id=requester_id, requester_role=requester_role
+        )
         return AppointmentResponse.model_validate(appointment)

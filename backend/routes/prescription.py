@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from controllers.prescription_controller import PrescriptionController
 from dependencies.prescription import get_prescription_controller
-from dependencies.auth import get_current_user, get_current_patient, require_roles
+from dependencies.auth import get_current_patient, require_roles
 from schemas.prescription import PrescriptionCreate, PrescriptionUpdate, PrescriptionResponse
 from models.user import User, UserRole
 from models.patient import Patient
@@ -75,8 +75,8 @@ async def get_patient_prescriptions(
 @router.get("/{prescription_id}", response_model=PrescriptionResponse)
 async def get_prescription(
     prescription_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles(UserRole.DOCTOR)),
     controller: PrescriptionController = Depends(get_prescription_controller),
 ):
-    """Get a specific prescription"""
-    return await controller.get_prescription(prescription_id)
+    """Doctor: Get one of my prescriptions (ownership-scoped)"""
+    return await controller.get_prescription(prescription_id, current_user.id)

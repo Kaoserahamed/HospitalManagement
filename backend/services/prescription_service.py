@@ -48,13 +48,20 @@ class PrescriptionService:
         )
         return await self.prescription_repo.create(prescription)
 
-    async def get_prescription(self, prescription_id: str) -> Prescription:
-        """Get a specific prescription"""
+    async def get_prescription(
+        self, prescription_id: str, requester_id: str | None = None
+    ) -> Prescription:
+        """Get a specific prescription (scoped to the owning doctor when known)"""
         prescription = await self.prescription_repo.get_by_id(prescription_id)
         if not prescription:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Prescription not found"
+            )
+        if requester_id is not None and prescription.doctor_id != requester_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to view this prescription",
             )
         return prescription
 

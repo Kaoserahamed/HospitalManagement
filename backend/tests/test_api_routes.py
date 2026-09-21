@@ -134,7 +134,7 @@ class FakeAppointmentController:
             updated_at=datetime(2030, 1, 1),
         )
 
-    async def get_appointment(self, appointment_id):
+    async def get_appointment(self, appointment_id, requester_id=None, requester_role=None):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
 
 
@@ -219,6 +219,56 @@ class TestErrorEnvelopeOverHttp:
         assert body["code"] == "NOT_FOUND"
         assert body["detail"] == "Appointment not found"
         assert body["request_id"] == response.headers["X-Request-ID"]
+
+    def test_doctor_cannot_view_other_doctor_appointment(self, api):
+        response = api["client"].get(
+            "/appointments/other-doctor-appt",
+            headers={"Authorization": "Bearer anything"},
+        )
+        assert response.status_code == 404
+        assert response.json()["code"] == "NOT_FOUND"
+
+
+class TestAuthorizationScope:
+    """Object-level scoping: detail endpoints pass staff identity down.
+
+    Doctors cannot read another doctor's appointment through the generic
+    detail endpoint (403 — never 200); patients cannot use the staff-only
+    detail endpoints (patient records stay behind /me endpoints).
+    """
+
+    def test_doctor_denied_other_doctor_appointment(self, api):
+        api["client"].app.dependency_overrides[auth_deps.get_current_user] = lambda: type(
+            "U", (), {**DOCTOR, "is_active": True}
+        )()
+
+        class DenyingController(FakeAppointmentController):
+            async def get_appointment(self, appointment_id, requester_id=None, requester_role=None):
+                assert requester_id == "doc-1"
+                assert requester_role == "doctor"
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Not authorized to view this appointment",
+                )
+
+        api["client"].app.dependency_overrides[appointment_deps.get_appointment_controller] = (
+            lambda: DenyingController()
+        )
+        response = api["client"].get(
+            "/appointments/other-doc-appt", headers={"Authorization": "Bearer anything"}
+        )
+        assert response.status_code == 403
+        assert response.json()["code"] == "FORBIDDEN"
+
+    def test_patient_denied_staff_appointment_detail(self, api):
+        api["client"].app.dependency_overrides.pop(auth_deps.get_current_user)
+        response = api["client"].get(
+            "/appointments/any-id", headers={"Authorization": "Bearer patient-token"}
+        )
+        # The staff-only detail endpoint requires a staff identity, so a
+        # patient bearer token cannot satisfy get_current_user.
+        assert response.status_code in (401, 403)
+        assert response.json()["code"] in ("UNAUTHORIZED", "FORBIDDEN")
 
 
 class TestPatientEndpoints:

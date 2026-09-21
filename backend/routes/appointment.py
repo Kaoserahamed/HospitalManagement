@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, Query
 
 from controllers.appointment_controller import AppointmentController
 from dependencies.appointment import get_appointment_controller
-from dependencies.auth import get_current_patient, get_current_user, require_roles
+from dependencies.auth import get_current_patient, require_roles
 from dependencies.pagination import PaginationParams, get_pagination
 from schemas.schemas import (
     AppointmentCreate, AppointmentUpdate, AppointmentStatusUpdate,
@@ -116,8 +116,14 @@ async def get_all_appointments(
 @router.get("/{appointment_id}", response_model=AppointmentResponse)
 async def get_appointment(
     appointment_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.RECEPTIONIST, UserRole.DOCTOR)),
     controller: AppointmentController = Depends(get_appointment_controller),
 ):
-    """Get a specific appointment"""
-    return await controller.get_appointment(appointment_id)
+    """Admin/Receptionist/Doctor: Get a specific appointment (ownership-scoped)"""
+    role = current_user.role
+    role_value = role.value if isinstance(role, UserRole) else role
+    return await controller.get_appointment(
+        appointment_id,
+        requester_id=current_user.id,
+        requester_role=role_value,
+    )
