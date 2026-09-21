@@ -176,7 +176,7 @@ class TestPasswordChange:
         monkeypatch.setattr("services.auth_service.verify_password", lambda p, h: True)
         with pytest.raises(HTTPException) as exc:
             await service.change_password(
-                user, PasswordChange(current_password="ok", new_password="12345")
+                user, PasswordChange.model_construct(current_password="ok", new_password="12345")
             )
         assert exc.value.status_code == 400
 

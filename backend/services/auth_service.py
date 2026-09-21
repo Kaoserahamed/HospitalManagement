@@ -1,11 +1,18 @@
 from fastapi import HTTPException, status
-from repositories.user_repository import UserRepository
-from repositories.patient_repository import PatientRepository
-from schemas.user import UserCreate, UserUpdate, PasswordChange, TokenResponse
-from schemas.patient import PatientCreate, PatientLogin, PatientResponse
-from models.user import User, UserRole
+
+from core.security import (
+    create_access_token,
+    hash_password,
+    validate_password_strength,
+    verify_password,
+)
 from models.patient import Patient
-from core.security import hash_password, verify_password, create_access_token
+from models.user import User
+from repositories.patient_repository import PatientRepository
+from repositories.user_repository import UserRepository
+from schemas.patient import PatientCreate
+from schemas.user import PasswordChange, TokenResponse, UserCreate, UserUpdate
+
 
 class AuthService:
     def __init__(self, user_repo: UserRepository, patient_repo: PatientRepository):
@@ -16,8 +23,10 @@ class AuthService:
         """Admin-only user creation for doctors, receptionists, and admins"""
         existing_user = await self.user_repo.get_by_email(data.email)
         if existing_user:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
-        
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
+            )
+
         user = User(
             email=data.email,
             password_hash=hash_password(data.password),
@@ -28,9 +37,7 @@ class AuthService:
         )
         return await self.user_repo.create(user)
 
-    async def get_all_users(
-        self, limit: int | None = None, offset: int = 0
-    ) -> list[User]:
+    async def get_all_users(self, limit: int | None = None, offset: int = 0) -> list[User]:
         """Get all staff users, optionally bounded."""
         return await self.user_repo.get_all(limit=limit, offset=offset)
 
@@ -52,7 +59,9 @@ class AuthService:
 
     async def delete_user(self, user_id: str, current_admin_id: str) -> None:
         if user_id == current_admin_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete your own account")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete your own account"
+            )
         user = await self.user_repo.get_by_id(user_id)
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -61,18 +70,25 @@ class AuthService:
 
     async def change_password(self, user: User, data: PasswordChange) -> None:
         if not verify_password(data.current_password, user.password_hash):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
-        if len(data.new_password) < 6:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Password must be at least 6 characters")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect"
+            )
+        error = validate_password_strength(data.new_password)
+        if error:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
         user.password_hash = hash_password(data.new_password)
         await self.user_repo.update(user)
 
     async def login(self, email: str, password: str) -> TokenResponse:
         user = await self.user_repo.get_by_email(email)
         if not user or not verify_password(password, user.password_hash):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+            )
         if not user.is_active:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive or suspended")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive or suspended"
+            )
 
         token = create_access_token({"sub": user.id, "role": user.role.value, "type": "staff"})
         return TokenResponse(access_token=token)
@@ -82,13 +98,17 @@ class AuthService:
         # Check if NID already exists
         existing_nid = await self.patient_repo.get_by_nid(data.nid)
         if existing_nid:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="NID already registered")
-        
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="NID already registered"
+            )
+
         # Check if phone already exists
         existing_phone = await self.patient_repo.get_by_phone(data.phone)
         if existing_phone:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone number already registered")
-        
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Phone number already registered"
+            )
+
         patient = Patient(
             nid=data.nid,
             phone=data.phone,
@@ -109,7 +129,9 @@ class AuthService:
         """Patient login with NID and phone"""
         patient = await self.patient_repo.get_by_nid(nid)
         if not patient or patient.phone != phone:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+            )
         if not patient.is_active:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive")
 

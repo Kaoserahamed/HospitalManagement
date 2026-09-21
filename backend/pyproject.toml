@@ -41,6 +41,11 @@ packages = ["core", "controllers", "dependencies", "models", "repositories", "ro
 # ---------------------------------------------------------------------------
 # Ruff — formatter + linter (line length aligned with .editorconfig)
 # ---------------------------------------------------------------------------
+# NOTE: full-repo lint (isort/format on all legacy modules) is intentionally
+# deferred. New or touched modules must be lint-clean; legacy import order /
+# whitespace debt is tracked in docs/engineering-audit.md and will be
+# addressed incrementally. CI therefore lints only the modules this
+# modernization effort owns (core/ + touched files), not the whole tree.
 [tool.ruff]
 line-length = 100
 target-version = "py311"
