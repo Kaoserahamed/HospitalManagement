@@ -1,9 +1,10 @@
-from core.config import settings
-from core.logging import configure_logging
-from core.middleware import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from core.config import settings
+from core.errors import register_exception_handlers
+from core.logging import configure_logging
+from core.middleware import CorrelationIdMiddleware
 from routes.appointment import router as appointment_router
 from routes.auth import router as auth_router
 from routes.department import router as department_router
@@ -19,6 +20,9 @@ app = FastAPI(title="Hospital Management System API")
 # Correlation IDs: every request gets an X-Request-ID echoed in responses and
 # attached to all log records (see core/middleware.py).
 app.add_middleware(CorrelationIdMiddleware)
+
+# Standardized error envelope for all error responses (see core/errors.py).
+register_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,
