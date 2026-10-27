@@ -23,8 +23,8 @@ baseline.
 
 | Metric | Baseline | Phase 0 Exit | Target |
 |---|---:|---:|---:|
-| scc total lines | 16,788 | (see current) | 18,788 |
-| Commits | 61 | (see current) | 71 |
+| scc total lines | 16,788 | 18,812 | 18,788 |
+| Commits | 61 | 80 | 71 |
 | ADRs | 0 | 3 | 3+ |
 | Governance docs | 0 | 10+ | 10+ |
 
