@@ -72,16 +72,16 @@ autoscaling:
 mysql:
   enabled: true
   auth:
-    rootPassword: "changeme"
+    rootPassword: "REPLACE_WITH_EXTERNAL_SECRET"
     database: hospital_db
     username: hospital
-    password: "changeme"
+    password: "REPLACE_WITH_EXTERNAL_SECRET"
 
 redis:
   enabled: true
   auth:
     enabled: true
-    password: "changeme"
+    password: "REPLACE_WITH_EXTERNAL_SECRET"
 
 config:
   environment: prod
@@ -89,5 +89,5 @@ config:
   corsOrigins: "https://hospital.example.com"
 
 secrets:
-  secretKey: "change-me"
-  databaseUrl: "mysql+asyncmy://hospital:changeme@mysql/hospital_db"
+  secretKey: "REPLACE_WITH_EXTERNAL_SECRET"
+  databaseUrl: "REPLACE_WITH_EXTERNAL_SECRET"

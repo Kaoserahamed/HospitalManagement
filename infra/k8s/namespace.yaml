@@ -24,9 +24,9 @@ metadata:
   namespace: hospital
 type: Opaque
 stringData:
-  database-url: "mysql+asyncmy://hospital:password@rds-endpoint/hospital_db"
-  secret-key: "change-me-in-production"
-  redis-url: "redis://:token@redis-endpoint:6379"
+  database-url: "REPLACE_WITH_EXTERNAL_SECRET"
+  secret-key: "REPLACE_WITH_EXTERNAL_SECRET"
+  redis-url: "REPLACE_WITH_EXTERNAL_SECRET"
 ---
 apiVersion: v1
 kind: ServiceAccount
