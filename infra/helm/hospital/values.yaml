@@ -1,0 +1,93 @@
+# Default values for hospitalmanagement
+
+replicaCount:
+  backend: 3
+  frontend: 2
+
+image:
+  backend:
+    repository: hospitalmanagement/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: hospitalmanagement/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+service:
+  backend:
+    type: ClusterIP
+    port: 8000
+  frontend:
+    type: ClusterIP
+    port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: hospital.example.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: backend
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls:
+    - secretName: hospital-tls
+      hosts:
+        - hospital.example.com
+
+resources:
+  backend:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  frontend:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+autoscaling:
+  backend:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  frontend:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 75
+
+mysql:
+  enabled: true
+  auth:
+    rootPassword: "changeme"
+    database: hospital_db
+    username: hospital
+    password: "changeme"
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "changeme"
+
+config:
+  environment: prod
+  logLevel: INFO
+  corsOrigins: "https://hospital.example.com"
+
+secrets:
+  secretKey: "change-me"
+  databaseUrl: "mysql+asyncmy://hospital:changeme@mysql/hospital_db"

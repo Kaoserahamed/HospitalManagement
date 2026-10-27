@@ -1,0 +1,23 @@
+apiVersion: v2
+name: hospitalmanagement
+description: Helm chart for HospitalManagement platform
+type: application
+version: 1.0.0
+appVersion: "2.0.0"
+keywords:
+  - hospital
+  - healthcare
+  - fastapi
+  - react
+maintainers:
+  - name: HospitalManagement Team
+    email: dev@hospitalmanagement.example.com
+dependencies:
+  - name: mysql
+    version: "9.0.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mysql.enabled
+  - name: redis
+    version: "17.0.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
