@@ -12,6 +12,7 @@ Usage:
 """
 
 import asyncio
+import os
 
 from core.database import AsyncSessionLocal
 from core.security import hash_password
@@ -36,7 +37,7 @@ async def seed_admin():
         # Create admin user
         admin_user = User(
             email=admin_email,
-            password_hash=hash_password("Admin@123"),  # Change this in production!
+            password_hash=hash_password(os.getenv("ADMIN_PASSWORD", "")),
             role=UserRole.ADMIN,
             first_name="System",
             last_name="Administrator",
@@ -47,7 +48,6 @@ async def seed_admin():
         await repo.create(admin_user)
         print("✓ Admin user created successfully!")
         print(f"  Email: {admin_email}")
-        print("  Password: Admin@123")
         print("  Role: admin")
         print("  ⚠️  IMPORTANT: Change the password after first login!")
 
