@@ -1,0 +1,1 @@
+"""TimekeepingEntry module."""
