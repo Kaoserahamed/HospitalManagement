@@ -105,7 +105,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["core", "services", "repositories", "controllers", "routes", "schemas", "dependencies"]
+source = ["core", "services", "repositories", "controllers", "routes", "schemas", "dependencies", "backend/modules"]
 omit = ["alembic/*", "*/__init__.py"]
 
 [tool.coverage.report]
