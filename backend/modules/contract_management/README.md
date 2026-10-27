@@ -1,0 +1,3 @@
+# Contract
+
+Module for contracts.

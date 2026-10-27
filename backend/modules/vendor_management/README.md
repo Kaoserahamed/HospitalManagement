@@ -1,0 +1,3 @@
+# Vendor
+
+Module for vendors.

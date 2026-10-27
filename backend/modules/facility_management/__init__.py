@@ -1,0 +1,1 @@
+"""FacilityAsset module."""
