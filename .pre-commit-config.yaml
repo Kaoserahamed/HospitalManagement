@@ -1,0 +1,47 @@
+# Pre-commit hooks for HospitalManagement (Phase 0 governance)
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.1
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        files: ^backend/core/
+        additional_dependencies: [pydantic, fastapi, sqlalchemy]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        files: ^frontend/
+        types_or: [javascript, typescript, css, json, markdown]
+
+  - repo: local
+    hooks:
+      - id: no-secrets
+        name: Block secrets and PHI markers
+        entry: python scripts/check_secrets.py
+        language: system
+        pass_filenames: true
+        files: \.(py|ts|tsx|js|json|yml|yaml|md|sql|env)$
