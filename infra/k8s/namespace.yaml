@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hospital
+  labels:
+    name: hospital
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hospital-config
+  namespace: hospital
+data:
+  ENVIRONMENT: "prod"
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "60"
+  LOG_LEVEL: "INFO"
+  CORS_ORIGINS: "https://hospital.example.com"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hospital-secrets
+  namespace: hospital
+type: Opaque
+stringData:
+  database-url: "mysql+asyncmy://hospital:password@rds-endpoint/hospital_db"
+  secret-key: "change-me-in-production"
+  redis-url: "redis://:token@redis-endpoint:6379"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hospital-backend
+  namespace: hospital
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/hospital-backend
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: hospital-backend-role
+  namespace: hospital
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: hospital-backend-binding
+  namespace: hospital
+subjects:
+  - kind: ServiceAccount
+    name: hospital-backend
+    namespace: hospital
+roleRef:
+  kind: Role
+  name: hospital-backend-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hospital-network-policy
+  namespace: hospital
+spec:
+  podSelector:
+    matchLabels:
+      app: hospital-backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: hospital-frontend
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: hospital-frontend
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3306
+        - protocol: TCP
+          port: 6379
