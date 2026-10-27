@@ -1,29 +1,33 @@
-# CODEOWNERS — default owners for every path not matched below
-*                                   @Kaoserahamed
+# CODEOWNERS — HospitalManagement
+# Syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Backend application code
-/backend/                           @Kaoserahamed
+# Default owners for everything
+*                               @kaoser @Kaoserahamed
 
-# Frontend application code
-/frontend/                          @Kaoserahamed
+# Backend
+/backend/                       @kaoser @Kaoserahamed
+/backend/core/                  @kaoser @Kaoserahamed
+/backend/services/              @kaoser @Kaoserahamed
+/backend/repositories/          @kaoser @Kaoserahamed
+/backend/models/                @kaoser @Kaoserahamed
+/backend/schemas/               @kaoser @Kaoserahamed
 
-# Database schema and migrations
-/database/                          @Kaoserahamed
-/backend/alembic/                   @Kaoserahamed
+# Frontend
+/frontend/                      @kaoser @Kaoserahamed
+/frontend/src/                  @kaoser @Kaoserahamed
 
-# Security-sensitive areas require the owner's review
-/backend/core/security.py           @Kaoserahamed
-/backend/dependencies/auth.py       @Kaoserahamed
-/backend/core/config.py             @Kaoserahamed
-/docs/threat-model.md               @Kaoserahamed
-/docs/security.md                   @Kaoserahamed
-/SECURITY.md                        @Kaoserahamed
+# Infrastructure and CI
+/.github/                       @kaoser @Kaoserahamed
+/docker-compose.yml             @kaoser @Kaoserahamed
+/backend/Dockerfile             @kaoser @Kaoserahamed
+/frontend/Dockerfile            @kaoser @Kaoserahamed
 
-# CI/CD pipelines
-/.github/                           @Kaoserahamed
+# Database
+/database/                      @kaoser @Kaoserahamed
 
-# Infrastructure and deployment
-/k8s/                               @Kaoserahamed
-/infra/terraform/                   @Kaoserahamed
-/Dockerfile*                        @Kaoserahamed
-/docker-compose*.yml                @Kaoserahamed
+# Documentation and governance
+/docs/                          @kaoser @Kaoserahamed
+/STRATEGIC_ENGINEERING_ROADMAP.md  @kaoser @Kaoserahamed
+/CONTRIBUTING.md                @kaoser @Kaoserahamed
+/SECURITY.md                    @kaoser @Kaoserahamed
+/CODEOWNERS                     @kaoser @Kaoserahamed
