@@ -17,7 +17,7 @@ def get_service() -> MonitoringService:
 
 
 @router.post("/devices", status_code=201)
-def register_device(payload: DeviceCreate, service: MonitoringService = Depends(get_service)) -> Any:
+def register_device(payload: DeviceCreate, service: MonitoringService = Depends(get_service)) -> None:
     try:
         return service.register_device(payload)
     except Exception as exc:  # noqa: BLE001
@@ -25,12 +25,12 @@ def register_device(payload: DeviceCreate, service: MonitoringService = Depends(
 
 
 @router.get("/devices")
-def list_devices(patient_id: int | None = None, service: MonitoringService = Depends(get_service)) -> Any:
+def list_devices(patient_id: int | None = None, service: MonitoringService = Depends(get_service)) -> None:
     return service.list_devices(patient_id=patient_id)
 
 
 @router.delete("/devices/{device_id}")
-def deactivate_device(device_id: int, service: MonitoringService = Depends(get_service)) -> Any:
+def deactivate_device(device_id: int, service: MonitoringService = Depends(get_service)) -> None:
     try:
         return service.deactivate_device(device_id)
     except Exception as exc:  # noqa: BLE001
@@ -38,7 +38,7 @@ def deactivate_device(device_id: int, service: MonitoringService = Depends(get_s
 
 
 @router.post("/readings", status_code=201)
-def record_reading(payload: ReadingCreate, service: MonitoringService = Depends(get_service)) -> Any:
+def record_reading(payload: ReadingCreate, service: MonitoringService = Depends(get_service)) -> None:
     try:
         return service.record_reading(payload)
     except Exception as exc:  # noqa: BLE001
@@ -46,12 +46,12 @@ def record_reading(payload: ReadingCreate, service: MonitoringService = Depends(
 
 
 @router.get("/readings")
-def list_readings(patient_id: int | None = None, vital_type: str | None = None, limit: int = Query(100, ge=1, le=500), service: MonitoringService = Depends(get_service)) -> Any:
+def list_readings(patient_id: int | None = None, vital_type: str | None = None, limit: int = Query(100, ge=1, le=500), service: MonitoringService = Depends(get_service)) -> None:
     return service.list_readings(patient_id=patient_id, vital_type=vital_type, limit=limit)
 
 
 @router.post("/thresholds", status_code=201)
-def create_threshold(payload: ThresholdCreate, service: MonitoringService = Depends(get_service)) -> Any:
+def create_threshold(payload: ThresholdCreate, service: MonitoringService = Depends(get_service)) -> None:
     try:
         return service.create_threshold(payload)
     except Exception as exc:  # noqa: BLE001
@@ -59,17 +59,17 @@ def create_threshold(payload: ThresholdCreate, service: MonitoringService = Depe
 
 
 @router.get("/thresholds")
-def list_thresholds(service: MonitoringService = Depends(get_service)) -> Any:
+def list_thresholds(service: MonitoringService = Depends(get_service)) -> None:
     return service.list_thresholds()
 
 
 @router.get("/alerts")
-def list_alerts(patient_id: int | None = None, acknowledged: bool | None = None, service: MonitoringService = Depends(get_service)) -> Any:
+def list_alerts(patient_id: int | None = None, acknowledged: bool | None = None, service: MonitoringService = Depends(get_service)) -> None:
     return service.list_alerts(patient_id=patient_id, acknowledged=acknowledged)
 
 
 @router.post("/alerts/{alert_id}/acknowledge")
-def acknowledge_alert(alert_id: int, service: MonitoringService = Depends(get_service)) -> Any:
+def acknowledge_alert(alert_id: int, service: MonitoringService = Depends(get_service)) -> None:
     try:
         return service.acknowledge_alert(alert_id)
     except Exception as exc: # noqa: BLE001
@@ -77,15 +77,15 @@ def acknowledge_alert(alert_id: int, service: MonitoringService = Depends(get_se
 
 
 @router.get("/alerts/unacknowledged-count")
-def unacknowledged_count(patient_id: int | None = None, service: MonitoringService = Depends(get_service)) -> Any:
+def unacknowledged_count(patient_id: int | None = None, service: MonitoringService = Depends(get_service)) -> None:
     return {"count": service.unacknowledged_count(patient_id=patient_id)}
 
 
 @router.get("/patients/{patient_id}/latest/{vital_type}")
-def latest_reading(patient_id: int, vital_type: str, service: MonitoringService = Depends(get_service)) -> Any:
+def latest_reading(patient_id: int, vital_type: str, service: MonitoringService = Depends(get_service)) -> None:
     return service.latest_reading(patient_id, vital_type)
 
 
 @router.get("/patients/{patient_id}/trend/{vital_type}")
-def trend(patient_id: int, vital_type: str, limit: int = Query(10, ge=1, le=100), service: MonitoringService = Depends(get_service)) -> Any:
+def trend(patient_id: int, vital_type: str, limit: int = Query(10, ge=1, le=100), service: MonitoringService = Depends(get_service)) -> None:
     return service.trend(patient_id, vital_type, limit=limit)

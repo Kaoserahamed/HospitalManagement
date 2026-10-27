@@ -26,7 +26,7 @@ def get_service() -> PharmacyService:
 
 
 @router.post("/medications", status_code=201)
-def create_medication(payload: MedicationCreate, service: PharmacyService = Depends(get_service)) -> Any:
+def create_medication(payload: MedicationCreate, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.create_medication(payload)
     except Exception as exc:  # noqa: BLE001
@@ -45,7 +45,7 @@ def list_medications(
 
 
 @router.get("/medications/{medication_id}")
-def get_medication(medication_id: int, service: PharmacyService = Depends(get_service)) -> Any:
+def get_medication(medication_id: int, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.get_medication(medication_id)
     except Exception as exc:  # noqa: BLE001
@@ -53,7 +53,7 @@ def get_medication(medication_id: int, service: PharmacyService = Depends(get_se
 
 
 @router.post("/stock", status_code=201)
-def create_stock(payload: StockCreate, service: PharmacyService = Depends(get_service)) -> Any:
+def create_stock(payload: StockCreate, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.create_stock(payload)
     except Exception as exc:  # noqa: BLE001
@@ -61,7 +61,7 @@ def create_stock(payload: StockCreate, service: PharmacyService = Depends(get_se
 
 
 @router.put("/stock/{stock_id}")
-def update_stock(stock_id: int, quantity: int, service: PharmacyService = Depends(get_service)) -> Any:
+def update_stock(stock_id: int, quantity: int, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.update_stock(stock_id, quantity)
     except Exception as exc:  # noqa: BLE001
@@ -69,12 +69,12 @@ def update_stock(stock_id: int, quantity: int, service: PharmacyService = Depend
 
 
 @router.get("/stock/low")
-def low_stock(service: PharmacyService = Depends(get_service)) -> Any:
+def low_stock(service: PharmacyService = Depends(get_service)) -> None:
     return service.low_stock_alerts()
 
 
 @router.post("/lots", status_code=201)
-def create_lot(payload: LotCreate, service: PharmacyService = Depends(get_service)) -> Any:
+def create_lot(payload: LotCreate, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.create_lot(payload)
     except Exception as exc:  # noqa: BLE001
@@ -82,12 +82,12 @@ def create_lot(payload: LotCreate, service: PharmacyService = Depends(get_servic
 
 
 @router.get("/lots")
-def list_lots(medication_id: int | None = None, expiring_within_days: int | None = None, service: PharmacyService = Depends(get_service)) -> Any:
+def list_lots(medication_id: int | None = None, expiring_within_days: int | None = None, service: PharmacyService = Depends(get_service)) -> None:
     return service.list_lots(medication_id=medication_id, expiring_within_days=expiring_within_days)
 
 
 @router.post("/suppliers", status_code=201)
-def create_supplier(payload: SupplierCreate, service: PharmacyService = Depends(get_service)) -> Any:
+def create_supplier(payload: SupplierCreate, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.create_supplier(payload)
     except Exception as exc:  # noqa: BLE001
@@ -95,12 +95,12 @@ def create_supplier(payload: SupplierCreate, service: PharmacyService = Depends(
 
 
 @router.get("/suppliers")
-def list_suppliers(service: PharmacyService = Depends(get_service)) -> Any:
+def list_suppliers(service: PharmacyService = Depends(get_service)) -> None:
     return service.list_suppliers()
 
 
 @router.post("/dispense", status_code=201)
-def dispense(payload: DispenseCreate, service: PharmacyService = Depends(get_service)) -> Any:
+def dispense(payload: DispenseCreate, service: PharmacyService = Depends(get_service)) -> None:
     try:
         return service.dispense(payload)
     except Exception as exc:  # noqa: BLE001
@@ -108,10 +108,10 @@ def dispense(payload: DispenseCreate, service: PharmacyService = Depends(get_ser
 
 
 @router.get("/dispenses")
-def list_dispenses(prescription_id: int | None = None, service: PharmacyService = Depends(get_service)) -> Any:
+def list_dispenses(prescription_id: int | None = None, service: PharmacyService = Depends(get_service)) -> None:
     return service.list_dispenses(prescription_id=prescription_id)
 
 
 @router.post("/interactions/check")
-def check_interaction(payload: InteractionCheck, service: PharmacyService = Depends(get_service)) -> Any:
+def check_interaction(payload: InteractionCheck, service: PharmacyService = Depends(get_service)) -> None:
     return service.check_interaction(payload)

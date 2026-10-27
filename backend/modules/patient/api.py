@@ -32,12 +32,12 @@ def list_patients(
 
 
 @router.post("/", status_code=201)
-def create_patient(payload: PatientCreate, service: PatientService = Depends(get_service)) -> Any:
+def create_patient(payload: PatientCreate, service: PatientService = Depends(get_service)) -> None:
     return service.create(payload)
 
 
 @router.get("/{patient_id}")
-def get_patient(patient_id: int, service: PatientService = Depends(get_service)) -> Any:
+def get_patient(patient_id: int, service: PatientService = Depends(get_service)) -> None:
     try:
         return service.get(patient_id)
     except Exception as exc:  # noqa: BLE001
@@ -45,14 +45,14 @@ def get_patient(patient_id: int, service: PatientService = Depends(get_service))
 
 
 @router.put("/{patient_id}")
-def update_patient(patient_id: int, payload: PatientUpdate, service: PatientService = Depends(get_service)) -> Any:
+def update_patient(patient_id: int, payload: PatientUpdate, service: PatientService = Depends(get_service)) -> None:
     try:
         return service.update(patient_id, payload)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.delete("/{patient_id}", status_code=204)
+@router.delete("/{patient_id}", status_code=200)
 def delete_patient(patient_id: int, service: PatientService = Depends(get_service)) -> None:
     try:
         service.delete(patient_id)
@@ -61,15 +61,15 @@ def delete_patient(patient_id: int, service: PatientService = Depends(get_servic
 
 
 @router.get("/{patient_id}/search")
-def search_patients(q: str, service: PatientService = Depends(get_service)) -> Any:
+def search_patients(q: str, service: PatientService = Depends(get_service)) -> None:
     return service.search(q)
 
 
 @router.post("/{patient_id}/deactivate")
-def deactivate_patient(patient_id: int, service: PatientService = Depends(get_service)) -> Any:
+def deactivate_patient(patient_id: int, service: PatientService = Depends(get_service)) -> None:
     return service.deactivate(patient_id)
 
 
 @router.post("/{patient_id}/reactivate")
-def reactivate_patient(patient_id: int, service: PatientService = Depends(get_service)) -> Any:
+def reactivate_patient(patient_id: int, service: PatientService = Depends(get_service)) -> None:
     return service.reactivate(patient_id)

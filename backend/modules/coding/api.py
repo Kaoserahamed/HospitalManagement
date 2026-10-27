@@ -17,7 +17,7 @@ def get_service() -> CodingService:
 
 
 @router.post("/codes", status_code=201)
-def add_code(payload: MedicalCodeCreate, service: CodingService = Depends(get_service)) -> Any:
+def add_code(payload: MedicalCodeCreate, service: CodingService = Depends(get_service)) -> None:
     try:
         return service.add_code(payload)
     except Exception as exc:  # noqa: BLE001
@@ -25,7 +25,7 @@ def add_code(payload: MedicalCodeCreate, service: CodingService = Depends(get_se
 
 
 @router.get("/codes/lookup")
-def lookup(system: str, code: str, service: CodingService = Depends(get_service)) -> Any:
+def lookup(system: str, code: str, service: CodingService = Depends(get_service)) -> None:
     try:
         return service.lookup(system, code)
     except Exception as exc:  # noqa: BLE001
@@ -33,27 +33,27 @@ def lookup(system: str, code: str, service: CodingService = Depends(get_service)
 
 
 @router.get("/codes/validate")
-def validate_code(system: str, code: str, service: CodingService = Depends(get_service)) -> Any:
+def validate_code(system: str, code: str, service: CodingService = Depends(get_service)) -> None:
     return service.validate_code(system, code)
 
 
 @router.post("/codes/search")
-def search_codes(payload: CodeSearchRequest, service: CodingService = Depends(get_service)) -> Any:
+def search_codes(payload: CodeSearchRequest, service: CodingService = Depends(get_service)) -> None:
     return service.search(payload)
 
 
 @router.get("/codes/common/icd10")
-def common_icd10(service: CodingService = Depends(get_service)) -> Any:
+def common_icd10(service: CodingService = Depends(get_service)) -> None:
     return service.common_icd10()
 
 
 @router.get("/codes/common/cpt")
-def common_cpt(service: CodingService = Depends(get_service)) -> Any:
+def common_cpt(service: CodingService = Depends(get_service)) -> None:
     return service.common_cpt()
 
 
 @router.post("/mappings", status_code=201)
-def add_mapping(payload: CodeMappingCreate, service: CodingService = Depends(get_service)) -> Any:
+def add_mapping(payload: CodeMappingCreate, service: CodingService = Depends(get_service)) -> None:
     try:
         return service.add_mapping(payload)
     except Exception as exc:  # noqa: BLE001
@@ -61,12 +61,12 @@ def add_mapping(payload: CodeMappingCreate, service: CodingService = Depends(get
 
 
 @router.get("/mappings")
-def map_code(source_system: str, source_code: str, target_system: str | None = None, service: CodingService = Depends(get_service)) -> Any:
+def map_code(source_system: str, source_code: str, target_system: str | None = None, service: CodingService = Depends(get_service)) -> None:
     return service.map_code(source_system, source_code, target_system=target_system)
 
 
 @router.post("/encounter-codes", status_code=201)
-def add_encounter_code(payload: EncounterCodeCreate, service: CodingService = Depends(get_service)) -> Any:
+def add_encounter_code(payload: EncounterCodeCreate, service: CodingService = Depends(get_service)) -> None:
     try:
         return service.add_encounter_code(payload)
     except Exception as exc:  # noqa: BLE001
@@ -74,11 +74,11 @@ def add_encounter_code(payload: EncounterCodeCreate, service: CodingService = De
 
 
 @router.get("/encounter-codes/{encounter_id}")
-def list_encounter_codes(encounter_id: int, service: CodingService = Depends(get_service)) -> Any:
+def list_encounter_codes(encounter_id: int, service: CodingService = Depends(get_service)) -> None:
     return service.list_encounter_codes(encounter_id)
 
 
-@router.delete("/encounter-codes/{code_id}", status_code=204)
+@router.delete("/encounter-codes/{code_id}", status_code=200)
 def remove_encounter_code(code_id: int, service: CodingService = Depends(get_service)) -> None:
     try:
         service.remove_encounter_code(code_id)

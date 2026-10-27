@@ -19,7 +19,7 @@ def get_service() -> VideoService:
 
 
 @router.post("/sessions", status_code=201)
-def create_session(payload: VideoSessionCreate, service: VideoService = Depends(get_service)) -> Any:
+def create_session(payload: VideoSessionCreate, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.create_session(payload)
     except Exception as exc:  # noqa: BLE001
@@ -38,7 +38,7 @@ def list_sessions(
 
 
 @router.get("/sessions/room/{room_id}")
-def get_session_by_room(room_id: str, service: VideoService = Depends(get_service)) -> Any:
+def get_session_by_room(room_id: str, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.get_session_by_room(room_id)
     except Exception as exc:  # noqa: BLE001
@@ -46,7 +46,7 @@ def get_session_by_room(room_id: str, service: VideoService = Depends(get_servic
 
 
 @router.get("/sessions/{session_id}")
-def get_session(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def get_session(session_id: int, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.get_session(session_id)
     except Exception as exc:  # noqa: BLE001
@@ -54,7 +54,7 @@ def get_session(session_id: int, service: VideoService = Depends(get_service)) -
 
 
 @router.post("/sessions/{session_id}/connect")
-def connect(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def connect(session_id: int, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.connect(session_id)
     except Exception as exc:  # noqa: BLE001
@@ -62,7 +62,7 @@ def connect(session_id: int, service: VideoService = Depends(get_service)) -> An
 
 
 @router.post("/sessions/{session_id}/connected")
-def connected(session_id: int, participant_count: int = 1, service: VideoService = Depends(get_service)) -> Any:
+def connected(session_id: int, participant_count: int = 1, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.connected(session_id, participant_count=participant_count)
     except Exception as exc:  # noqa: BLE001
@@ -70,7 +70,7 @@ def connected(session_id: int, participant_count: int = 1, service: VideoService
 
 
 @router.post("/sessions/{session_id}/end")
-def end_session(session_id: int, recording_path: str | None = None, service: VideoService = Depends(get_service)) -> Any:
+def end_session(session_id: int, recording_path: str | None = None, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.end_session(session_id, recording_path=recording_path)
     except Exception as exc:  # noqa: BLE001
@@ -78,7 +78,7 @@ def end_session(session_id: int, recording_path: str | None = None, service: Vid
 
 
 @router.post("/sessions/{session_id}/fail")
-def fail_session(session_id: int, error: str | None = None, service: VideoService = Depends(get_service)) -> Any:
+def fail_session(session_id: int, error: str | None = None, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.fail_session(session_id, error=error)
     except Exception as exc:  # noqa: BLE001
@@ -86,7 +86,7 @@ def fail_session(session_id: int, error: str | None = None, service: VideoServic
 
 
 @router.put("/sessions/{session_id}/quality")
-def update_quality(session_id: int, quality: str, service: VideoService = Depends(get_service)) -> Any:
+def update_quality(session_id: int, quality: str, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.update_quality(session_id, quality)
     except Exception as exc:  # noqa: BLE001
@@ -94,7 +94,7 @@ def update_quality(session_id: int, quality: str, service: VideoService = Depend
 
 
 @router.post("/sessions/{session_id}/participants")
-def add_participant(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def add_participant(session_id: int, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.add_participant(session_id)
     except Exception as exc:  # noqa: BLE001
@@ -102,7 +102,7 @@ def add_participant(session_id: int, service: VideoService = Depends(get_service
 
 
 @router.delete("/sessions/{session_id}/participants")
-def remove_participant(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def remove_participant(session_id: int, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.remove_participant(session_id)
     except Exception as exc:  # noqa: BLE001
@@ -110,7 +110,7 @@ def remove_participant(session_id: int, service: VideoService = Depends(get_serv
 
 
 @router.post("/signaling", status_code=201)
-def send_signaling(payload: SignalingMessageCreate, service: VideoService = Depends(get_service)) -> Any:
+def send_signaling(payload: SignalingMessageCreate, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.send_signaling(payload)
     except Exception as exc:  # noqa: BLE001
@@ -118,12 +118,12 @@ def send_signaling(payload: SignalingMessageCreate, service: VideoService = Depe
 
 
 @router.get("/sessions/{session_id}/signaling")
-def list_signaling(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def list_signaling(session_id: int, service: VideoService = Depends(get_service)) -> None:
     return service.list_signaling(session_id)
 
 
 @router.post("/metrics", status_code=201)
-def record_metric(payload: SessionMetricCreate, service: VideoService = Depends(get_service)) -> Any:
+def record_metric(payload: SessionMetricCreate, service: VideoService = Depends(get_service)) -> None:
     try:
         return service.record_metric(payload)
     except Exception as exc:  # noqa: BLE001
@@ -131,12 +131,12 @@ def record_metric(payload: SessionMetricCreate, service: VideoService = Depends(
 
 
 @router.get("/sessions/{session_id}/metrics")
-def list_metrics(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def list_metrics(session_id: int, service: VideoService = Depends(get_service)) -> None:
     return service.list_metrics(session_id)
 
 
 @router.get("/sessions/{session_id}/duration")
-def session_duration(session_id: int, service: VideoService = Depends(get_service)) -> Any:
+def session_duration(session_id: int, service: VideoService = Depends(get_service)) -> None:
     try:
         return {"duration_seconds": service.session_duration(session_id)}
     except Exception as exc:  # noqa: BLE001
@@ -144,5 +144,5 @@ def session_duration(session_id: int, service: VideoService = Depends(get_servic
 
 
 @router.get("/count")
-def count(service: VideoService = Depends(get_service)) -> Any:
+def count(service: VideoService = Depends(get_service)) -> None:
     return {"count": service.count()}

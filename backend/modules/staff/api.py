@@ -25,7 +25,7 @@ def get_service() -> StaffService:
 
 
 @router.post("/profiles", status_code=201)
-def create_profile(payload: StaffProfileCreate, service: StaffService = Depends(get_service)) -> Any:
+def create_profile(payload: StaffProfileCreate, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.create_profile(payload)
     except Exception as exc:  # noqa: BLE001
@@ -45,7 +45,7 @@ def list_profiles(
 
 
 @router.get("/profiles/{profile_id}")
-def get_profile(profile_id: int, service: StaffService = Depends(get_service)) -> Any:
+def get_profile(profile_id: int, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.get_profile(profile_id)
     except Exception as exc:  # noqa: BLE001
@@ -53,7 +53,7 @@ def get_profile(profile_id: int, service: StaffService = Depends(get_service)) -
 
 
 @router.get("/profiles/by-user/{user_id}")
-def get_profile_by_user(user_id: int, service: StaffService = Depends(get_service)) -> Any:
+def get_profile_by_user(user_id: int, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.get_profile_by_user(user_id)
     except Exception as exc:  # noqa: BLE001
@@ -61,7 +61,7 @@ def get_profile_by_user(user_id: int, service: StaffService = Depends(get_servic
 
 
 @router.put("/profiles/{profile_id}")
-def update_profile(profile_id: int, payload: StaffProfileUpdate, service: StaffService = Depends(get_service)) -> Any:
+def update_profile(profile_id: int, payload: StaffProfileUpdate, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.update_profile(profile_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -69,7 +69,7 @@ def update_profile(profile_id: int, payload: StaffProfileUpdate, service: StaffS
 
 
 @router.post("/shifts", status_code=201)
-def create_shift(payload: ShiftCreate, service: StaffService = Depends(get_service)) -> Any:
+def create_shift(payload: ShiftCreate, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.create_shift(payload)
     except Exception as exc:  # noqa: BLE001
@@ -77,12 +77,12 @@ def create_shift(payload: ShiftCreate, service: StaffService = Depends(get_servi
 
 
 @router.get("/shifts")
-def list_shifts(staff_id: int | None = None, department_id: int | None = None, service: StaffService = Depends(get_service)) -> Any:
+def list_shifts(staff_id: int | None = None, department_id: int | None = None, service: StaffService = Depends(get_service)) -> None:
     return service.list_shifts(staff_id=staff_id, department_id=department_id)
 
 
 @router.post("/time-off", status_code=201)
-def request_time_off(payload: TimeOffCreate, service: StaffService = Depends(get_service)) -> Any:
+def request_time_off(payload: TimeOffCreate, service: StaffService = Depends(get_service)) -> None:
     try:
         return service.request_time_off(payload)
     except Exception as exc:  # noqa: BLE001
@@ -90,7 +90,7 @@ def request_time_off(payload: TimeOffCreate, service: StaffService = Depends(get
 
 
 @router.put("/time-off/{request_id}")
-def update_time_off(request_id: int, payload: TimeOffUpdate, service: StaffService = Depends(get_service)) -> Any:
+def update_time_off(request_id: int, payload: TimeOffUpdate, service: StaffService = Depends(get_service)) -> None:
     try:
         if payload.status == "approved":
             return service.approve_time_off(request_id, payload.reviewed_by or 0)
@@ -102,19 +102,19 @@ def update_time_off(request_id: int, payload: TimeOffUpdate, service: StaffServi
 
 
 @router.get("/time-off")
-def list_time_off(staff_id: int | None = None, status: str | None = None, service: StaffService = Depends(get_service)) -> Any:
+def list_time_off(staff_id: int | None = None, status: str | None = None, service: StaffService = Depends(get_service)) -> None:
     return service.list_time_off(staff_id=staff_id, status=status)
 
 
 @router.post("/roster")
-def create_roster_entry(department_id: int, date: str, staff_id: int, shift_type: str = "morning", service: StaffService = Depends(get_service)) -> Any:
+def create_roster_entry(department_id: int, date: str, staff_id: int, shift_type: str = "morning", service: StaffService = Depends(get_service)) -> None:
     from datetime import date as _date
 
     return service.create_roster_entry(department_id, _date.fromisoformat(date), staff_id, shift_type)
 
 
 @router.get("/roster")
-def list_roster(department_id: int | None = None, date: str | None = None, service: StaffService = Depends(get_service)) -> Any:
+def list_roster(department_id: int | None = None, date: str | None = None, service: StaffService = Depends(get_service)) -> None:
     from datetime import date as _date
 
     date_value = _date.fromisoformat(date) if date else None
@@ -122,7 +122,7 @@ def list_roster(department_id: int | None = None, date: str | None = None, servi
 
 
 @router.get("/coverage-gaps")
-def coverage_gaps(department_id: int, date: str, service: StaffService = Depends(get_service)) -> Any:
+def coverage_gaps(department_id: int, date: str, service: StaffService = Depends(get_service)) -> None:
     from datetime import date as _date
 
     return service.coverage_gaps(department_id, _date.fromisoformat(date))

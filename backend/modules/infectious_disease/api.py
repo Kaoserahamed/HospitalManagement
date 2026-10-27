@@ -52,7 +52,7 @@ def list_all(
 
 
 @router.get("/count")
-def count(service: InfectiousDiseaseCaseService = Depends(get_service)) -> Any:
+def count(service: InfectiousDiseaseCaseService = Depends(get_service)) -> None:
     return {"count": service.count()}
 
 
@@ -71,7 +71,7 @@ def summary(
 
 
 @router.get("/{record_id}")
-def get(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> Any:
+def get(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> None:
     return service.get(record_id)
 
 
@@ -84,19 +84,18 @@ def update(
     return service.update(record_id, payload)
 
 
-@router.delete("/{record_id}", status_code=204)
-def delete(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> Any:
+@router.delete("/{record_id}", status_code=200)
+def delete(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> None:
     service.delete(record_id)
-    return None
 
 
 @router.post("/{record_id}/activate")
-def activate(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> Any:
+def activate(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> None:
     return service.activate(record_id)
 
 
 @router.post("/{record_id}/deactivate")
-def deactivate(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> Any:
+def deactivate(record_id: int, service: InfectiousDiseaseCaseService = Depends(get_service)) -> None:
     return service.deactivate(record_id)
 
 

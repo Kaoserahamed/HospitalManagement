@@ -19,7 +19,7 @@ def get_service() -> NotificationService:
 
 
 @router.post("/", status_code=201)
-def send_notification(payload: NotificationCreate, service: NotificationService = Depends(get_service)) -> Any:
+def send_notification(payload: NotificationCreate, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.send(payload)
     except Exception as exc:  # noqa: BLE001
@@ -27,7 +27,7 @@ def send_notification(payload: NotificationCreate, service: NotificationService 
 
 
 @router.post("/bulk", status_code=201)
-def send_bulk(payload: BulkNotificationCreate, service: NotificationService = Depends(get_service)) -> Any:
+def send_bulk(payload: BulkNotificationCreate, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.send_bulk(payload)
     except Exception as exc:  # noqa: BLE001
@@ -48,12 +48,12 @@ def list_notifications(
 
 
 @router.get("/unread-count")
-def unread_count(recipient_id: int, service: NotificationService = Depends(get_service)) -> Any:
+def unread_count(recipient_id: int, service: NotificationService = Depends(get_service)) -> None:
     return {"count": service.unread_count(recipient_id)}
 
 
 @router.post("/{notification_id}/read")
-def mark_read(notification_id: int, service: NotificationService = Depends(get_service)) -> Any:
+def mark_read(notification_id: int, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.mark_read(notification_id)
     except Exception as exc:  # noqa: BLE001
@@ -61,13 +61,13 @@ def mark_read(notification_id: int, service: NotificationService = Depends(get_s
 
 
 @router.post("/read-all")
-def mark_all_read(recipient_id: int, service: NotificationService = Depends(get_service)) -> Any:
+def mark_all_read(recipient_id: int, service: NotificationService = Depends(get_service)) -> None:
     count = service.mark_all_read(recipient_id)
     return {"marked": count}
 
 
 @router.post("/templates", status_code=201)
-def create_template(payload: NotificationTemplateCreate, service: NotificationService = Depends(get_service)) -> Any:
+def create_template(payload: NotificationTemplateCreate, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.create_template(payload)
     except Exception as exc:  # noqa: BLE001
@@ -75,12 +75,12 @@ def create_template(payload: NotificationTemplateCreate, service: NotificationSe
 
 
 @router.get("/templates")
-def list_templates(service: NotificationService = Depends(get_service)) -> Any:
+def list_templates(service: NotificationService = Depends(get_service)) -> None:
     return service.list_templates()
 
 
 @router.get("/templates/{name}")
-def get_template(name: str, service: NotificationService = Depends(get_service)) -> Any:
+def get_template(name: str, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.get_template(name)
     except Exception as exc:  # noqa: BLE001
@@ -88,7 +88,7 @@ def get_template(name: str, service: NotificationService = Depends(get_service))
 
 
 @router.post("/templates/{name}/render")
-def render_template(name: str, context: dict, service: NotificationService = Depends(get_service)) -> Any:
+def render_template(name: str, context: dict, service: NotificationService = Depends(get_service)) -> None:
     try:
         return service.render_template(name, context)
     except Exception as exc:  # noqa: BLE001

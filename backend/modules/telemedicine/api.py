@@ -24,7 +24,7 @@ def get_service() -> TelemedicineService:
 
 
 @router.post("/visits", status_code=201)
-def schedule_visit(payload: VirtualVisitCreate, service: TelemedicineService = Depends(get_service)) -> Any:
+def schedule_visit(payload: VirtualVisitCreate, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.schedule_visit(payload)
     except Exception as exc:  # noqa: BLE001
@@ -45,7 +45,7 @@ def list_visits(
 
 
 @router.get("/visits/{visit_id}")
-def get_visit(visit_id: int, service: TelemedicineService = Depends(get_service)) -> Any:
+def get_visit(visit_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.get_visit(visit_id)
     except Exception as exc:  # noqa: BLE001
@@ -53,7 +53,7 @@ def get_visit(visit_id: int, service: TelemedicineService = Depends(get_service)
 
 
 @router.put("/visits/{visit_id}")
-def update_visit(visit_id: int, payload: VirtualVisitUpdate, service: TelemedicineService = Depends(get_service)) -> Any:
+def update_visit(visit_id: int, payload: VirtualVisitUpdate, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.update_visit(visit_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -61,7 +61,7 @@ def update_visit(visit_id: int, payload: VirtualVisitUpdate, service: Telemedici
 
 
 @router.post("/visits/{visit_id}/start")
-def start_visit(visit_id: int, service: TelemedicineService = Depends(get_service)) -> Any:
+def start_visit(visit_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.start_visit(visit_id)
     except Exception as exc:  # noqa: BLE001
@@ -69,7 +69,7 @@ def start_visit(visit_id: int, service: TelemedicineService = Depends(get_servic
 
 
 @router.post("/visits/{visit_id}/end")
-def end_visit(visit_id: int, quality: str | None = None, notes: str | None = None, service: TelemedicineService = Depends(get_service)) -> Any:
+def end_visit(visit_id: int, quality: str | None = None, notes: str | None = None, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.end_visit(visit_id, quality=quality, notes=notes)
     except Exception as exc:  # noqa: BLE001
@@ -77,7 +77,7 @@ def end_visit(visit_id: int, quality: str | None = None, notes: str | None = Non
 
 
 @router.post("/visits/{visit_id}/cancel")
-def cancel_visit(visit_id: int, reason: str | None = None, service: TelemedicineService = Depends(get_service)) -> Any:
+def cancel_visit(visit_id: int, reason: str | None = None, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.cancel_visit(visit_id, reason=reason)
     except Exception as exc:  # noqa: BLE001
@@ -85,14 +85,14 @@ def cancel_visit(visit_id: int, reason: str | None = None, service: Telemedicine
 
 
 @router.post("/visits/{visit_id}/no-show")
-def mark_no_show(visit_id: int, service: TelemedicineService = Depends(get_service)) -> Any:
+def mark_no_show(visit_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.mark_no_show(visit_id)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.delete("/visits/{visit_id}", status_code=204)
+@router.delete("/visits/{visit_id}", status_code=200)
 def delete_visit(visit_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         service.delete_visit(visit_id)
@@ -101,7 +101,7 @@ def delete_visit(visit_id: int, service: TelemedicineService = Depends(get_servi
 
 
 @router.post("/waiting-room", status_code=201)
-def enter_waiting_room(payload: WaitingRoomEntry, service: TelemedicineService = Depends(get_service)) -> Any:
+def enter_waiting_room(payload: WaitingRoomEntry, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.enter_waiting_room(payload)
     except Exception as exc:  # noqa: BLE001
@@ -109,12 +109,12 @@ def enter_waiting_room(payload: WaitingRoomEntry, service: TelemedicineService =
 
 
 @router.get("/waiting-room")
-def list_waiting_room(admitted: bool | None = None, service: TelemedicineService = Depends(get_service)) -> Any:
+def list_waiting_room(admitted: bool | None = None, service: TelemedicineService = Depends(get_service)) -> None:
     return service.list_waiting_room(admitted=admitted)
 
 
 @router.post("/waiting-room/{waiting_id}/admit")
-def admit_patient(waiting_id: int, service: TelemedicineService = Depends(get_service)) -> Any:
+def admit_patient(waiting_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.admit_patient(waiting_id)
     except Exception as exc:  # noqa: BLE001
@@ -122,7 +122,7 @@ def admit_patient(waiting_id: int, service: TelemedicineService = Depends(get_se
 
 
 @router.post("/metrics", status_code=201)
-def record_metric(payload: SessionMetricCreate, service: TelemedicineService = Depends(get_service)) -> Any:
+def record_metric(payload: SessionMetricCreate, service: TelemedicineService = Depends(get_service)) -> None:
     try:
         return service.record_metric(payload)
     except Exception as exc:  # noqa: BLE001
@@ -130,10 +130,10 @@ def record_metric(payload: SessionMetricCreate, service: TelemedicineService = D
 
 
 @router.get("/visits/{visit_id}/metrics")
-def list_metrics(visit_id: int, service: TelemedicineService = Depends(get_service)) -> Any:
+def list_metrics(visit_id: int, service: TelemedicineService = Depends(get_service)) -> None:
     return service.list_metrics(visit_id)
 
 
 @router.get("/summary")
-def visit_summary(service: TelemedicineService = Depends(get_service)) -> Any:
+def visit_summary(service: TelemedicineService = Depends(get_service)) -> None:
     return service.summary()

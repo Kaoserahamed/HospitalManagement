@@ -17,7 +17,7 @@ def get_service() -> RiskPredictionService:
 
 
 @router.post("/models", status_code=201)
-def create_model(payload: RiskModelCreate, service: RiskPredictionService = Depends(get_service)) -> Any:
+def create_model(payload: RiskModelCreate, service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.create_model(payload)
     except Exception as exc:  # noqa: BLE001
@@ -25,12 +25,12 @@ def create_model(payload: RiskModelCreate, service: RiskPredictionService = Depe
 
 
 @router.get("/models")
-def list_models(service: RiskPredictionService = Depends(get_service)) -> Any:
+def list_models(service: RiskPredictionService = Depends(get_service)) -> None:
     return service.list_models()
 
 
 @router.get("/models/active")
-def active_model(service: RiskPredictionService = Depends(get_service)) -> Any:
+def active_model(service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.active_model()
     except Exception as exc:  # noqa: BLE001
@@ -38,7 +38,7 @@ def active_model(service: RiskPredictionService = Depends(get_service)) -> Any:
 
 
 @router.post("/factors", status_code=201)
-def create_factor(payload: RiskFactorCreate, service: RiskPredictionService = Depends(get_service)) -> Any:
+def create_factor(payload: RiskFactorCreate, service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.create_factor(payload)
     except Exception as exc:  # noqa: BLE001
@@ -46,17 +46,17 @@ def create_factor(payload: RiskFactorCreate, service: RiskPredictionService = De
 
 
 @router.get("/factors")
-def list_factors(service: RiskPredictionService = Depends(get_service)) -> Any:
+def list_factors(service: RiskPredictionService = Depends(get_service)) -> None:
     return service.list_factors()
 
 
 @router.get("/factors/importance")
-def feature_importance(service: RiskPredictionService = Depends(get_service)) -> Any:
+def feature_importance(service: RiskPredictionService = Depends(get_service)) -> None:
     return service.feature_importance()
 
 
 @router.post("/evaluate")
-def evaluate(payload: RiskEvaluationRequest, service: RiskPredictionService = Depends(get_service)) -> Any:
+def evaluate(payload: RiskEvaluationRequest, service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.evaluate(payload)
     except Exception as exc:  # noqa: BLE001
@@ -64,7 +64,7 @@ def evaluate(payload: RiskEvaluationRequest, service: RiskPredictionService = De
 
 
 @router.post("/predict/readmission")
-def predict_readmission(patient_id: int, encounter_id: int | None = None, service: RiskPredictionService = Depends(get_service)) -> Any:
+def predict_readmission(patient_id: int, encounter_id: int | None = None, service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.predict_readmission(patient_id, encounter_id=encounter_id)
     except Exception as exc:  # noqa: BLE001
@@ -72,12 +72,12 @@ def predict_readmission(patient_id: int, encounter_id: int | None = None, servic
 
 
 @router.get("/predictions")
-def list_predictions(patient_id: int | None = None, service: RiskPredictionService = Depends(get_service)) -> Any:
+def list_predictions(patient_id: int | None = None, service: RiskPredictionService = Depends(get_service)) -> None:
     return service.list_predictions(patient_id=patient_id)
 
 
 @router.get("/predictions/{prediction_id}")
-def get_prediction(prediction_id: int, service: RiskPredictionService = Depends(get_service)) -> Any:
+def get_prediction(prediction_id: int, service: RiskPredictionService = Depends(get_service)) -> None:
     try:
         return service.get_prediction(prediction_id)
     except Exception as exc:  # noqa: BLE001
@@ -85,10 +85,10 @@ def get_prediction(prediction_id: int, service: RiskPredictionService = Depends(
 
 
 @router.get("/high-risk")
-def high_risk_patients(threshold: float = 0.7, service: RiskPredictionService = Depends(get_service)) -> Any:
+def high_risk_patients(threshold: float = 0.7, service: RiskPredictionService = Depends(get_service)) -> None:
     return service.high_risk_patients(threshold=threshold)
 
 
 @router.get("/patients/{patient_id}/trend")
-def risk_trend(patient_id: int, service: RiskPredictionService = Depends(get_service)) -> Any:
+def risk_trend(patient_id: int, service: RiskPredictionService = Depends(get_service)) -> None:
     return service.risk_trend(patient_id)

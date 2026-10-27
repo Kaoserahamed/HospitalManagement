@@ -19,7 +19,7 @@ def get_service() -> QueueService:
 
 
 @router.post("/tasks", status_code=201)
-def enqueue(payload: TaskCreate, service: QueueService = Depends(get_service)) -> Any:
+def enqueue(payload: TaskCreate, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.enqueue(payload)
     except Exception as exc:  # noqa: BLE001
@@ -39,7 +39,7 @@ def list_tasks(
 
 
 @router.get("/tasks/{task_id}")
-def get_task(task_id: int, service: QueueService = Depends(get_service)) -> Any:
+def get_task(task_id: int, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.get(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -47,7 +47,7 @@ def get_task(task_id: int, service: QueueService = Depends(get_service)) -> Any:
 
 
 @router.put("/tasks/{task_id}")
-def update_task(task_id: int, payload: TaskUpdate, service: QueueService = Depends(get_service)) -> Any:
+def update_task(task_id: int, payload: TaskUpdate, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.update(task_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +55,7 @@ def update_task(task_id: int, payload: TaskUpdate, service: QueueService = Depen
 
 
 @router.post("/tasks/dequeue")
-def dequeue(service: QueueService = Depends(get_service)) -> Any:
+def dequeue(service: QueueService = Depends(get_service)) -> None:
     task = service.dequeue()
     if task is None:
         return {"message": "No tasks queued"}
@@ -63,7 +63,7 @@ def dequeue(service: QueueService = Depends(get_service)) -> Any:
 
 
 @router.post("/tasks/{task_id}/complete")
-def complete_task(task_id: int, service: QueueService = Depends(get_service)) -> Any:
+def complete_task(task_id: int, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.complete(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -71,7 +71,7 @@ def complete_task(task_id: int, service: QueueService = Depends(get_service)) ->
 
 
 @router.post("/tasks/{task_id}/fail")
-def fail_task(task_id: int, error: str, service: QueueService = Depends(get_service)) -> Any:
+def fail_task(task_id: int, error: str, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.fail(task_id, error)
     except Exception as exc:  # noqa: BLE001
@@ -79,7 +79,7 @@ def fail_task(task_id: int, error: str, service: QueueService = Depends(get_serv
 
 
 @router.post("/tasks/{task_id}/cancel")
-def cancel_task(task_id: int, service: QueueService = Depends(get_service)) -> Any:
+def cancel_task(task_id: int, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.cancel(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -87,7 +87,7 @@ def cancel_task(task_id: int, service: QueueService = Depends(get_service)) -> A
 
 
 @router.post("/tasks/{task_id}/retry")
-def retry_task(task_id: int, service: QueueService = Depends(get_service)) -> Any:
+def retry_task(task_id: int, service: QueueService = Depends(get_service)) -> None:
     try:
         return service.retry(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -95,10 +95,10 @@ def retry_task(task_id: int, service: QueueService = Depends(get_service)) -> An
 
 
 @router.get("/stats")
-def queue_stats(service: QueueService = Depends(get_service)) -> Any:
+def queue_stats(service: QueueService = Depends(get_service)) -> None:
     return service.stats()
 
 
 @router.get("/size")
-def queue_size(service: QueueService = Depends(get_service)) -> Any:
+def queue_size(service: QueueService = Depends(get_service)) -> None:
     return {"size": service.size()}

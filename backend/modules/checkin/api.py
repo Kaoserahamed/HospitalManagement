@@ -19,7 +19,7 @@ def get_service() -> CheckInService:
 
 
 @router.post("/", status_code=201)
-def check_in(payload: CheckInCreate, service: CheckInService = Depends(get_service)) -> Any:
+def check_in(payload: CheckInCreate, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.check_in(payload)
     except Exception as exc:  # noqa: BLE001
@@ -39,7 +39,7 @@ def list_checkins(
 
 
 @router.get("/{checkin_id}")
-def get_checkin(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def get_checkin(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.get_checkin(checkin_id)
     except Exception as exc:  # noqa: BLE001
@@ -47,7 +47,7 @@ def get_checkin(checkin_id: int, service: CheckInService = Depends(get_service))
 
 
 @router.put("/{checkin_id}")
-def update_checkin(checkin_id: int, payload: CheckInUpdate, service: CheckInService = Depends(get_service)) -> Any:
+def update_checkin(checkin_id: int, payload: CheckInUpdate, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.update_checkin(checkin_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +55,7 @@ def update_checkin(checkin_id: int, payload: CheckInUpdate, service: CheckInServ
 
 
 @router.post("/{checkin_id}/call")
-def call_patient(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def call_patient(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.call_patient(checkin_id)
     except Exception as exc:  # noqa: BLE001
@@ -63,7 +63,7 @@ def call_patient(checkin_id: int, service: CheckInService = Depends(get_service)
 
 
 @router.post("/{checkin_id}/start-service")
-def start_service(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def start_service(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.start_service(checkin_id)
     except Exception as exc:  # noqa: BLE001
@@ -71,7 +71,7 @@ def start_service(checkin_id: int, service: CheckInService = Depends(get_service
 
 
 @router.post("/{checkin_id}/complete")
-def complete(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def complete(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.complete(checkin_id)
     except Exception as exc:  # noqa: BLE001
@@ -79,7 +79,7 @@ def complete(checkin_id: int, service: CheckInService = Depends(get_service)) ->
 
 
 @router.post("/{checkin_id}/no-show")
-def mark_no_show(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def mark_no_show(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.mark_no_show(checkin_id)
     except Exception as exc:  # noqa: BLE001
@@ -87,27 +87,27 @@ def mark_no_show(checkin_id: int, service: CheckInService = Depends(get_service)
 
 
 @router.get("/{checkin_id}/position")
-def queue_position(checkin_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def queue_position(checkin_id: int, service: CheckInService = Depends(get_service)) -> None:
     return service.queue_position(checkin_id)
 
 
 @router.get("/queue/next")
-def next_patient(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> Any:
+def next_patient(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> None:
     return service.next_patient(department_id=department_id)
 
 
 @router.get("/queue/count")
-def waiting_count(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> Any:
+def waiting_count(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> None:
     return {"count": service.waiting_count(department_id=department_id)}
 
 
 @router.get("/queue/stats")
-def queue_stats(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> Any:
+def queue_stats(department_id: int | None = None, service: CheckInService = Depends(get_service)) -> None:
     return service.queue_stats(department_id=department_id)
 
 
 @router.post("/kiosk/sessions", status_code=201)
-def start_kiosk(payload: KioskSessionCreate, service: CheckInService = Depends(get_service)) -> Any:
+def start_kiosk(payload: KioskSessionCreate, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.create_kiosk_session(payload)
     except Exception as exc:  # noqa: BLE001
@@ -115,7 +115,7 @@ def start_kiosk(payload: KioskSessionCreate, service: CheckInService = Depends(g
 
 
 @router.post("/kiosk/sessions/{session_id}/end")
-def end_kiosk(session_id: int, service: CheckInService = Depends(get_service)) -> Any:
+def end_kiosk(session_id: int, service: CheckInService = Depends(get_service)) -> None:
     try:
         return service.end_kiosk_session(session_id)
     except Exception as exc:  # noqa: BLE001

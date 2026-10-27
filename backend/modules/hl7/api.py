@@ -19,7 +19,7 @@ def get_service() -> HL7Service:
 
 
 @router.post("/parse")
-def parse(payload: HL7ParseRequest, service: HL7Service = Depends(get_service)) -> Any:
+def parse(payload: HL7ParseRequest, service: HL7Service = Depends(get_service)) -> None:
     try:
         return service.parse_message(payload.raw_message)
     except Exception as exc:  # noqa: BLE001
@@ -27,7 +27,7 @@ def parse(payload: HL7ParseRequest, service: HL7Service = Depends(get_service)) 
 
 
 @router.post("/messages", status_code=201)
-def receive(payload: HL7MessageCreate, service: HL7Service = Depends(get_service)) -> Any:
+def receive(payload: HL7MessageCreate, service: HL7Service = Depends(get_service)) -> None:
     try:
         return service.receive(payload)
     except Exception as exc:  # noqa: BLE001
@@ -47,7 +47,7 @@ def list_messages(
 
 
 @router.get("/messages/{message_id}")
-def get_message(message_id: int, service: HL7Service = Depends(get_service)) -> Any:
+def get_message(message_id: int, service: HL7Service = Depends(get_service)) -> None:
     try:
         return service.get(message_id)
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +55,7 @@ def get_message(message_id: int, service: HL7Service = Depends(get_service)) -> 
 
 
 @router.post("/messages/{message_id}/process")
-def process_message(message_id: int, service: HL7Service = Depends(get_service)) -> Any:
+def process_message(message_id: int, service: HL7Service = Depends(get_service)) -> None:
     try:
         return service.process(message_id)
     except Exception as exc:  # noqa: BLE001
@@ -63,7 +63,7 @@ def process_message(message_id: int, service: HL7Service = Depends(get_service))
 
 
 @router.post("/messages/{message_id}/fail")
-def fail_message(message_id: int, error: str, service: HL7Service = Depends(get_service)) -> Any:
+def fail_message(message_id: int, error: str, service: HL7Service = Depends(get_service)) -> None:
     try:
         return service.fail(message_id, error)
     except Exception as exc:  # noqa: BLE001
@@ -71,25 +71,25 @@ def fail_message(message_id: int, error: str, service: HL7Service = Depends(get_
 
 
 @router.post("/ack")
-def generate_ack(message_control_id: str, ack_code: str = "AA", text: str | None = None, service: HL7Service = Depends(get_service)) -> Any:
+def generate_ack(message_control_id: str, ack_code: str = "AA", text: str | None = None, service: HL7Service = Depends(get_service)) -> None:
     return {"ack": service.generate_ack(message_control_id, ack_code=ack_code, text=text)}
 
 
 @router.post("/adt")
-def handle_adt(patient_id: int, event: str = "A01", service: HL7Service = Depends(get_service)) -> Any:
+def handle_adt(patient_id: int, event: str = "A01", service: HL7Service = Depends(get_service)) -> None:
     return service.handle_adt(patient_id, event)
 
 
 @router.post("/oru")
-def handle_oru(patient_id: int, observations: list = [], service: HL7Service = Depends(get_service)) -> Any:
+def handle_oru(patient_id: int, observations: list = [], service: HL7Service = Depends(get_service)) -> None:
     return service.handle_oru(patient_id, observations)
 
 
 @router.post("/orm")
-def handle_orm(patient_id: int, orders: list = [], service: HL7Service = Depends(get_service)) -> Any:
+def handle_orm(patient_id: int, orders: list = [], service: HL7Service = Depends(get_service)) -> None:
     return service.handle_orm(patient_id, orders)
 
 
 @router.get("/count")
-def count(service: HL7Service = Depends(get_service)) -> Any:
+def count(service: HL7Service = Depends(get_service)) -> None:
     return {"count": service.count()}

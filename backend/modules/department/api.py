@@ -31,7 +31,7 @@ def list_departments(
 
 
 @router.post("/", status_code=201)
-def create_department(payload: DepartmentCreate, service: DepartmentService = Depends(get_service)) -> Any:
+def create_department(payload: DepartmentCreate, service: DepartmentService = Depends(get_service)) -> None:
     try:
         return service.create(payload)
     except Exception as exc:  # noqa: BLE001
@@ -39,7 +39,7 @@ def create_department(payload: DepartmentCreate, service: DepartmentService = De
 
 
 @router.get("/{department_id}")
-def get_department(department_id: int, service: DepartmentService = Depends(get_service)) -> Any:
+def get_department(department_id: int, service: DepartmentService = Depends(get_service)) -> None:
     try:
         return service.get(department_id)
     except Exception as exc:  # noqa: BLE001
@@ -47,14 +47,14 @@ def get_department(department_id: int, service: DepartmentService = Depends(get_
 
 
 @router.put("/{department_id}")
-def update_department(department_id: int, payload: DepartmentUpdate, service: DepartmentService = Depends(get_service)) -> Any:
+def update_department(department_id: int, payload: DepartmentUpdate, service: DepartmentService = Depends(get_service)) -> None:
     try:
         return service.update(department_id, payload)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.delete("/{department_id}", status_code=204)
+@router.delete("/{department_id}", status_code=200)
 def delete_department(department_id: int, service: DepartmentService = Depends(get_service)) -> None:
     try:
         service.delete(department_id)
@@ -63,7 +63,7 @@ def delete_department(department_id: int, service: DepartmentService = Depends(g
 
 
 @router.post("/{department_id}/rooms", status_code=201)
-def add_room(department_id: int, payload: RoomCreate, service: DepartmentService = Depends(get_service)) -> Any:
+def add_room(department_id: int, payload: RoomCreate, service: DepartmentService = Depends(get_service)) -> None:
     try:
         data = payload.model_dump()
         data["department_id"] = department_id
@@ -73,12 +73,12 @@ def add_room(department_id: int, payload: RoomCreate, service: DepartmentService
 
 
 @router.get("/{department_id}/rooms")
-def list_rooms(department_id: int, service: DepartmentService = Depends(get_service)) -> Any:
+def list_rooms(department_id: int, service: DepartmentService = Depends(get_service)) -> None:
     return service.list_rooms(department_id=department_id)
 
 
 @router.post("/{department_id}/equipment", status_code=201)
-def add_equipment(department_id: int, payload: EquipmentCreate, service: DepartmentService = Depends(get_service)) -> Any:
+def add_equipment(department_id: int, payload: EquipmentCreate, service: DepartmentService = Depends(get_service)) -> None:
     try:
         data = payload.model_dump()
         data["department_id"] = department_id
@@ -88,5 +88,5 @@ def add_equipment(department_id: int, payload: EquipmentCreate, service: Departm
 
 
 @router.get("/{department_id}/equipment")
-def list_equipment(department_id: int, service: DepartmentService = Depends(get_service)) -> Any:
+def list_equipment(department_id: int, service: DepartmentService = Depends(get_service)) -> None:
     return service.list_equipment(department_id=department_id)

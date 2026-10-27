@@ -17,7 +17,7 @@ def get_service() -> QualityService:
 
 
 @router.post("/measures", status_code=201)
-def create_measure(payload: QualityMeasureCreate, service: QualityService = Depends(get_service)) -> Any:
+def create_measure(payload: QualityMeasureCreate, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.create_measure(payload)
     except Exception as exc:  # noqa: BLE001
@@ -25,12 +25,12 @@ def create_measure(payload: QualityMeasureCreate, service: QualityService = Depe
 
 
 @router.get("/measures")
-def list_measures(category: str | None = None, service: QualityService = Depends(get_service)) -> Any:
+def list_measures(category: str | None = None, service: QualityService = Depends(get_service)) -> None:
     return service.list_measures(category=category)
 
 
 @router.get("/measures/{measure_id}")
-def get_measure(measure_id: int, service: QualityService = Depends(get_service)) -> Any:
+def get_measure(measure_id: int, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.get_measure(measure_id)
     except Exception as exc:  # noqa: BLE001
@@ -38,7 +38,7 @@ def get_measure(measure_id: int, service: QualityService = Depends(get_service))
 
 
 @router.put("/measures/{measure_id}")
-def update_measure(measure_id: int, payload: dict, service: QualityService = Depends(get_service)) -> Any:
+def update_measure(measure_id: int, payload: dict, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.update_measure(measure_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -46,7 +46,7 @@ def update_measure(measure_id: int, payload: dict, service: QualityService = Dep
 
 
 @router.post("/results", status_code=201)
-def record_result(payload: QualityResultCreate, service: QualityService = Depends(get_service)) -> Any:
+def record_result(payload: QualityResultCreate, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.record_result(payload)
     except Exception as exc:  # noqa: BLE001
@@ -54,12 +54,12 @@ def record_result(payload: QualityResultCreate, service: QualityService = Depend
 
 
 @router.get("/measures/{measure_id}/results")
-def list_results(measure_id: int, service: QualityService = Depends(get_service)) -> Any:
+def list_results(measure_id: int, service: QualityService = Depends(get_service)) -> None:
     return service.list_results(measure_id=measure_id)
 
 
 @router.post("/benchmarks", status_code=201)
-def create_benchmark(payload: BenchmarkCreate, service: QualityService = Depends(get_service)) -> Any:
+def create_benchmark(payload: BenchmarkCreate, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.create_benchmark(payload)
     except Exception as exc:  # noqa: BLE001
@@ -67,17 +67,17 @@ def create_benchmark(payload: BenchmarkCreate, service: QualityService = Depends
 
 
 @router.get("/measures/{measure_id}/benchmarks")
-def list_benchmarks(measure_id: int, service: QualityService = Depends(get_service)) -> Any:
+def list_benchmarks(measure_id: int, service: QualityService = Depends(get_service)) -> None:
     return service.list_benchmarks(measure_id=measure_id)
 
 
 @router.get("/measures/{measure_id}/rate")
-def get_rate(measure_id: int, service: QualityService = Depends(get_service)) -> Any:
+def get_rate(measure_id: int, service: QualityService = Depends(get_service)) -> None:
     return {"rate": service.rate(measure_id)}
 
 
 @router.get("/measures/{measure_id}/summary")
-def get_summary(measure_id: int, service: QualityService = Depends(get_service)) -> Any:
+def get_summary(measure_id: int, service: QualityService = Depends(get_service)) -> None:
     try:
         return service.summary(measure_id)
     except Exception as exc:  # noqa: BLE001
@@ -85,10 +85,10 @@ def get_summary(measure_id: int, service: QualityService = Depends(get_service))
 
 
 @router.get("/summaries")
-def all_summaries(service: QualityService = Depends(get_service)) -> Any:
+def all_summaries(service: QualityService = Depends(get_service)) -> None:
     return service.all_summaries()
 
 
 @router.get("/top-performers")
-def top_performers(limit: int = Query(5, ge=1, le=20), service: QualityService = Depends(get_service)) -> Any:
+def top_performers(limit: int = Query(5, ge=1, le=20), service: QualityService = Depends(get_service)) -> None:
     return service.top_performers(limit=limit)

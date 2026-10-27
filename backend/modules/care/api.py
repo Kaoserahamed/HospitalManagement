@@ -26,7 +26,7 @@ def get_service() -> CareService:
 
 
 @router.post("/teams", status_code=201)
-def create_team(payload: CareTeamCreate, service: CareService = Depends(get_service)) -> Any:
+def create_team(payload: CareTeamCreate, service: CareService = Depends(get_service)) -> None:
     try:
         return service.create_team(payload)
     except Exception as exc:  # noqa: BLE001
@@ -34,12 +34,12 @@ def create_team(payload: CareTeamCreate, service: CareService = Depends(get_serv
 
 
 @router.get("/teams")
-def list_teams(patient_id: int | None = None, service: CareService = Depends(get_service)) -> Any:
+def list_teams(patient_id: int | None = None, service: CareService = Depends(get_service)) -> None:
     return service.list_teams(patient_id=patient_id)
 
 
 @router.post("/teams/{team_id}/members", status_code=201)
-def add_member(team_id: int, user_id: int, role: str = "consulting", service: CareService = Depends(get_service)) -> Any:
+def add_member(team_id: int, user_id: int, role: str = "consulting", service: CareService = Depends(get_service)) -> None:
     try:
         return service.add_member({"care_team_id": team_id, "user_id": user_id, "role": role})
     except Exception as exc:  # noqa: BLE001
@@ -47,12 +47,12 @@ def add_member(team_id: int, user_id: int, role: str = "consulting", service: Ca
 
 
 @router.get("/teams/{team_id}/members")
-def list_members(team_id: int, service: CareService = Depends(get_service)) -> Any:
+def list_members(team_id: int, service: CareService = Depends(get_service)) -> None:
     return service.list_members(team_id)
 
 
 @router.post("/tasks", status_code=201)
-def create_task(payload: CareTaskCreate, service: CareService = Depends(get_service)) -> Any:
+def create_task(payload: CareTaskCreate, service: CareService = Depends(get_service)) -> None:
     try:
         return service.create_task(payload)
     except Exception as exc:  # noqa: BLE001
@@ -73,7 +73,7 @@ def list_tasks(
 
 
 @router.get("/tasks/{task_id}")
-def get_task(task_id: int, service: CareService = Depends(get_service)) -> Any:
+def get_task(task_id: int, service: CareService = Depends(get_service)) -> None:
     try:
         return service.get_task(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -81,7 +81,7 @@ def get_task(task_id: int, service: CareService = Depends(get_service)) -> Any:
 
 
 @router.put("/tasks/{task_id}")
-def update_task(task_id: int, payload: CareTaskUpdate, service: CareService = Depends(get_service)) -> Any:
+def update_task(task_id: int, payload: CareTaskUpdate, service: CareService = Depends(get_service)) -> None:
     try:
         return service.update_task(task_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -89,7 +89,7 @@ def update_task(task_id: int, payload: CareTaskUpdate, service: CareService = De
 
 
 @router.post("/tasks/{task_id}/complete")
-def complete_task(task_id: int, service: CareService = Depends(get_service)) -> Any:
+def complete_task(task_id: int, service: CareService = Depends(get_service)) -> None:
     try:
         return service.complete_task(task_id)
     except Exception as exc:  # noqa: BLE001
@@ -97,17 +97,17 @@ def complete_task(task_id: int, service: CareService = Depends(get_service)) -> 
 
 
 @router.get("/patients/{patient_id}/tasks")
-def open_tasks(patient_id: int, service: CareService = Depends(get_service)) -> Any:
+def open_tasks(patient_id: int, service: CareService = Depends(get_service)) -> None:
     return service.open_tasks_for_patient(patient_id)
 
 
 @router.get("/tasks/overdue")
-def overdue_tasks(service: CareService = Depends(get_service)) -> Any:
+def overdue_tasks(service: CareService = Depends(get_service)) -> None:
     return service.overdue_tasks()
 
 
 @router.post("/handoffs", status_code=201)
-def create_handoff(payload: HandoffCreate, service: CareService = Depends(get_service)) -> Any:
+def create_handoff(payload: HandoffCreate, service: CareService = Depends(get_service)) -> None:
     try:
         return service.create_handoff(payload)
     except Exception as exc:  # noqa: BLE001
@@ -115,12 +115,12 @@ def create_handoff(payload: HandoffCreate, service: CareService = Depends(get_se
 
 
 @router.get("/handoffs")
-def list_handoffs(patient_id: int | None = None, to_user: int | None = None, service: CareService = Depends(get_service)) -> Any:
+def list_handoffs(patient_id: int | None = None, to_user: int | None = None, service: CareService = Depends(get_service)) -> None:
     return service.list_handoffs(patient_id=patient_id, to_user=to_user)
 
 
 @router.post("/handoffs/{handoff_id}/acknowledge")
-def acknowledge_handoff(handoff_id: int, service: CareService = Depends(get_service)) -> Any:
+def acknowledge_handoff(handoff_id: int, service: CareService = Depends(get_service)) -> None:
     try:
         return service.acknowledge_handoff(handoff_id)
     except Exception as exc:  # noqa: BLE001
@@ -128,7 +128,7 @@ def acknowledge_handoff(handoff_id: int, service: CareService = Depends(get_serv
 
 
 @router.post("/discharge-plans", status_code=201)
-def create_discharge_plan(payload: DischargePlanCreate, service: CareService = Depends(get_service)) -> Any:
+def create_discharge_plan(payload: DischargePlanCreate, service: CareService = Depends(get_service)) -> None:
     try:
         return service.create_discharge_plan(payload)
     except Exception as exc:  # noqa: BLE001
@@ -136,12 +136,12 @@ def create_discharge_plan(payload: DischargePlanCreate, service: CareService = D
 
 
 @router.get("/discharge-plans")
-def list_discharge_plans(patient_id: int | None = None, service: CareService = Depends(get_service)) -> Any:
+def list_discharge_plans(patient_id: int | None = None, service: CareService = Depends(get_service)) -> None:
     return service.list_discharge_plans(patient_id=patient_id)
 
 
 @router.get("/discharge-plans/{plan_id}")
-def get_discharge_plan(plan_id: int, service: CareService = Depends(get_service)) -> Any:
+def get_discharge_plan(plan_id: int, service: CareService = Depends(get_service)) -> None:
     try:
         return service.get_discharge_plan(plan_id)
     except Exception as exc:  # noqa: BLE001

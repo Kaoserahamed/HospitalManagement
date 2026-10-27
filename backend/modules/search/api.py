@@ -17,39 +17,39 @@ def get_service() -> SearchService:
 
 
 @router.post("/")
-def search(payload: SearchRequest, service: SearchService = Depends(get_service)) -> Any:
+def search(payload: SearchRequest, service: SearchService = Depends(get_service)) -> None:
     return {"results": service.search(payload.query, limit=payload.limit)}
 
 
 @router.get("/suggest")
-def suggest(q: str, limit: int = Query(5, ge=1, le=20), service: SearchService = Depends(get_service)) -> Any:
+def suggest(q: str, limit: int = Query(5, ge=1, le=20), service: SearchService = Depends(get_service)) -> None:
     return {"suggestions": service.suggest(q, limit=limit)}
 
 
 @router.get("/count")
-def count(service: SearchService = Depends(get_service)) -> Any:
+def count(service: SearchService = Depends(get_service)) -> None:
     return {"count": service.count()}
 
 
 @router.post("/index")
-def index_document(doc_id: str, content: str, service: SearchService = Depends(get_service)) -> Any:
+def index_document(doc_id: str, content: str, service: SearchService = Depends(get_service)) -> None:
     service.index_document(doc_id, content)
     return {"indexed": doc_id}
 
 
 @router.delete("/index/{doc_id}")
-def remove_document(doc_id: str, service: SearchService = Depends(get_service)) -> Any:
+def remove_document(doc_id: str, service: SearchService = Depends(get_service)) -> None:
     deleted = service.remove_document(doc_id)
     return {"deleted": deleted}
 
 
 @router.post("/rebuild")
-def rebuild(documents: list[dict], service: SearchService = Depends(get_service)) -> Any:
+def rebuild(documents: list[dict], service: SearchService = Depends(get_service)) -> None:
     count = service.rebuild(documents)
     return {"indexed": count}
 
 
 @router.post("/clear")
-def clear(service: SearchService = Depends(get_service)) -> Any:
+def clear(service: SearchService = Depends(get_service)) -> None:
     service.clear()
     return {"message": "index cleared"}

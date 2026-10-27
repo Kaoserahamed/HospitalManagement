@@ -17,7 +17,7 @@ def get_service() -> CDSService:
 
 
 @router.post("/rules", status_code=201)
-def create_rule(payload: CDSRuleCreate, service: CDSService = Depends(get_service)) -> Any:
+def create_rule(payload: CDSRuleCreate, service: CDSService = Depends(get_service)) -> None:
     try:
         return service.create_rule(payload)
     except Exception as exc:  # noqa: BLE001
@@ -25,12 +25,12 @@ def create_rule(payload: CDSRuleCreate, service: CDSService = Depends(get_servic
 
 
 @router.get("/rules")
-def list_rules(rule_type: str | None = None, active_only: bool = False, service: CDSService = Depends(get_service)) -> Any:
+def list_rules(rule_type: str | None = None, active_only: bool = False, service: CDSService = Depends(get_service)) -> None:
     return service.list_rules(rule_type=rule_type, active_only=active_only)
 
 
 @router.post("/alerts")
-def create_alert(payload: dict, service: CDSService = Depends(get_service)) -> Any:
+def create_alert(payload: dict, service: CDSService = Depends(get_service)) -> None:
     try:
         return service.create_alert(payload)
     except Exception as exc:  # noqa: BLE001
@@ -38,12 +38,12 @@ def create_alert(payload: dict, service: CDSService = Depends(get_service)) -> A
 
 
 @router.get("/alerts")
-def list_alerts(patient_id: int | None = None, acknowledged: bool | None = None, service: CDSService = Depends(get_service)) -> Any:
+def list_alerts(patient_id: int | None = None, acknowledged: bool | None = None, service: CDSService = Depends(get_service)) -> None:
     return service.list_alerts(patient_id=patient_id, acknowledged=acknowledged)
 
 
 @router.post("/alerts/{alert_id}/acknowledge")
-def acknowledge_alert(alert_id: int, acknowledged_by: int | None = None, service: CDSService = Depends(get_service)) -> Any:
+def acknowledge_alert(alert_id: int, acknowledged_by: int | None = None, service: CDSService = Depends(get_service)) -> None:
     try:
         return service.acknowledge_alert(alert_id, acknowledged_by=acknowledged_by)
     except Exception as exc:  # noqa: BLE001
@@ -51,7 +51,7 @@ def acknowledge_alert(alert_id: int, acknowledged_by: int | None = None, service
 
 
 @router.post("/dose-ranges", status_code=201)
-def create_dose_range(payload: DrugDoseRangeCreate, service: CDSService = Depends(get_service)) -> Any:
+def create_dose_range(payload: DrugDoseRangeCreate, service: CDSService = Depends(get_service)) -> None:
     try:
         return service.create_dose_range(payload)
     except Exception as exc:  # noqa: BLE001
@@ -59,12 +59,12 @@ def create_dose_range(payload: DrugDoseRangeCreate, service: CDSService = Depend
 
 
 @router.get("/dose-check")
-def dose_check(medication: str, dose: float, age: int | None = None, service: CDSService = Depends(get_service)) -> Any:
+def dose_check(medication: str, dose: float, age: int | None = None, service: CDSService = Depends(get_service)) -> None:
     return service.check_dose(medication, dose, age=age)
 
 
 @router.post("/evaluate")
-def evaluate(payload: CDSEvaluationRequest, service: CDSService = Depends(get_service)) -> Any:
+def evaluate(payload: CDSEvaluationRequest, service: CDSService = Depends(get_service)) -> None:
     try:
         return service.evaluate(payload)
     except Exception as exc:  # noqa: BLE001
@@ -72,12 +72,12 @@ def evaluate(payload: CDSEvaluationRequest, service: CDSService = Depends(get_se
 
 
 @router.get("/care-gaps")
-def care_gaps(patient_id: int, measures: str = "", service: CDSService = Depends(get_service)) -> Any:
+def care_gaps(patient_id: int, measures: str = "", service: CDSService = Depends(get_service)) -> None:
     measure_list = [m.strip() for m in measures.split(",") if m.strip()]
     return service.care_gaps(patient_id, measure_list)
 
 
 @router.get("/diagnosis-suggestions")
-def diagnosis_suggestions(symptoms: str = "", service: CDSService = Depends(get_service)) -> Any:
+def diagnosis_suggestions(symptoms: str = "", service: CDSService = Depends(get_service)) -> None:
     symptom_list = [s.strip() for s in symptoms.split(",") if s.strip()]
     return service.diagnosis_suggestions(symptom_list)

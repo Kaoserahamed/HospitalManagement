@@ -19,7 +19,7 @@ def get_service() -> MDTService:
 
 
 @router.post("/meetings", status_code=201)
-def schedule_meeting(payload: MDTMeetingCreate, service: MDTService = Depends(get_service)) -> Any:
+def schedule_meeting(payload: MDTMeetingCreate, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.schedule_meeting(payload)
     except Exception as exc:  # noqa: BLE001
@@ -39,7 +39,7 @@ def list_meetings(
 
 
 @router.get("/meetings/{meeting_id}")
-def get_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def get_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.get_meeting(meeting_id)
     except Exception as exc:  # noqa: BLE001
@@ -47,7 +47,7 @@ def get_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> 
 
 
 @router.put("/meetings/{meeting_id}")
-def update_meeting(meeting_id: int, payload: MDTMeetingUpdate, service: MDTService = Depends(get_service)) -> Any:
+def update_meeting(meeting_id: int, payload: MDTMeetingUpdate, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.update_meeting(meeting_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +55,7 @@ def update_meeting(meeting_id: int, payload: MDTMeetingUpdate, service: MDTServi
 
 
 @router.post("/meetings/{meeting_id}/start")
-def start_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def start_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.start_meeting(meeting_id)
     except Exception as exc:  # noqa: BLE001
@@ -63,7 +63,7 @@ def start_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -
 
 
 @router.post("/meetings/{meeting_id}/complete")
-def complete_meeting(meeting_id: int, notes: str | None = None, service: MDTService = Depends(get_service)) -> Any:
+def complete_meeting(meeting_id: int, notes: str | None = None, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.complete_meeting(meeting_id, notes=notes)
     except Exception as exc:  # noqa: BLE001
@@ -71,7 +71,7 @@ def complete_meeting(meeting_id: int, notes: str | None = None, service: MDTServ
 
 
 @router.post("/meetings/{meeting_id}/cancel")
-def cancel_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def cancel_meeting(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.cancel_meeting(meeting_id)
     except Exception as exc:  # noqa: BLE001
@@ -79,7 +79,7 @@ def cancel_meeting(meeting_id: int, service: MDTService = Depends(get_service)) 
 
 
 @router.post("/attendees", status_code=201)
-def add_attendee(payload: MDTAttendeeCreate, service: MDTService = Depends(get_service)) -> Any:
+def add_attendee(payload: MDTAttendeeCreate, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.add_attendee(payload)
     except Exception as exc:  # noqa: BLE001
@@ -87,12 +87,12 @@ def add_attendee(payload: MDTAttendeeCreate, service: MDTService = Depends(get_s
 
 
 @router.get("/meetings/{meeting_id}/attendees")
-def list_attendees(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def list_attendees(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     return service.list_attendees(meeting_id)
 
 
 @router.post("/attendees/{attendee_id}/attend")
-def mark_attended(attendee_id: int, service: MDTService = Depends(get_service)) -> Any:
+def mark_attended(attendee_id: int, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.mark_attended(attendee_id)
     except Exception as exc:  # noqa: BLE001
@@ -100,7 +100,7 @@ def mark_attended(attendee_id: int, service: MDTService = Depends(get_service)) 
 
 
 @router.post("/decisions", status_code=201)
-def add_decision(payload: MDTDecisionCreate, service: MDTService = Depends(get_service)) -> Any:
+def add_decision(payload: MDTDecisionCreate, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.add_decision(payload)
     except Exception as exc:  # noqa: BLE001
@@ -108,12 +108,12 @@ def add_decision(payload: MDTDecisionCreate, service: MDTService = Depends(get_s
 
 
 @router.get("/meetings/{meeting_id}/decisions")
-def list_decisions(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def list_decisions(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     return service.list_decisions(meeting_id)
 
 
 @router.put("/decisions/{decision_id}")
-def update_decision(decision_id: int, status: str, service: MDTService = Depends(get_service)) -> Any:
+def update_decision(decision_id: int, status: str, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.update_decision(decision_id, status)
     except Exception as exc:  # noqa: BLE001
@@ -121,7 +121,7 @@ def update_decision(decision_id: int, status: str, service: MDTService = Depends
 
 
 @router.post("/decisions/{decision_id}/close")
-def close_decision(decision_id: int, service: MDTService = Depends(get_service)) -> Any:
+def close_decision(decision_id: int, service: MDTService = Depends(get_service)) -> None:
     try:
         return service.close_decision(decision_id)
     except Exception as exc:  # noqa: BLE001
@@ -129,10 +129,10 @@ def close_decision(decision_id: int, service: MDTService = Depends(get_service))
 
 
 @router.get("/patients/{patient_id}/meetings")
-def meetings_for_patient(patient_id: int, service: MDTService = Depends(get_service)) -> Any:
+def meetings_for_patient(patient_id: int, service: MDTService = Depends(get_service)) -> None:
     return service.meetings_for_patient(patient_id)
 
 
 @router.get("/meetings/{meeting_id}/attendance-rate")
-def attendance_rate(meeting_id: int, service: MDTService = Depends(get_service)) -> Any:
+def attendance_rate(meeting_id: int, service: MDTService = Depends(get_service)) -> None:
     return {"rate": service.attendance_rate(meeting_id)}

@@ -19,7 +19,7 @@ def get_service() -> WorkflowService:
 
 
 @router.post("/definitions", status_code=201)
-def create_definition(payload: WorkflowDefinitionCreate, service: WorkflowService = Depends(get_service)) -> Any:
+def create_definition(payload: WorkflowDefinitionCreate, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.create_definition(payload)
     except Exception as exc:  # noqa: BLE001
@@ -27,12 +27,12 @@ def create_definition(payload: WorkflowDefinitionCreate, service: WorkflowServic
 
 
 @router.get("/definitions")
-def list_definitions(active_only: bool = False, service: WorkflowService = Depends(get_service)) -> Any:
+def list_definitions(active_only: bool = False, service: WorkflowService = Depends(get_service)) -> None:
     return service.list_definitions(active_only=active_only)
 
 
 @router.get("/definitions/{definition_id}")
-def get_definition(definition_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def get_definition(definition_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.get_definition(definition_id)
     except Exception as exc:  # noqa: BLE001
@@ -40,7 +40,7 @@ def get_definition(definition_id: int, service: WorkflowService = Depends(get_se
 
 
 @router.post("/instances", status_code=201)
-def start_instance(payload: WorkflowInstanceCreate, service: WorkflowService = Depends(get_service)) -> Any:
+def start_instance(payload: WorkflowInstanceCreate, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.start_instance(payload)
     except Exception as exc:  # noqa: BLE001
@@ -60,7 +60,7 @@ def list_instances(
 
 
 @router.get("/instances/{instance_id}")
-def get_instance(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def get_instance(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.get_instance(instance_id)
     except Exception as exc:  # noqa: BLE001
@@ -68,7 +68,7 @@ def get_instance(instance_id: int, service: WorkflowService = Depends(get_servic
 
 
 @router.post("/instances/{instance_id}/advance")
-def advance(instance_id: int, action: str = "next", performed_by: int | None = None, notes: str | None = None, service: WorkflowService = Depends(get_service)) -> Any:
+def advance(instance_id: int, action: str = "next", performed_by: int | None = None, notes: str | None = None, service: WorkflowService = Depends(get_service)) -> None:
     try:
         from .schemas import WorkflowActionRequest
         return service.advance(WorkflowActionRequest(instance_id=instance_id, action=action, performed_by=performed_by, notes=notes))
@@ -77,7 +77,7 @@ def advance(instance_id: int, action: str = "next", performed_by: int | None = N
 
 
 @router.post("/instances/{instance_id}/skip")
-def skip_step(instance_id: int, step_index: int, performed_by: int | None = None, service: WorkflowService = Depends(get_service)) -> Any:
+def skip_step(instance_id: int, step_index: int, performed_by: int | None = None, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.skip_step(instance_id, step_index, performed_by=performed_by)
     except Exception as exc:  # noqa: BLE001
@@ -85,7 +85,7 @@ def skip_step(instance_id: int, step_index: int, performed_by: int | None = None
 
 
 @router.post("/instances/{instance_id}/fail")
-def fail_step(instance_id: int, step_index: int, notes: str | None = None, service: WorkflowService = Depends(get_service)) -> Any:
+def fail_step(instance_id: int, step_index: int, notes: str | None = None, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.fail_step(instance_id, step_index, notes=notes)
     except Exception as exc:  # noqa: BLE001
@@ -93,7 +93,7 @@ def fail_step(instance_id: int, step_index: int, notes: str | None = None, servi
 
 
 @router.post("/instances/{instance_id}/pause")
-def pause(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def pause(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.pause(instance_id)
     except Exception as exc:  # noqa: BLE001
@@ -101,7 +101,7 @@ def pause(instance_id: int, service: WorkflowService = Depends(get_service)) -> 
 
 
 @router.post("/instances/{instance_id}/resume")
-def resume(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def resume(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.resume(instance_id)
     except Exception as exc:  # noqa: BLE001
@@ -109,7 +109,7 @@ def resume(instance_id: int, service: WorkflowService = Depends(get_service)) ->
 
 
 @router.post("/instances/{instance_id}/cancel")
-def cancel(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def cancel(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.cancel(instance_id)
     except Exception as exc:  # noqa: BLE001
@@ -117,7 +117,7 @@ def cancel(instance_id: int, service: WorkflowService = Depends(get_service)) ->
 
 
 @router.get("/instances/{instance_id}/progress")
-def progress(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def progress(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.progress(instance_id)
     except Exception as exc:  # noqa: BLE001
@@ -125,7 +125,7 @@ def progress(instance_id: int, service: WorkflowService = Depends(get_service)) 
 
 
 @router.get("/instances/{instance_id}/history")
-def history(instance_id: int, service: WorkflowService = Depends(get_service)) -> Any:
+def history(instance_id: int, service: WorkflowService = Depends(get_service)) -> None:
     try:
         return service.history(instance_id)
     except Exception as exc:  # noqa: BLE001

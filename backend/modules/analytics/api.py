@@ -23,7 +23,7 @@ def get_service() -> AnalyticsService:
 
 
 @router.post("/registries", status_code=201)
-def create_registry(payload: RegistryCreate, service: AnalyticsService = Depends(get_service)) -> Any:
+def create_registry(payload: RegistryCreate, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.create_registry(payload)
     except Exception as exc:  # noqa: BLE001
@@ -31,12 +31,12 @@ def create_registry(payload: RegistryCreate, service: AnalyticsService = Depends
 
 
 @router.get("/registries")
-def list_registries(service: AnalyticsService = Depends(get_service)) -> Any:
+def list_registries(service: AnalyticsService = Depends(get_service)) -> None:
     return service.list_registries()
 
 
 @router.post("/outcomes", status_code=201)
-def record_outcome(payload: OutcomeCreate, service: AnalyticsService = Depends(get_service)) -> Any:
+def record_outcome(payload: OutcomeCreate, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.record_outcome(payload)
     except Exception as exc:  # noqa: BLE001
@@ -44,12 +44,12 @@ def record_outcome(payload: OutcomeCreate, service: AnalyticsService = Depends(g
 
 
 @router.get("/outcomes")
-def list_outcomes(patient_id: int | None = None, measure: str | None = None, service: AnalyticsService = Depends(get_service)) -> Any:
+def list_outcomes(patient_id: int | None = None, measure: str | None = None, service: AnalyticsService = Depends(get_service)) -> None:
     return service.list_outcomes(patient_id=patient_id, measure=measure)
 
 
 @router.post("/quality-measures", status_code=201)
-def create_measure(payload: QualityMeasureCreate, service: AnalyticsService = Depends(get_service)) -> Any:
+def create_measure(payload: QualityMeasureCreate, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.create_measure(payload)
     except Exception as exc:  # noqa: BLE001
@@ -57,12 +57,12 @@ def create_measure(payload: QualityMeasureCreate, service: AnalyticsService = De
 
 
 @router.get("/quality-measures")
-def list_measures(service: AnalyticsService = Depends(get_service)) -> Any:
+def list_measures(service: AnalyticsService = Depends(get_service)) -> None:
     return service.list_measures()
 
 
 @router.put("/quality-measures/{measure_id}")
-def update_measure(measure_id: int, numerator: int | None = None, denominator: int | None = None, service: AnalyticsService = Depends(get_service)) -> Any:
+def update_measure(measure_id: int, numerator: int | None = None, denominator: int | None = None, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.update_measure(measure_id, numerator=numerator, denominator=denominator)
     except Exception as exc:  # noqa: BLE001
@@ -70,7 +70,7 @@ def update_measure(measure_id: int, numerator: int | None = None, denominator: i
 
 
 @router.post("/reports", status_code=201)
-def create_report(payload: ReportCreate, service: AnalyticsService = Depends(get_service)) -> Any:
+def create_report(payload: ReportCreate, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.create_report(payload)
     except Exception as exc:  # noqa: BLE001
@@ -78,12 +78,12 @@ def create_report(payload: ReportCreate, service: AnalyticsService = Depends(get
 
 
 @router.get("/reports")
-def list_reports(service: AnalyticsService = Depends(get_service)) -> Any:
+def list_reports(service: AnalyticsService = Depends(get_service)) -> None:
     return service.list_reports()
 
 
 @router.get("/reports/{report_id}")
-def get_report(report_id: int, service: AnalyticsService = Depends(get_service)) -> Any:
+def get_report(report_id: int, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.get_report(report_id)
     except Exception as exc:  # noqa: BLE001
@@ -91,7 +91,7 @@ def get_report(report_id: int, service: AnalyticsService = Depends(get_service))
 
 
 @router.post("/readmission-risk", status_code=201)
-def compute_risk(payload: ReadmissionRiskCreate, service: AnalyticsService = Depends(get_service)) -> Any:
+def compute_risk(payload: ReadmissionRiskCreate, service: AnalyticsService = Depends(get_service)) -> None:
     try:
         return service.compute_readmission_risk(payload.patient_id, payload.encounter_id, None)
     except Exception as exc:  # noqa: BLE001
@@ -99,15 +99,15 @@ def compute_risk(payload: ReadmissionRiskCreate, service: AnalyticsService = Dep
 
 
 @router.get("/readmission-risk")
-def list_risks(patient_id: int | None = None, risk_level: str | None = None, service: AnalyticsService = Depends(get_service)) -> Any:
+def list_risks(patient_id: int | None = None, risk_level: str | None = None, service: AnalyticsService = Depends(get_service)) -> None:
     return service.list_risks(patient_id=patient_id, risk_level=risk_level)
 
 
 @router.get("/dashboard")
-def dashboard(service: AnalyticsService = Depends(get_service)) -> Any:
+def dashboard(service: AnalyticsService = Depends(get_service)) -> None:
     return service.dashboard_summary()
 
 
 @router.get("/standard-reports")
-def standard_reports(service: AnalyticsService = Depends(get_service)) -> Any:
+def standard_reports(service: AnalyticsService = Depends(get_service)) -> None:
     return service.standard_reports()

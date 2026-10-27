@@ -19,7 +19,7 @@ def get_service() -> LabService:
 
 
 @router.post("/orders", status_code=201)
-def create_order(payload: LabOrderCreate, service: LabService = Depends(get_service)) -> Any:
+def create_order(payload: LabOrderCreate, service: LabService = Depends(get_service)) -> None:
     try:
         return service.create_order(payload)
     except Exception as exc:  # noqa: BLE001
@@ -39,7 +39,7 @@ def list_orders(
 
 
 @router.get("/orders/{order_id}")
-def get_order(order_id: int, service: LabService = Depends(get_service)) -> Any:
+def get_order(order_id: int, service: LabService = Depends(get_service)) -> None:
     try:
         return service.get_order(order_id)
     except Exception as exc:  # noqa: BLE001
@@ -47,7 +47,7 @@ def get_order(order_id: int, service: LabService = Depends(get_service)) -> Any:
 
 
 @router.put("/orders/{order_id}")
-def update_order(order_id: int, payload: LabOrderUpdate, service: LabService = Depends(get_service)) -> Any:
+def update_order(order_id: int, payload: LabOrderUpdate, service: LabService = Depends(get_service)) -> None:
     try:
         return service.update_order(order_id, payload)
     except Exception as exc:  # noqa: BLE001
@@ -55,7 +55,7 @@ def update_order(order_id: int, payload: LabOrderUpdate, service: LabService = D
 
 
 @router.post("/orders/{order_id}/collect")
-def collect_sample(order_id: int, service: LabService = Depends(get_service)) -> Any:
+def collect_sample(order_id: int, service: LabService = Depends(get_service)) -> None:
     try:
         return service.collect_sample(order_id)
     except Exception as exc:  # noqa: BLE001
@@ -63,7 +63,7 @@ def collect_sample(order_id: int, service: LabService = Depends(get_service)) ->
 
 
 @router.post("/orders/{order_id}/process")
-def start_processing(order_id: int, service: LabService = Depends(get_service)) -> Any:
+def start_processing(order_id: int, service: LabService = Depends(get_service)) -> None:
     try:
         return service.start_processing(order_id)
     except Exception as exc:  # noqa: BLE001
@@ -71,7 +71,7 @@ def start_processing(order_id: int, service: LabService = Depends(get_service)) 
 
 
 @router.post("/orders/{order_id}/cancel")
-def cancel_order(order_id: int, reason: str | None = None, service: LabService = Depends(get_service)) -> Any:
+def cancel_order(order_id: int, reason: str | None = None, service: LabService = Depends(get_service)) -> None:
     try:
         return service.cancel_order(order_id, reason)
     except Exception as exc:  # noqa: BLE001
@@ -79,7 +79,7 @@ def cancel_order(order_id: int, reason: str | None = None, service: LabService =
 
 
 @router.post("/results", status_code=201)
-def add_result(payload: LabResultCreate, service: LabService = Depends(get_service)) -> Any:
+def add_result(payload: LabResultCreate, service: LabService = Depends(get_service)) -> None:
     try:
         return service.add_result(payload)
     except Exception as exc:  # noqa: BLE001
@@ -87,12 +87,12 @@ def add_result(payload: LabResultCreate, service: LabService = Depends(get_servi
 
 
 @router.get("/orders/{order_id}/results")
-def list_results(order_id: int, service: LabService = Depends(get_service)) -> Any:
+def list_results(order_id: int, service: LabService = Depends(get_service)) -> None:
     return service.list_results(order_id)
 
 
 @router.post("/panels", status_code=201)
-def create_panel(payload: LabPanelCreate, service: LabService = Depends(get_service)) -> Any:
+def create_panel(payload: LabPanelCreate, service: LabService = Depends(get_service)) -> None:
     try:
         return service.create_panel(payload)
     except Exception as exc:  # noqa: BLE001
@@ -100,12 +100,12 @@ def create_panel(payload: LabPanelCreate, service: LabService = Depends(get_serv
 
 
 @router.get("/panels")
-def list_panels(service: LabService = Depends(get_service)) -> Any:
+def list_panels(service: LabService = Depends(get_service)) -> None:
     return service.list_panels()
 
 
 @router.post("/panels/{panel_id}/order")
-def order_panel(panel_id: int, patient_id: int, ordering_provider: int, encounter_id: int | None = None, service: LabService = Depends(get_service)) -> Any:
+def order_panel(panel_id: int, patient_id: int, ordering_provider: int, encounter_id: int | None = None, service: LabService = Depends(get_service)) -> None:
     try:
         return service.order_panel(panel_id, patient_id, ordering_provider, encounter_id=encounter_id)
     except Exception as exc:  # noqa: BLE001
@@ -113,10 +113,10 @@ def order_panel(panel_id: int, patient_id: int, ordering_provider: int, encounte
 
 
 @router.get("/patients/{patient_id}/abnormal")
-def abnormal_results(patient_id: int, service: LabService = Depends(get_service)) -> Any:
+def abnormal_results(patient_id: int, service: LabService = Depends(get_service)) -> None:
     return service.abnormal_results(patient_id)
 
 
 @router.get("/count")
-def count(service: LabService = Depends(get_service)) -> Any:
+def count(service: LabService = Depends(get_service)) -> None:
     return {"count": service.count_orders()}

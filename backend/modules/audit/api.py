@@ -19,7 +19,7 @@ def get_service() -> AuditService:
 
 
 @router.post("/logs", status_code=201)
-def record_log(payload: AuditLogCreate, service: AuditService = Depends(get_service)) -> Any:
+def record_log(payload: AuditLogCreate, service: AuditService = Depends(get_service)) -> None:
     return service.record(payload)
 
 
@@ -47,10 +47,10 @@ def list_logs(
 
 
 @router.get("/logs/recent")
-def recent_logs(limit: int = Query(20, ge=1, le=100), service: AuditService = Depends(get_service)) -> Any:
+def recent_logs(limit: int = Query(20, ge=1, le=100), service: AuditService = Depends(get_service)) -> None:
     return service.recent(limit=limit)
 
 
 @router.get("/logs/count")
-def count_logs(service: AuditService = Depends(get_service)) -> Any:
+def count_logs(service: AuditService = Depends(get_service)) -> None:
     return {"count": service.count()}

@@ -19,7 +19,7 @@ def get_service() -> FHIRService:
 
 
 @router.post("/resources", status_code=201)
-def create_resource(payload: FHIRResourceCreate, service: FHIRService = Depends(get_service)) -> Any:
+def create_resource(payload: FHIRResourceCreate, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.create_resource(payload)
     except Exception as exc:  # noqa: BLE001
@@ -27,7 +27,7 @@ def create_resource(payload: FHIRResourceCreate, service: FHIRService = Depends(
 
 
 @router.get("/resources/{resource_type}/{resource_id}")
-def get_resource(resource_type: str, resource_id: str, service: FHIRService = Depends(get_service)) -> Any:
+def get_resource(resource_type: str, resource_id: str, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.get_resource(resource_type, resource_id)
     except Exception as exc:  # noqa: BLE001
@@ -35,14 +35,14 @@ def get_resource(resource_type: str, resource_id: str, service: FHIRService = De
 
 
 @router.put("/resources/{resource_type}/{resource_id}")
-def update_resource(resource_type: str, resource_id: str, payload: dict, service: FHIRService = Depends(get_service)) -> Any:
+def update_resource(resource_type: str, resource_id: str, payload: dict, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.update_resource(resource_type, resource_id, payload)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-@router.delete("/resources/{resource_type}/{resource_id}", status_code=204)
+@router.delete("/resources/{resource_type}/{resource_id}", status_code=200)
 def delete_resource(resource_type: str, resource_id: str, service: FHIRService = Depends(get_service)) -> None:
     try:
         service.delete_resource(resource_type, resource_id)
@@ -51,12 +51,12 @@ def delete_resource(resource_type: str, resource_id: str, service: FHIRService =
 
 
 @router.post("/search")
-def search(payload: FHIRSearchRequest, service: FHIRService = Depends(get_service)) -> Any:
+def search(payload: FHIRSearchRequest, service: FHIRService = Depends(get_service)) -> None:
     return service.search(payload).to_dict()
 
 
 @router.post("/bundles", status_code=201)
-def create_bundle(payload: FHIRBundleCreate, service: FHIRService = Depends(get_service)) -> Any:
+def create_bundle(payload: FHIRBundleCreate, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.create_bundle(payload)
     except Exception as exc:  # noqa: BLE001
@@ -64,7 +64,7 @@ def create_bundle(payload: FHIRBundleCreate, service: FHIRService = Depends(get_
 
 
 @router.get("/bundles/{bundle_id}")
-def get_bundle(bundle_id: int, service: FHIRService = Depends(get_service)) -> Any:
+def get_bundle(bundle_id: int, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.get_bundle(bundle_id)
     except Exception as exc:  # noqa: BLE001
@@ -72,7 +72,7 @@ def get_bundle(bundle_id: int, service: FHIRService = Depends(get_service)) -> A
 
 
 @router.post("/subscriptions", status_code=201)
-def create_subscription(payload: FHIRSubscriptionCreate, service: FHIRService = Depends(get_service)) -> Any:
+def create_subscription(payload: FHIRSubscriptionCreate, service: FHIRService = Depends(get_service)) -> None:
     try:
         return service.create_subscription(payload)
     except Exception as exc:  # noqa: BLE001
@@ -80,10 +80,10 @@ def create_subscription(payload: FHIRSubscriptionCreate, service: FHIRService = 
 
 
 @router.get("/subscriptions")
-def list_subscriptions(resource_type: str | None = None, service: FHIRService = Depends(get_service)) -> Any:
+def list_subscriptions(resource_type: str | None = None, service: FHIRService = Depends(get_service)) -> None:
     return service.list_subscriptions(resource_type=resource_type)
 
 
 @router.get("/count")
-def count(service: FHIRService = Depends(get_service)) -> Any:
+def count(service: FHIRService = Depends(get_service)) -> None:
     return {"count": service.count()}
