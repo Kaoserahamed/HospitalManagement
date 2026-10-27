@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
-
 
 class SearchIndex:
     def __init__(self) -> None:
         self._documents: dict[str, dict] = {}
 
     def index(self, doc_id: str, content: str, metadata: dict | None = None) -> None:
-        self._documents[doc_id] = {"id": doc_id, "content": content.lower(), "metadata": metadata or {}}
+        self._documents[doc_id] = {
+            "id": doc_id,
+            "content": content.lower(),
+            "metadata": metadata or {},
+        }
 
     def remove(self, doc_id: str) -> bool:
         return self._documents.pop(doc_id, None) is not None
@@ -63,7 +65,7 @@ class SearchService:
     def suggest(self, prefix: str, limit: int = 5) -> list[str]:
         prefix = prefix.lower()
         suggestions = set()
-        for doc in self._documents.values():
+        for doc in self.index._documents.values():
             for word in doc["content"].split():
                 if word.startswith(prefix):
                     suggestions.add(word)

@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
-from typing import Any, Optional
+from datetime import datetime
 
 from backend.shared.errors import ConflictError, NotFoundError, ValidationError
-from backend.shared.events import default_bus, DomainEvent
+from backend.shared.events import DomainEvent, default_bus
 from backend.shared.pagination import PageParams, PageResult
 
 from .repository import AppointmentRepository
-from .schemas import AppointmentCreate, AppointmentUpdate, ConflictCheck
+from .schemas import AppointmentCreate, AppointmentUpdate
 
 
 class AppointmentService:
@@ -26,7 +25,9 @@ class AppointmentService:
         if conflicts:
             raise ConflictError("Appointment conflicts with existing booking", details=conflicts)
         record = self.repository.create(payload)
-        default_bus.publish(DomainEvent(name="AppointmentBooked", payload={"appointment_id": record["id"]}))
+        default_bus.publish(
+            DomainEvent(name="AppointmentBooked", payload={"appointment_id": record["id"]})
+        )
         return record
 
     def get(self, appointment_id: int) -> dict:
@@ -42,17 +43,29 @@ class AppointmentService:
         if "start_time" in payload or "end_time" in payload:
             self._validate_times(merged)
             conflicts = self.repository.find_conflicts(
-                merged["doctor_id"], merged["start_time"], merged["end_time"], exclude_id=appointment_id
+                merged["doctor_id"],
+                merged["start_time"],
+                merged["end_time"],
+                exclude_id=appointment_id,
             )
             if conflicts:
-                raise ConflictError("Updated time conflicts with existing booking", details=conflicts)
+                raise ConflictError(
+                    "Updated time conflicts with existing booking", details=conflicts
+                )
         record = self.repository.update(appointment_id, payload)
-        default_bus.publish(DomainEvent(name="AppointmentUpdated", payload={"appointment_id": appointment_id}))
+        default_bus.publish(
+            DomainEvent(name="AppointmentUpdated", payload={"appointment_id": appointment_id})
+        )
         return record
 
     def cancel(self, appointment_id: int, reason: str | None = None) -> dict:
         record = self.repository.update(appointment_id, {"status": "cancelled", "notes": reason})
-        default_bus.publish(DomainEvent(name="AppointmentCancelled", payload={"appointment_id": appointment_id, "reason": reason}))
+        default_bus.publish(
+            DomainEvent(
+                name="AppointmentCancelled",
+                payload={"appointment_id": appointment_id, "reason": reason},
+            )
+        )
         return record
 
     def complete(self, appointment_id: int, notes: str | None = None) -> dict:
@@ -60,12 +73,16 @@ class AppointmentService:
         if notes:
             payload["notes"] = notes
         record = self.repository.update(appointment_id, payload)
-        default_bus.publish(DomainEvent(name="AppointmentCompleted", payload={"appointment_id": appointment_id}))
+        default_bus.publish(
+            DomainEvent(name="AppointmentCompleted", payload={"appointment_id": appointment_id})
+        )
         return record
 
     def mark_no_show(self, appointment_id: int) -> dict:
         record = self.repository.update(appointment_id, {"status": "no_show"})
-        default_bus.publish(DomainEvent(name="AppointmentNoShow", payload={"appointment_id": appointment_id}))
+        default_bus.publish(
+            DomainEvent(name="AppointmentNoShow", payload={"appointment_id": appointment_id})
+        )
         return record
 
     def delete(self, appointment_id: int) -> bool:
@@ -76,9 +93,13 @@ class AppointmentService:
     def list(self, params: PageParams, **filters) -> PageResult:
         return self.repository.list(params, **filters)
 
-    def check_conflict(self, check: ConflictCheck) -> dict:
+    def check_conflict(self, check) -> dict:
+        payload = check.model_dump() if hasattr(check, "model_dump") else dict(check)
         conflicts = self.repository.find_conflicts(
-            check.doctor_id, check.start_time, check.end_time, exclude_id=check.exclude_appointment_id
+            payload["doctor_id"],
+            payload["start_time"],
+            payload["end_time"],
+            exclude_id=payload.get("exclude_appointment_id"),
         )
         return {"has_conflict": bool(conflicts), "conflicts": conflicts}
 
@@ -88,7 +109,9 @@ class AppointmentService:
     def create_slot(self, doctor_id: int, start_time: datetime, end_time: datetime) -> dict:
         if start_time >= end_time:
             raise ValidationError("start_time must be before end_time")
-        return self.repository.create_slot({"doctor_id": doctor_id, "start_time": start_time, "end_time": end_time})
+        return self.repository.create_slot(
+            {"doctor_id": doctor_id, "start_time": start_time, "end_time": end_time}
+        )
 
     def book_slot(self, slot_id: int, appointment_id: int) -> dict:
         return self.repository.book_slot(slot_id, appointment_id)
@@ -97,7 +120,9 @@ class AppointmentService:
         return self.repository.free_slot(slot_id)
 
     def reschedule(self, appointment_id: int, new_start: datetime, new_end: datetime) -> dict:
-        return self.update(appointment_id, {"start_time": new_start, "end_time": new_end, "status": "scheduled"})
+        return self.update(
+            appointment_id, {"start_time": new_start, "end_time": new_end, "status": "scheduled"}
+        )
 
     def for_doctor(self, doctor_id: int, params: PageParams) -> PageResult:
         return self.repository.list(params, doctor_id=doctor_id)

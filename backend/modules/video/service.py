@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any
 
-from backend.shared.errors import NotFoundError, ValidationError
-from backend.shared.events import default_bus, DomainEvent
+from backend.shared.errors import NotFoundError
+from backend.shared.events import DomainEvent, default_bus
 
 from .repository import VideoRepository
 from .schemas import SessionMetricCreate, SignalingMessageCreate, VideoSessionCreate
@@ -22,7 +21,9 @@ class VideoService:
         if not payload.get("room_id"):
             payload["room_id"] = str(uuid.uuid4())
         record = self.repository.create_session(payload)
-        default_bus.publish(DomainEvent(name="VideoSessionCreated", payload={"session_id": record["id"]}))
+        default_bus.publish(
+            DomainEvent(name="VideoSessionCreated", payload={"session_id": record["id"]})
+        )
         return record
 
     def get_session(self, session_id: int) -> dict:
@@ -39,12 +40,23 @@ class VideoService:
 
     def connect(self, session_id: int) -> dict:
         record = self.repository.update_session(session_id, {"status": "connecting"})
-        default_bus.publish(DomainEvent(name="VideoSessionConnecting", payload={"session_id": session_id}))
+        default_bus.publish(
+            DomainEvent(name="VideoSessionConnecting", payload={"session_id": session_id})
+        )
         return record
 
     def connected(self, session_id: int, participant_count: int = 1) -> dict:
-        record = self.repository.update_session(session_id, {"status": "connected", "started_at": datetime.utcnow(), "participant_count": participant_count})
-        default_bus.publish(DomainEvent(name="VideoSessionConnected", payload={"session_id": session_id}))
+        record = self.repository.update_session(
+            session_id,
+            {
+                "status": "connected",
+                "started_at": datetime.utcnow(),
+                "participant_count": participant_count,
+            },
+        )
+        default_bus.publish(
+            DomainEvent(name="VideoSessionConnected", payload={"session_id": session_id})
+        )
         return record
 
     def end_session(self, session_id: int, recording_path: str | None = None) -> dict:
@@ -52,7 +64,9 @@ class VideoService:
         if recording_path:
             payload["recording_path"] = recording_path
         record = self.repository.update_session(session_id, payload)
-        default_bus.publish(DomainEvent(name="VideoSessionEnded", payload={"session_id": session_id}))
+        default_bus.publish(
+            DomainEvent(name="VideoSessionEnded", payload={"session_id": session_id})
+        )
         return record
 
     def fail_session(self, session_id: int, error: str | None = None) -> dict:
@@ -77,7 +91,9 @@ class VideoService:
     def send_signaling(self, data: SignalingMessageCreate | dict) -> dict:
         payload = data.model_dump() if hasattr(data, "model_dump") else dict(data)
         record = self.repository.create_signaling(payload)
-        default_bus.publish(DomainEvent(name="SignalingMessageSent", payload={"message_id": record["id"]}))
+        default_bus.publish(
+            DomainEvent(name="SignalingMessageSent", payload={"message_id": record["id"]})
+        )
         return record
 
     def list_signaling(self, session_id: int) -> list[dict]:
@@ -92,18 +108,24 @@ class VideoService:
 
     def session_duration(self, session_id: int) -> float:
         session = self.get_session(session_id)
-        if session.get("started_at") and session.get("ended_at"):
-            from datetime import datetime
-            try:
-                s = datetime.fromisoformat(session["started_at"])
-                e = datetime.fromisoformat(session["ended_at"])
-                return (e - s).total_seconds()
-            except ValueError:
-                pass
+        started = session.get("started_at")
+        ended = session.get("ended_at")
+        if started and ended:
+            if isinstance(started, str):
+                try:
+                    started = datetime.fromisoformat(started)
+                except ValueError:
+                    started = None
+            if isinstance(ended, str):
+                try:
+                    ended = datetime.fromisoformat(ended)
+                except ValueError:
+                    ended = None
+            if isinstance(started, datetime) and isinstance(ended, datetime):
+                return (ended - started).total_seconds()
         return 0.0
 
     def list_sessions(self, params, status: str | None = None):
-        from backend.shared.pagination import PageParams, PageResult
         return self.repository.list_sessions(params, status=status)
 
     def count(self) -> int:

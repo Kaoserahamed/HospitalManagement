@@ -2,11 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
-from typing import Optional
-
-from backend.shared.pagination import PageParams, PageResult, paginate
-
 
 class SchedulingRepository:
     def __init__(self) -> None:
@@ -27,7 +22,7 @@ class SchedulingRepository:
         self._swaps[sid] = record
         return dict(record)
 
-    def get_swap(self, swap_id: int) -> Optional[dict]:
+    def get_swap(self, swap_id: int) -> dict | None:
         record = self._swaps.get(swap_id)
         return dict(record) if record else None
 
@@ -47,11 +42,18 @@ class SchedulingRepository:
 
     def create_oncall(self, data: dict) -> dict:
         oid = self._next("oncall")
-        record = {"id": oid, **data, "is_active": data.get("is_active", True)}
+        record = {
+            "id": oid,
+            **data,
+            "on_call_type": data.get("on_call_type", "primary"),
+            "is_active": data.get("is_active", True),
+        }
         self._oncall[oid] = record
         return dict(record)
 
-    def list_oncall(self, department_id: int | None = None, active_only: bool = False) -> list[dict]:
+    def list_oncall(
+        self, department_id: int | None = None, active_only: bool = False
+    ) -> list[dict]:
         items = list(self._oncall.values())
         if department_id is not None:
             items = [o for o in items if o.get("department_id") == department_id]
@@ -61,11 +63,13 @@ class SchedulingRepository:
 
     def create_alert(self, data: dict) -> dict:
         aid = self._next("alert")
-        record = {"id": aid, **data, "acknowledged": False}
+        record = {"id": aid, **data, "status": data.get("status", "gap"), "acknowledged": False}
         self._alerts[aid] = record
         return dict(record)
 
-    def list_alerts(self, department_id: int | None = None, acknowledged: bool | None = None) -> list[dict]:
+    def list_alerts(
+        self, department_id: int | None = None, acknowledged: bool | None = None
+    ) -> list[dict]:
         items = list(self._alerts.values())
         if department_id is not None:
             items = [a for a in items if a.get("department_id") == department_id]
@@ -95,7 +99,7 @@ class SchedulingRepository:
 
     def create_availability(self, data: dict) -> dict:
         aid = self._next("avail")
-        record = {"id": aid, **data}
+        record = {"id": aid, **data, "is_available": data.get("is_available", True)}
         self._availability[aid] = record
         return dict(record)
 

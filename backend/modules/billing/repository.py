@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from backend.shared.pagination import PageParams, PageResult, paginate
 
 
@@ -23,11 +21,16 @@ class BillingRepository:
     # Charges
     def create_charge(self, data: dict) -> dict:
         cid = self._next("charge")
-        record = {"id": cid, **data, "total": data.get("quantity", 1) * data.get("unit_price", 0.0)}
+        record = {
+            "id": cid,
+            **data,
+            "quantity": data.get("quantity", 1),
+            "total": data.get("quantity", 1) * data.get("unit_price", 0.0),
+        }
         self._charges[cid] = record
         return dict(record)
 
-    def get_charge(self, charge_id: int) -> Optional[dict]:
+    def get_charge(self, charge_id: int) -> dict | None:
         record = self._charges.get(charge_id)
         return dict(record) if record else None
 
@@ -40,11 +43,17 @@ class BillingRepository:
     # Invoices
     def create_invoice(self, data: dict) -> dict:
         iid = self._next("invoice")
-        record = {"id": iid, **data, "status": data.get("status", "draft"), "subtotal": 0.0, "total": 0.0}
+        record = {
+            "id": iid,
+            **data,
+            "status": data.get("status", "draft"),
+            "subtotal": 0.0,
+            "total": 0.0,
+        }
         self._invoices[iid] = record
         return dict(record)
 
-    def get_invoice(self, invoice_id: int) -> Optional[dict]:
+    def get_invoice(self, invoice_id: int) -> dict | None:
         record = self._invoices.get(invoice_id)
         return dict(record) if record else None
 
@@ -56,14 +65,16 @@ class BillingRepository:
         self._invoices[invoice_id] = record
         return dict(record)
 
-    def list_invoices(self, params: PageParams, patient_id: int | None = None, status: str | None = None) -> PageResult:
+    def list_invoices(
+        self, params: PageParams, patient_id: int | None = None, status: str | None = None
+    ) -> PageResult:
         items = list(self._invoices.values())
         if patient_id is not None:
             items = [i for i in items if i.get("patient_id") == patient_id]
         if status is not None:
             items = [i for i in items if i.get("status") == status]
         total = len(items)
-        page_items = items[params.offset:params.offset + params.limit]
+        page_items = items[params.offset : params.offset + params.limit]
         return paginate(page_items, params, total)
 
     # Invoice items
@@ -93,7 +104,7 @@ class BillingRepository:
         self._claims[cid] = record
         return dict(record)
 
-    def get_claim(self, claim_id: int) -> Optional[dict]:
+    def get_claim(self, claim_id: int) -> dict | None:
         record = self._claims.get(claim_id)
         return dict(record) if record else None
 
