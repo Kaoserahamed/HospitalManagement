@@ -122,7 +122,7 @@ class BillingService:
         return self.repository.list_claims(invoice_id=invoice_id)
 
     def summary(self, patient_id: int | None = None) -> dict:
-        invoices = self.repository.list_invoices(PageParams(page=1, per_page=1000), patient_id=patient_id)
+        invoices = self.repository.list_invoices(PageParams(page=1, per_page=100), patient_id=patient_id)
         total_invoiced = sum(i.get("total", 0) for i in invoices.items)
         paid = 0.0
         for inv in invoices.items:
@@ -137,7 +137,7 @@ class BillingService:
     def overdue_invoices(self, days: int = 30) -> list[dict]:
         cutoff = datetime.utcnow() - timedelta(days=days)
         result = []
-        for inv in self.repository.list_invoices(PageParams(page=1, per_page=1000)).items:
+        for inv in self.repository.list_invoices(PageParams(page=1, per_page=100)).items:
             if inv.get("status") in ("issued", "partially_paid") and inv.get("due_date") and inv["due_date"] < cutoff:
                 result.append(inv)
         return result

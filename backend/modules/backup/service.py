@@ -93,12 +93,12 @@ class BackupService:
         return [s for s in schedules if s.get("next_run") and s["next_run"] <= now]
 
     def latest_backup(self) -> dict | None:
-        backups = self.repository.list_backups(PageParams(page=1, per_page=1000))
+        backups = self.repository.list_backups(PageParams(page=1, per_page=100))
         items = sorted(backups.items, key=lambda x: x.get("created_at", ""), reverse=True)
         return items[0] if items else None
 
     def backup_stats(self) -> dict:
-        backups = self.repository.list_backups(PageParams(page=1, per_page=10000))
+        backups = self.repository.list_backups(PageParams(page=1, per_page=100))
         items = list(backups.items)
         return {
             "total": len(items),

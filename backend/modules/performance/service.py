@@ -44,7 +44,7 @@ class PerformanceService:
         return self.repository.list_cache_stats(cache_name=cache_name)
 
     def summary(self, endpoint: str | None = None) -> list[dict]:
-        params = PageParams(page=1, per_page=10000)
+        params = PageParams(page=1, per_page=100)
         result = self.repository.list_metrics(params, endpoint=endpoint)
         items = list(result.items)
         # group by endpoint

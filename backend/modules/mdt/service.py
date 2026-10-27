@@ -82,7 +82,7 @@ class MDTService:
         return self.update_decision(decision_id, "closed")
 
     def meetings_for_patient(self, patient_id: int) -> list[dict]:
-        result = self.repository.list_meetings(PageParams(page=1, per_page=1000), patient_id=patient_id)
+        result = self.repository.list_meetings(PageParams(page=1, per_page=100), patient_id=patient_id)
         return list(result.items)
 
     def attendance_rate(self, meeting_id: int) -> float:

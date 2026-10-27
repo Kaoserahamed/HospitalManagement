@@ -79,7 +79,7 @@ class QueueService:
         self.repository.clear()
 
     def stats(self) -> dict:
-        all_tasks = self.repository.list(PageParams(page=1, per_page=10000))
+        all_tasks = self.repository.list(PageParams(page=1, per_page=100))
         items = list(all_tasks.items)
         return {
             "total": len(items),

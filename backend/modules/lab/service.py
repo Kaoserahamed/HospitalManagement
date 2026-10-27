@@ -95,7 +95,7 @@ class LabService:
 
     def abnormal_results(self, patient_id: int) -> list[dict]:
         result = []
-        orders = self.repository.list_orders(PageParams(page=1, per_page=1000), patient_id=patient_id)
+        orders = self.repository.list_orders(PageParams(page=1, per_page=100), patient_id=patient_id)
         for order in orders.items:
             for r in self.repository.list_results(order["id"]):
                 if r.get("abnormal"):

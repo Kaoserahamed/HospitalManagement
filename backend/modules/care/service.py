@@ -102,14 +102,14 @@ class CareService:
         return self.repository.list_discharge_plans(patient_id=patient_id)
 
     def open_tasks_for_patient(self, patient_id: int) -> list[dict]:
-        result = self.repository.list_tasks(PageParams(page=1, per_page=1000), patient_id=patient_id, status="open")
+        result = self.repository.list_tasks(PageParams(page=1, per_page=100), patient_id=patient_id, status="open")
         return list(result.items)
 
     def overdue_tasks(self) -> list[dict]:
         now = datetime.utcnow()
-        result = self.repository.list_tasks(PageParams(page=1, per_page=1000))
+        result = self.repository.list_tasks(PageParams(page=1, per_page=100))
         return [t for t in result.items if t.get("due_date") and t["due_date"] < now and t.get("status") != "done"]
 
     def count_tasks(self) -> int:
-        result = self.repository.list_tasks(PageParams(page=1, per_page=10000))
+        result = self.repository.list_tasks(PageParams(page=1, per_page=100))
         return result.total

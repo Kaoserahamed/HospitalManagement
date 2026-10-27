@@ -96,7 +96,7 @@ class TelemedicineService:
         return self.repository.list_metrics(visit_id)
 
     def summary(self) -> dict:
-        result = self.repository.list_visits(PageParams(page=1, per_page=1000))
+        result = self.repository.list_visits(PageParams(page=1, per_page=100))
         items = list(result.items)
         completed = [v for v in items if v.get("status") == "completed"]
         cancelled = [v for v in items if v.get("status") == "cancelled"]
