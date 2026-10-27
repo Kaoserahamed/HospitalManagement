@@ -1,0 +1,3 @@
+# Bed
+
+Module for beds.

@@ -1,0 +1,1 @@
+"""PalliativeConsult module."""

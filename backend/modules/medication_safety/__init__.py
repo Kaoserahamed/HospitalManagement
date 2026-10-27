@@ -1,0 +1,1 @@
+"""MedicationSafetyEvent module."""

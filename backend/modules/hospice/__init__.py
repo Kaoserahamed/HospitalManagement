@@ -1,0 +1,1 @@
+"""HospiceAdmission module."""

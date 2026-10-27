@@ -1,0 +1,1 @@
+"""CardiologyStudy module."""

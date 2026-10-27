@@ -1,0 +1,1 @@
+"""ReleaseOfInformation module."""

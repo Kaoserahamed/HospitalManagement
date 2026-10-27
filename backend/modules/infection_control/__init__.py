@@ -1,0 +1,1 @@
+"""InfectionCase module."""
