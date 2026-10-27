@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useImports, useExports } from './hooks';
-import { Table, Button, Badge } from '../../components/ui';
+import { Table, Badge } from '../../components/ui';
 
 export const ImportExportPage: React.FC = () => {
   const { data: imports } = useImports();

@@ -1,6 +1,6 @@
 import axios from 'axios';
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000' });
-import type { Medication, MedicationCreateInput, MedicationListParams, MedicationListResponse, Stock, StockCreateInput, Lot, Lot as LotType, Supplier, Supplier as SupplierType, Dispense, DispenseCreateInput, InteractionCheck, InteractionResult } from './types';
+import type { Medication, MedicationCreateInput, MedicationListParams, MedicationListResponse, Stock, StockCreateInput, Lot, Lot as Supplier, Supplier as Dispense, DispenseCreateInput, InteractionCheck, InteractionResult } from './types';
 
 export const pharmacyApi = {
   listMedications: async (params: MedicationListParams = {}): Promise<MedicationListResponse> => { const { data } = await api.get('/pharmacy/medications', { params }); return data; },

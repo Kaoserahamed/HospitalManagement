@@ -36,7 +36,7 @@ export const AppointmentDetailPage: React.FC = () => {
         <Button variant="secondary" onClick={() => navigate(`/appointments/${appointmentId}/edit`)}>
           Edit
         </Button>
-        <Button variant="success" onClick={() => completeMutation.mutate({ id: appointmentId })}>
+        <Button variant="primary" onClick={() => completeMutation.mutate({ id: appointmentId })}>
           Complete
         </Button>
         <Button variant="danger" onClick={() => cancelMutation.mutate({ id: appointmentId })}>

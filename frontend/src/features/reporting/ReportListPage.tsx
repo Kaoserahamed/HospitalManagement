@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useReportDefinitions, useRunReport } from './hooks';
-import { Table, Pagination, Button, Badge } from '../../components/ui';
+import { Table, Button, Badge } from '../../components/ui';
 
 export const ReportListPage: React.FC = () => {
-  const [page, setPage] = useState(1);
   const { data, isLoading } = useReportDefinitions();
   const runMutation = useRunReport();
 

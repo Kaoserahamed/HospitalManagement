@@ -30,7 +30,7 @@ export const CheckInListPage: React.FC = () => {
             render: (row: any) => (
               <div>
                 <Button size="sm" onClick={() => callMutation.mutate(row.id)}>Call</Button>
-                <Button size="sm" variant="success" onClick={() => completeMutation.mutate(row.id)}>Complete</Button>
+                <Button size="sm" variant="primary" onClick={() => completeMutation.mutate(row.id)}>Complete</Button>
               </div>
             ),
           },

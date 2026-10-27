@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRegistries } from './hooks';
-import { Table, Button, Badge } from '../../components/ui';
+import { Table, Button } from '../../components/ui';
 
 export const RegistryListPage: React.FC = () => {
   const { data, isLoading } = useRegistries();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWorkflowInstances, useWorkflowProgress } from './hooks';
+import { useWorkflowInstances } from './hooks';
 import { Table, Pagination, Button, Badge } from '../../components/ui';
 
 export const WorkflowInstanceListPage: React.FC = () => {

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQualityMeasures, useAllQualitySummaries } from './hooks';
-import { Table, Button, Badge } from '../../components/ui';
+import { Table, Button } from '../../components/ui';
 
 export const QualityDashboardPage: React.FC = () => {
   const { data: measures, isLoading } = useQualityMeasures();

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppointments, useCancelAppointment } from './hooks';
-import { Table, Pagination, Button, Input, Badge } from '../../components/ui';
+import { Table, Pagination, Button, Badge } from '../../components/ui';
 
 export const AppointmentListPage: React.FC = () => {
   const [page, setPage] = useState(1);
