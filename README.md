@@ -74,5 +74,3 @@ npm run build
 - Frontend feature modules are registered but not all are linked to navigation.
 - 111 integration tests are skipped without a live MySQL instance.
 
-## License
-MIT
