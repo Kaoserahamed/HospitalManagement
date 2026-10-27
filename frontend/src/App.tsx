@@ -9,6 +9,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import ReceptionistDashboard from './pages/ReceptionistDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import { FeatureRoutes } from './routes/FeatureRoutes';
 
 const RootRedirect = () => {
   const { user, loading } = useAuth();
@@ -96,6 +97,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <FeatureRoutes />
           <Route path="/" element={<RootRedirect />} />
         </Routes>
       </AuthProvider>
